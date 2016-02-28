@@ -3,9 +3,6 @@
 minimist = require 'minimist'
 fs = require 'fs'
 {make_esc} = require 'iced-error'
-{a_json_parse} = require('iced-utils').util
-log = require 'iced-logger'
-path = require 'path'
 
 #====================================================================
 
