@@ -7,7 +7,8 @@ lib/%.js: src/%.iced
 	$(ICED) -I node -c -o `dirname $@` $<
 
 build-stamp: \
-	lib/main.js
+	lib/main.js \
+	lib/emit.js
 	date > $@
 
 test:
