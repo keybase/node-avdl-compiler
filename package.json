@@ -1,0 +1,33 @@
+{
+  "name": "avdl-compiler",
+  "version": "1.0.0",
+  "description": "AVDL to Go compiler written in IcedCoffeeScript (for node)",
+  "main": "lib/main.js",
+  "scripts": {
+    "test": "make test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/keybase/node-avdl-compiler.git"
+  },
+  "keywords": [
+    "AVDL",
+    "Go"
+  ],
+  "author": "Maxwell Krohn <max@keybase.io>",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/keybase/node-avdl-compiler/issues"
+  },
+  "homepage": "https://github.com/keybase/node-avdl-compiler#readme",
+  "devDependencies": {
+    "iced-coffee-script": "^108.0.9",
+    "iced-test": "0.0.22"
+  },
+  "dependencies": {
+    "avdl2json": "^1.0.3",
+    "iced-error": "0.0.9",
+    "iced-runtime": "^1.0.3",
+    "minimist": "^1.2.0"
+  }
+}
