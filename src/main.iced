@@ -3,6 +3,7 @@ minimist = require 'minimist'
 avdl2json = require 'avdl2json'
 {GoEmitter} = require './emit'
 {make_esc} = require 'iced-error'
+fs = require 'fs'
 
 #================================================
 
@@ -15,6 +16,19 @@ usage = () ->
 avdlc can run in either batch or single-file mode. Specify which language
 to output code in. Currently, only "go" is supported.
 """
+
+#================================================
+
+emit = ( { json }, cb) ->
+  e = new GoEmitter()
+  code = e.run { json }
+  cb null, code
+
+#================================================
+
+output = ({outfile, code}, cb) ->
+  await fs.writeFile outfile, code.join("\n"), defer err
+  cb err
 
 #================================================
 
@@ -64,10 +78,10 @@ exports.Main = class Main
 
   do_file : ({infile, outfile}, cb) ->
     esc = make_esc cb, "do_file"
-    await avdl2json.parse { infile }, esc defer ast
-    await emit { ast }, esc defer code
-    await output { code }, esc defer()
-    console.log "Compiling #{f} -> #{outfile}"
+    await avdl2json.parse { infile, version : 2 }, esc defer ast
+    await emit { json : ast.to_json() }, esc defer code
+    await output { code, outfile }, esc defer()
+    console.log "Compiling #{infile} -> #{outfile}"
     cb null
 
   #---------------

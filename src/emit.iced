@@ -6,7 +6,12 @@ fs = require 'fs'
 
 #====================================================================
 
-class GoEmitter
+exports.GoEmitter = class GoEmitter
+
+  constructor : () ->
+    @_code = []
+    @_tabs = 0
+    @_pkg = null
 
   go_export_case : (n) ->
     ret = n[0].toUpperCase() + n[1...]
@@ -28,11 +33,6 @@ class GoEmitter
       double : "float64"
     map[m] or m
 
-  constructor : () ->
-    @_code = []
-    @_tabs = 0
-    @_pkg = null
-
   tabs : () -> ("\t" for i in [0...@_tabs]).join("")
   output : (l) ->
     @_code.push (@tabs() + l)
@@ -42,10 +42,12 @@ class GoEmitter
   untab : () -> @_tabs--
 
   emit_field_type : (t) ->
+    console.log "type --->"
+    console.log t
     optional = false
     type = if typeof(t) is 'string' then @go_primitive_type(t)
     else if typeof(t) is 'object'
-      if Array.isArray(t) and t[0] == "null"
+      if Array.isArray(t) and not t[0]?
         optional = true
         "*" + @go_primitive_type(t[1])
       else if t.type is "array" then "[]" + @go_primitive_type(t.items)
@@ -130,6 +132,7 @@ class GoEmitter
     }
 
   emit_interface : ({protocol, messages}) ->
+    console.log messages
     @emit_wrapper_objects messages
     @emit_interface_server protocol, messages
     @emit_interface_client protocol, messages
@@ -144,16 +147,9 @@ class GoEmitter
     for k,v of messages
       @emit_message_client protocol, k,v, false
 
-  run : (files, cb) ->
-    esc = make_esc cb, "run"
-    for f in files
-      await @run_file f, esc defer()
-    src = @_code.join("\n")
-    cb null, {"": src}
-
   emit_package : ({namespace}) ->
     @output "package #{@go_package namespace}"
-    @output()
+    @output ""
     @_pkg = namespace
 
   emit_imports : ({imports}) ->
@@ -259,7 +255,7 @@ class GoEmitter
     res = details.response
     args = if arg.nargs then "#{(@emit_field_type (arg.single or arg).type ).type}" else ""
     res_types = []
-    if res isnt "null" then res_types.push @go_lint_capitalize(@emit_field_type(res).type)
+    if res? then res_types.push @go_lint_capitalize(@emit_field_type(res).type)
     res_types.push "error"
     @output "#{@go_export_case(name)}(context.Context, #{args}) (#{res_types.join ","})"
 
@@ -268,7 +264,7 @@ class GoEmitter
     arg = details.request
     res = details.response
     out_list = []
-    if res isnt "null"
+    if res?
       out_list.push "res #{@go_lint_capitalize(@emit_field_type(res).type)}"
       res_in = "&res"
     else
