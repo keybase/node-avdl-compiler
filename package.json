@@ -1,13 +1,13 @@
 {
   "name": "avdl-compiler",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "AVDL to Go compiler written in IcedCoffeeScript (for node)",
   "main": "lib/main.js",
   "scripts": {
     "test": "make test"
   },
-  "bin" : {
-    "avdlc" : "bin/main.js"
+  "bin": {
+    "avdlc": "bin/main.js"
   },
   "repository": {
     "type": "git",
