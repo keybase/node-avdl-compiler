@@ -81,8 +81,8 @@ exports.Main = class Main
   do_file : ({infile, outfile}, cb) ->
     esc = make_esc cb, "do_file"
     if @clean
-      await fs.unlink outfile, esc defer()
-      console.log "Deleting #{outfile}"
+      await fs.unlink outfile defer err
+      console.log "Deleting #{outfile}" unless err?
     else
       await avdl2json.parse { infile, version : 2 }, esc defer ast
       await emit { json : ast.to_json() }, esc defer code
