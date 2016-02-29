@@ -4,6 +4,7 @@ avdl2json = require 'avdl2json'
 {GoEmitter} = require './emit'
 {make_esc} = require 'iced-error'
 fs = require 'fs'
+pathmod = require 'path'
 
 #================================================
 
@@ -59,6 +60,7 @@ exports.Main = class Main
       err = new Error "must specify a language; candidates are: {'go'}"
     else
       @lang = "go"
+    @clean = argv.c
     cb err
 
   #---------------
@@ -78,10 +80,14 @@ exports.Main = class Main
 
   do_file : ({infile, outfile}, cb) ->
     esc = make_esc cb, "do_file"
-    await avdl2json.parse { infile, version : 2 }, esc defer ast
-    await emit { json : ast.to_json() }, esc defer code
-    await output { code, outfile }, esc defer()
-    console.log "Compiling #{infile} -> #{outfile}"
+    if @clean
+      await fs.unlink outfile, esc defer()
+      console.log "Deleting #{outfile}"
+    else
+      await avdl2json.parse { infile, version : 2 }, esc defer ast
+      await emit { json : ast.to_json() }, esc defer code
+      await output { code, outfile }, esc defer()
+      console.log "Compiling #{infile} -> #{outfile}"
     cb null
 
   #---------------
@@ -90,7 +96,9 @@ exports.Main = class Main
     esc = make_esc cb, "do_batch_mode"
     for infile in @infiles
       outfile = @make_outfile infile
-      await @skip_infile { infile, outfile }, esc defer skip
+      skip = false
+      unless @clean
+        await @skip_infile { infile, outfile }, esc defer skip
       unless skip
         await @do_file { infile, outfile }, esc defer()
     cb null

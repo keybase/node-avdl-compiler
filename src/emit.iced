@@ -42,8 +42,6 @@ exports.GoEmitter = class GoEmitter
   untab : () -> @_tabs--
 
   emit_field_type : (t) ->
-    console.log "type --->"
-    console.log t
     optional = false
     type = if typeof(t) is 'string' then @go_primitive_type(t)
     else if typeof(t) is 'object'
@@ -132,7 +130,6 @@ exports.GoEmitter = class GoEmitter
     }
 
   emit_interface : ({protocol, messages}) ->
-    console.log messages
     @emit_wrapper_objects messages
     @emit_interface_server protocol, messages
     @emit_interface_client protocol, messages
@@ -152,11 +149,11 @@ exports.GoEmitter = class GoEmitter
     @output ""
     @_pkg = namespace
 
-  emit_imports : ({imports}) ->
+  emit_imports : ({imports, messages}) ->
     @output "import ("
     @tab()
     @output 'rpc "github.com/keybase/go-framed-msgpack-rpc"'
-    @output 'context "golang.org/x/net/context"'
+    @output 'context "golang.org/x/net/context"' if Object.keys(messages).length > 0
     for {import_as, path} in imports when path.indexOf('/') >= 0
       line = ""
       line = import_as + " " if import_as?
@@ -179,7 +176,7 @@ exports.GoEmitter = class GoEmitter
   emit_server_hook : (name, details) ->
     arg = details.request
     res = details.response
-    resvar = if res is "null" then "" else "ret, "
+    resvar = if res? then "ret, " else ""
     @output """"#{name}": {"""
     @tab()
     @emit_server_hook_make_arg name, details
@@ -211,7 +208,7 @@ exports.GoEmitter = class GoEmitter
   emit_server_hook_make_handler : (name, details) ->
     arg = details.request
     res = details.response
-    resvar = if res is "null" then "" else "ret, "
+    resvar = if res? then "ret, " else ""
     pt = @go_primitive_type arg.type
     @output "Handler: func(ctx context.Context, args interface{}) (ret interface{}, err error) {"
     @tab()
