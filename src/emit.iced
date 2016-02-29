@@ -7,6 +7,10 @@ pkg = require '../package.json'
 
 #====================================================================
 
+is_one_way = (d) -> (d.notify? or d.oneway)
+
+#====================================================================
+
 exports.GoEmitter = class GoEmitter
 
   constructor : () ->
@@ -204,7 +208,7 @@ exports.GoEmitter = class GoEmitter
     @output "},"
 
   emit_server_hook_method_type : (name, details) ->
-    @output "MethodType: rpc.Method#{if details.notify? then 'Notify' else 'Call'},"
+    @output "MethodType: rpc.Method#{if is_one_way(details) then 'Notify' else 'Call'},"
 
   emit_server_hook_make_handler : (name, details) ->
     arg = details.request
@@ -282,8 +286,9 @@ exports.GoEmitter = class GoEmitter
     oarg += if arg.nargs is 0 then "#{arg.type}{}"
     else arg.name
     oarg += "}"
-    res = if details.notify? then "" else ", #{res_in}"
-    @output """err = c.Cli.#{if details.notify? then "Notify" else "Call"}(ctx, "#{@_pkg}.#{protocol}.#{name}", #{oarg}#{res})"""
+    ow = is_one_way(details)
+    res = if ow then "" else ", #{res_in}"
+    @output """err = c.Cli.#{if ow then "Notify" else "Call"}(ctx, "#{@_pkg}.#{protocol}.#{name}", #{oarg}#{res})"""
     @output "return"
     @untab()
     @output "}"
