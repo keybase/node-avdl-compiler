@@ -22,7 +22,7 @@
   "bugs": {
     "url": "https://github.com/keybase/node-avdl-compiler/issues"
   },
-  "homepage": "https://github.com/keybase/node-avdl-compiler#readme",
+  "homepage": "https://github.com/keybase/node-avdl-compiler",
   "devDependencies": {
     "iced-coffee-script": "^108.0.9",
     "iced-test": "0.0.22"

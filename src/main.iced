@@ -20,9 +20,9 @@ to output code in. Currently, only "go" is supported.
 
 #================================================
 
-emit = ( { json }, cb) ->
+emit = ( { infile, json }, cb) ->
   e = new GoEmitter()
-  code = e.run { json }
+  code = e.run { infile, json }
   cb null, code
 
 #================================================
@@ -85,7 +85,7 @@ exports.Main = class Main
       console.log "Deleting #{outfile}" unless err?
     else
       await avdl2json.parse { infile, version : 2 }, esc defer ast
-      await emit { json : ast.to_json() }, esc defer code
+      await emit { infile, json : ast.to_json() }, esc defer code
       await output { code, outfile }, esc defer()
       console.log "Compiling #{infile} -> #{outfile}"
     cb null
