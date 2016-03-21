@@ -18,9 +18,11 @@ exports.GoEmitter = class GoEmitter
     @_tabs = 0
     @_pkg = null
 
-  go_export_case : (n) ->
+  go_export_case : (n, { go_field_suffix } = {} ) ->
     ret = n[0].toUpperCase() + n[1...]
-    @go_lint_capitalize ret
+    ret = @go_lint_capitalize ret
+    if go_field_suffix? then ret += go_field_suffix
+    return ret
 
   go_lint_capitalize : (n) ->
     n = n.replace /pgp/g, "PGP"
@@ -70,15 +72,14 @@ exports.GoEmitter = class GoEmitter
     @output "type #{t.name} #{@emit_field_type(t.typedef).type}"
     true
 
-  emit_record : (json, {wrapper} ) ->
-    @output "type #{@go_export_case(json.name)} struct {"
+  emit_record : ({obj, go_field_suffix} ) ->
+    @output "type #{@go_export_case(obj.name)} struct {"
     @tab()
-    @emit_wrapper_record_first() if wrapper
-    for f in json.fields
+    for f in obj.fields
       {type, optional } = @emit_field_type(f.type)
       omitempty = if optional then ",omitempty" else ""
       @output [
-        @go_export_case(f.name),
+        @go_export_case(f.name, { go_field_suffix }),
         @go_lint_capitalize(type),
         "`codec:\"#{f.name}#{omitempty}\" json:\"#{f.name}#{omitempty}\"`"
       ].join "\t"
@@ -88,21 +89,21 @@ exports.GoEmitter = class GoEmitter
   emit_fixed : (t) ->
     @output "type #{t.name} [#{t.size}]byte"
 
-  emit_types : ({types}) ->
-    for t in types
-      @emit_type t
+  emit_types : ({types, go_field_suffix}) ->
+    for type in types
+      @emit_type { type, go_field_suffix }
 
-  emit_type : (t) ->
-    switch t.type
+  emit_type : ({type, go_field_suffix}) ->
+    switch type.type
       when "record"
-        if t.typedef
-          @emit_typedef t
+        if type.typedef
+          @emit_typedef type
         else
-          @emit_record t, {}
+          @emit_record { obj : type, go_field_suffix }
       when "fixed"
-        @emit_fixed t
+        @emit_fixed type
       when "enum"
-        @emit_enum t
+        @emit_enum type
 
   emit_enum : (t) ->
     @output "type #{t.name} int"
@@ -125,7 +126,7 @@ exports.GoEmitter = class GoEmitter
     obj =
       name : klass_name
       fields : args
-    @emit_record obj, {}
+    @emit_record { obj }
     details.request = {
       type : klass_name
       name : "__arg"
