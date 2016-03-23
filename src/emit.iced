@@ -122,11 +122,11 @@ exports.GoEmitter = class GoEmitter
     @untab()
     @output ")"
 
-  emit_wrapper_objects : (messages) ->
+  emit_wrapper_objects : ({messages}) ->
     for k,v of messages
-      @emit_wrapper_object k, v
+      @emit_wrapper_object { name : k, details : v }
 
-  emit_wrapper_object : (name, details) ->
+  emit_wrapper_object : ({name, details}) ->
     args = details.request
     klass_name = @go_export_case(name) + "Arg"
     obj =
@@ -142,7 +142,7 @@ exports.GoEmitter = class GoEmitter
     }
 
   emit_interface : ({protocol, messages, doc}) ->
-    @emit_wrapper_objects messages
+    @emit_wrapper_objects { messages }
     @emit_interface_server { protocol, messages, doc }
     @emit_interface_client { protocol, messages }
 
@@ -192,13 +192,13 @@ exports.GoEmitter = class GoEmitter
     resvar = if res? then "ret, " else ""
     @output """"#{name}": {"""
     @tab()
-    @emit_server_hook_make_arg name, details
-    @emit_server_hook_make_handler name, details
-    @emit_server_hook_method_type name, details
+    @emit_server_hook_make_arg { name, details }
+    @emit_server_hook_make_handler { name, details }
+    @emit_server_hook_method_type { name, details }
     @untab()
     @output "},"
 
-  emit_server_hook_make_arg : (name, details) ->
+  emit_server_hook_make_arg : ({name, details}) ->
     arg = details.request
     @output "MakeArg: func() interface{} {"
     @tab()
@@ -215,10 +215,10 @@ exports.GoEmitter = class GoEmitter
     @untab()
     @output "},"
 
-  emit_server_hook_method_type : (name, details) ->
+  emit_server_hook_method_type : ({name, details}) ->
     @output "MethodType: rpc.Method#{if is_one_way(details) then 'Notify' else 'Call'},"
 
-  emit_server_hook_make_handler : (name, details) ->
+  emit_server_hook_make_handler : ({name, details}) ->
     arg = details.request
     res = details.response
     resvar = if res? then "ret, " else ""
