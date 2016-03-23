@@ -45,6 +45,11 @@ exports.GoEmitter = class GoEmitter
     @_code.push (@tabs() + l)
     @_code.push("") if (l is "}" or l is ")") and @_tabs is 0
 
+  output_doc : (d) ->
+    if d?
+      for line in d.split /\n/
+        @output "// " + line.replace /^\s*/, ''
+
   tab : () -> @_tabs++
   untab : () -> @_tabs--
 
@@ -73,6 +78,7 @@ exports.GoEmitter = class GoEmitter
     true
 
   emit_record : ({obj, go_field_suffix} ) ->
+    @output_doc obj.doc
     @output "type #{@go_export_case(obj.name)} struct {"
     @tab()
     for f in obj.fields
@@ -116,11 +122,11 @@ exports.GoEmitter = class GoEmitter
     @untab()
     @output ")"
 
-  emit_wrapper_objects : (messages) ->
+  emit_wrapper_objects : ({messages}) ->
     for k,v of messages
-      @emit_wrapper_object k, v
+      @emit_wrapper_object { name : k, details : v }
 
-  emit_wrapper_object : (name, details) ->
+  emit_wrapper_object : ({name, details}) ->
     args = details.request
     klass_name = @go_export_case(name) + "Arg"
     obj =
@@ -135,12 +141,12 @@ exports.GoEmitter = class GoEmitter
       single : if args.length is 1 then args[0] else null
     }
 
-  emit_interface : ({protocol, messages}) ->
-    @emit_wrapper_objects messages
-    @emit_interface_server protocol, messages
-    @emit_interface_client protocol, messages
+  emit_interface : ({protocol, messages, doc}) ->
+    @emit_wrapper_objects { messages }
+    @emit_interface_server { protocol, messages, doc }
+    @emit_interface_client { protocol, messages }
 
-  emit_interface_client : (protocol, messages) ->
+  emit_interface_client : ({protocol, messages}) ->
     p = @go_export_case protocol
     @output "type #{p}Client struct {"
     @tab()
@@ -148,7 +154,7 @@ exports.GoEmitter = class GoEmitter
     @untab()
     @output "}"
     for k,v of messages
-      @emit_message_client protocol, k,v, false
+      @emit_message_client { protocol, name : k, details : v, async : false }
 
   emit_package : ({namespace}) ->
     @output "package #{@go_package namespace}"
@@ -169,29 +175,30 @@ exports.GoEmitter = class GoEmitter
     @output ")"
     @output ""
 
-  emit_interface_server : (protocol, messages) ->
+  emit_interface_server : ({protocol, messages, doc}) ->
     p = @go_export_case protocol
+    @output_doc doc
     @output "type #{p}Interface interface {"
     @tab()
     for k,v of messages
-      @emit_message_server k,v
+      @emit_message_server { name : k, details : v }
     @untab()
     @output "}"
-    @emit_protocol_server protocol, messages
+    @emit_protocol_server { protocol, messages }
 
-  emit_server_hook : (name, details) ->
+  emit_server_hook : ({name, details}) ->
     arg = details.request
     res = details.response
     resvar = if res? then "ret, " else ""
     @output """"#{name}": {"""
     @tab()
-    @emit_server_hook_make_arg name, details
-    @emit_server_hook_make_handler name, details
-    @emit_server_hook_method_type name, details
+    @emit_server_hook_make_arg { name, details }
+    @emit_server_hook_make_handler { name, details }
+    @emit_server_hook_method_type { name, details }
     @untab()
     @output "},"
 
-  emit_server_hook_make_arg : (name, details) ->
+  emit_server_hook_make_arg : ({name, details}) ->
     arg = details.request
     @output "MakeArg: func() interface{} {"
     @tab()
@@ -208,10 +215,10 @@ exports.GoEmitter = class GoEmitter
     @untab()
     @output "},"
 
-  emit_server_hook_method_type : (name, details) ->
+  emit_server_hook_method_type : ({name, details}) ->
     @output "MethodType: rpc.Method#{if is_one_way(details) then 'Notify' else 'Call'},"
 
-  emit_server_hook_make_handler : (name, details) ->
+  emit_server_hook_make_handler : ({name, details}) ->
     arg = details.request
     res = details.response
     resvar = if res? then "ret, " else ""
@@ -235,7 +242,7 @@ exports.GoEmitter = class GoEmitter
     @untab()
     @output "},"
 
-  emit_protocol_server : (protocol, messages) ->
+  emit_protocol_server : ({protocol, messages}) ->
     p = @go_export_case protocol
     @output "func #{p}Protocol(i #{p}Interface) rpc.Protocol {"
     @tab()
@@ -245,7 +252,7 @@ exports.GoEmitter = class GoEmitter
     @output "Methods: map[string]rpc.ServeHandlerDescription{"
     @tab()
     for k,v of messages
-      @emit_server_hook k, v
+      @emit_server_hook { name : k, details : v }
     @untab()
     @output "},"
     @untab()
@@ -253,16 +260,17 @@ exports.GoEmitter = class GoEmitter
     @untab()
     @output "}"
 
-  emit_message_server : (name, details) ->
+  emit_message_server : ({name, details}) ->
     arg = details.request
     res = details.response
     args = if arg.nargs then "#{(@emit_field_type (arg.single or arg).type ).type}" else ""
     res_types = []
     if res? then res_types.push @go_lint_capitalize(@emit_field_type(res).type)
     res_types.push "error"
+    @output_doc details.doc
     @output "#{@go_export_case(name)}(context.Context, #{args}) (#{res_types.join ","})"
 
-  emit_message_client: (protocol, name, details, async) ->
+  emit_message_client: ({protocol, name, details, async}) ->
     p = @go_export_case protocol
     arg = details.request
     res = details.response
@@ -278,6 +286,7 @@ exports.GoEmitter = class GoEmitter
     else
       parg = arg.single or arg
       "#{parg.name} #{(@emit_field_type parg.type).type}"
+    @output_doc details.doc
     @output "func (c #{p}Client) #{@go_export_case(name)}(ctx context.Context, #{params}) (#{outs}) {"
     @tab()
     if arg.nargs is 1
