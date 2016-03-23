@@ -1,0 +1,28 @@
+
+/**
+  SampleInterface protocol is a sample among samples.
+*/
+@namespace("sample.1")
+protocol sample {
+	import idl "github.com/keybase/client/go/protocol" as keybase1;
+
+	/**
+     R is a rad record.
+	*/
+	record R {
+		keybase1.Bar bar;
+	}
+
+	/**
+	 GetBaz will get a baz like you wouldn't believe.
+	 If this baz isn't gotten, then I'll eat my hat
+
+	 And then.
+	*/
+	keybase1.Baz getBaz(R r, keybase1.Beep beep);
+
+	/**
+	Notifier notifies the notifiee.
+	*/
+	void notifier(int i) oneway;
+}
