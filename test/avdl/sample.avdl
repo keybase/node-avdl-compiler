@@ -7,6 +7,11 @@ protocol sample {
 	import idl "github.com/keybase/client/go/protocol" as keybase1;
 
 	/**
+	  Joe is an alias for an int.
+	 */
+	@typedef("int") record Joe {}
+
+	/**
      R is a rad record.
 	*/
 	record R {

@@ -10,6 +10,8 @@ import (
 )
 
 
+// Joe is an alias for an int.
+type Joe int
 // R is a rad record.
 type R struct {
 	Bar	keybase1.Bar	`codec:"bar" json:"bar"`

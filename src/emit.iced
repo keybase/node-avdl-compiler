@@ -78,7 +78,6 @@ exports.GoEmitter = class GoEmitter
     true
 
   emit_record : ({obj, go_field_suffix} ) ->
-    @output_doc obj.doc
     @output "type #{@go_export_case(obj.name)} struct {"
     @tab()
     for f in obj.fields
@@ -100,6 +99,7 @@ exports.GoEmitter = class GoEmitter
       @emit_type { type, go_field_suffix }
 
   emit_type : ({type, go_field_suffix}) ->
+    @output_doc type.doc
     switch type.type
       when "record"
         if type.typedef
