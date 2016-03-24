@@ -14,12 +14,12 @@ import (
 type Joe int
 // R is a rad record.
 type R struct {
-	Bar	keybase1.Bar	`codec:"bar" json:"bar"`
+	Bar	keybase1.UID	`codec:"bar" json:"bar"`
 }
 
 type GetBazArg struct {
 	R	R	`codec:"r" json:"r"`
-	Beep	keybase1.Beep	`codec:"beep" json:"beep"`
+	Beep	keybase1.DeviceID	`codec:"beep" json:"beep"`
 }
 
 type NotifierArg struct {
@@ -32,7 +32,7 @@ type SampleInterface interface {
 	// If this baz isn't gotten, then I'll eat my hat
 	// 
 	// And then.
-	GetBaz(context.Context, GetBazArg) (keybase1.Baz,error)
+	GetBaz(context.Context, GetBazArg) (keybase1.SigID,error)
 	// Notifier notifies the notifiee.
 	Notifier(context.Context, int) (error)
 }
@@ -85,7 +85,7 @@ type SampleClient struct {
 // If this baz isn't gotten, then I'll eat my hat
 // 
 // And then.
-func (c SampleClient) GetBaz(ctx context.Context, __arg GetBazArg) (res keybase1.Baz,err error) {
+func (c SampleClient) GetBaz(ctx context.Context, __arg GetBazArg) (res keybase1.SigID,err error) {
 	err = c.Cli.Call(ctx, "sample.1.sample.getBaz", []interface{}{__arg}, &res)
 	return
 }

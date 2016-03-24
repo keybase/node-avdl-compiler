@@ -15,7 +15,7 @@ protocol sample {
      R is a rad record.
 	*/
 	record R {
-		keybase1.Bar bar;
+		keybase1.UID bar;
 	}
 
 	/**
@@ -24,7 +24,7 @@ protocol sample {
 
 	 And then.
 	*/
-	keybase1.Baz getBaz(R r, keybase1.Beep beep);
+	keybase1.SigID getBaz(R r, keybase1.DeviceID beep);
 
 	/**
 	Notifier notifies the notifiee.
