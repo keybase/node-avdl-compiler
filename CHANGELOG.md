@@ -1,3 +1,15 @@
+# 1.3.4 (2016-08-18)
+
+- Add forward map for enums in Go
+
+# 1.3.3 (2016-03-25)
+
+- Fix tests
+
+# 1.3.2 (2016-03-23)
+
+- Fix tests
+
 # 1.3.1 (2016-03-21)
 
 - Also plumb through /** ... */-style docs to typedefs
