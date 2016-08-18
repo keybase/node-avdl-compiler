@@ -122,6 +122,15 @@ exports.GoEmitter = class GoEmitter
     @untab()
     @output ")"
 
+    @output "var #{t.name}Map = map[string]#{t.name}{"
+    @tab()
+    for s, i in t.symbols
+      i = s.split("_").pop(-1);
+      s = s.replace("_" + i, "");
+      @output "\"#{s}\" : #{i},"
+    @untab()
+    @output "}"
+
   emit_wrapper_objects : ({messages}) ->
     for k,v of messages
       @emit_wrapper_object { name : k, details : v }
