@@ -1,3 +1,7 @@
+# 1.3.5 (2016-08-31)
+
+- Add variant type
+
 # 1.3.4 (2016-08-18)
 
 - Add forward map for enums in Go

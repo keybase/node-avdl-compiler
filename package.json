@@ -28,7 +28,7 @@
     "iced-test": "0.0.22"
   },
   "dependencies": {
-    "avdl2json": "^2.2.0",
+    "avdl2json": "^2.2.3",
     "iced-error": "0.0.9",
     "iced-runtime": "^1.0.3",
     "minimist": "^1.2.0"
