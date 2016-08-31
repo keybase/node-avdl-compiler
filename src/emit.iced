@@ -18,6 +18,11 @@ exports.GoEmitter = class GoEmitter
     @_tabs = 0
     @_pkg = null
 
+  go_translate_identifier : ({name, go_field_suffix, exported}) ->
+    if exported then @go_export_case name, { go_field_suffix }
+    else if go_field_suffix? then name + go_field_suffix
+    else name
+
   go_export_case : (n, { go_field_suffix } = {} ) ->
     ret = n[0].toUpperCase() + n[1...]
     ret = @go_lint_capitalize ret
@@ -40,6 +45,8 @@ exports.GoEmitter = class GoEmitter
       double : "float64"
     map[m] or m
 
+  is_primitive_switch_type : (m) -> m in [ "boolean", "long", "int" ]
+
   tabs : () -> ("\t" for i in [0...@_tabs]).join("")
   output : (l) ->
     @_code.push (@tabs() + l)
@@ -53,8 +60,8 @@ exports.GoEmitter = class GoEmitter
   tab : () -> @_tabs++
   untab : () -> @_tabs--
 
-  emit_field_type : (t) ->
-    optional = false
+  emit_field_type : (t, {pointed} = {}) ->
+    optional = !!pointed
     type = if typeof(t) is 'string' then @go_primitive_type(t)
     else if typeof(t) is 'object'
       if Array.isArray(t) and not t[0]?
@@ -64,8 +71,8 @@ exports.GoEmitter = class GoEmitter
       else if t.type is "map" then "map[string]" + @go_primitive_type(t.values)
       else "ERROR"
     else "ERROR"
+    type = "*" + type if pointed
     { type , optional }
-
 
   #
   # An example of an AVDL "typedef":
@@ -77,17 +84,139 @@ exports.GoEmitter = class GoEmitter
     @output "type #{t.name} #{@emit_field_type(t.typedef).type}"
     true
 
-  emit_record : ({obj, go_field_suffix} ) ->
+  codec : (name, optional) ->
+    omitempty = if optional then ",omitempty" else ""
+    "`codec:\"#{name}#{omitempty}\" json:\"#{name}#{omitempty}\"`"
+
+  emit_field : ({name, type, go_field_suffix, exported, pointed}) ->
+    {type, optional} = @emit_field_type(type, {pointed})
+    @output [
+      @go_translate_identifier({ name, go_field_suffix, exported }),
+      @go_lint_capitalize(type),
+      @codec(name, optional)
+    ].join "\t"
+
+  emit_record : ({obj, go_field_suffix}) ->
     @output "type #{@go_export_case(obj.name)} struct {"
     @tab()
     for f in obj.fields
-      {type, optional } = @emit_field_type(f.type)
-      omitempty = if optional then ",omitempty" else ""
-      @output [
-        @go_export_case(f.name, { go_field_suffix }),
-        @go_lint_capitalize(type),
-        "`codec:\"#{f.name}#{omitempty}\" json:\"#{f.name}#{omitempty}\"`"
-      ].join "\t"
+      @emit_field { name : f.name, type : f.type, go_field_suffix, exported : true }
+    @untab()
+    @output "}"
+
+  go_unsnake : (n) ->
+    parts = n.split /_+/
+    recase = (n) -> n[0].toUpperCase() + n[1...].toLowerCase()
+    (recase(part) for part in parts).join("")
+
+  case_label_to_go : ({label, prefixed}) ->
+    if not label? then "Default"
+    else if typeof label is 'number'
+      if prefixed then "Int" + label
+      else label.toString()
+    else @go_unsnake label.toString()
+
+  emit_variant_tag_getter : ({obj, go_field_suffix}) ->
+    {type, optional} = @emit_field_type(obj.switch.type, {pointed : false})
+    ret_type = type
+    fname = @go_translate_identifier { name : obj.switch.name, exported : true }
+    @output "func (o *#{@go_export_case(obj.name)}) #{fname}() #{ret_type} {"
+    @tab()
+    @output "return o.#{@variant_field(obj.switch.name)}"
+    @untab()
+    @output "}"
+
+  emit_variant_case_getters : ({obj, go_field_suffix}) ->
+    cases = []
+    def = null
+    for c in obj.cases
+      if not c.label.def
+        cases.push @emit_variant_case_getter { obj, c : c, go_field_suffix }
+      else
+        def = c
+    if def and def.body?
+      cases.push @emit_variant_case_getter { obj, c : def, go_field_suffix, cases, def : true }
+
+  variant_suffix : () -> "__"
+  variant_field : (name) ->
+    @go_translate_identifier {name, go_field_suffix : @variant_suffix(), exported : true }
+
+  emit_variant_case_getter : ({obj, c, go_field_suffix, cases, def}) ->
+    {type, optional} = @emit_field_type(c.body, {pointed : false})
+    ret_type = type
+    go_label = @case_label_to_go { label : c.label.name, prefixed : true }
+    tag_val = c.label.name
+    unless @is_primitive_switch_type obj.switch.type
+      tag_val = @go_lint_capitalize(obj.switch.type) + "_" + tag_val
+    @output "func (o #{@go_export_case(obj.name)}) #{go_label}() #{ret_type} {"
+    @tab()
+    if def
+      cases = ("o.#{@variant_field(obj.switch.name)} == #{v}" for v in cases)
+      @output "if #{cases.join(" || ")} {"
+    else
+      @output "if o.#{@variant_field(obj.switch.name)} != #{tag_val} {"
+    @tab()
+    @output """panic("wrong case accessed")"""
+    @untab()
+    @output "}"
+    @output "return *o.#{@variant_field(go_label)}"
+    @untab()
+    @output "}"
+    return tag_val
+
+  emit_variant_getters : ({obj, go_field_suffix}) ->
+    @emit_variant_tag_getter { obj, go_field_suffix }
+    @emit_variant_case_getters { obj, go_field_suffix }
+
+  emit_variant_constructors : ({obj, go_field_suffix}) ->
+    for c in obj.cases
+      @emit_variant_case_constructor { obj, c : c, go_field_suffix }
+
+  emit_variant_case_constructor : ({obj, c, go_field_suffix}) ->
+    if c.body?
+      {type} = @emit_field_type(c.body, {pointed : false})
+      case_type = type
+
+    klass = @go_export_case(obj.name)
+
+    go_label_prefixed   = @case_label_to_go { label : c.label.name, prefixed : true }
+    go_label_unprefixed = @case_label_to_go { label : c.label.name, prefixed : false }
+
+    if not c.label.def
+      tag_val = c.label.name
+      unless @is_primitive_switch_type obj.switch.type
+        tag_val = @go_lint_capitalize(obj.switch.type) + "_" + tag_val
+      @output "func New#{klass}With#{go_label_unprefixed}(v #{case_type}) #{klass} {"
+    else if c.body?
+      @output "func New#{klass}Default(#{obj.switch.name} #{obj.switch.type}, v #{case_type}) #{klass} {"
+      tag_val = obj.switch.name
+    else
+      @output "func New#{klass}Default(#{obj.switch.name} #{obj.switch.type}) #{klass} {"
+      tag_val = obj.switch.name
+    @tab()
+    @output "return #{klass}{"
+    @tab()
+    @output "#{@variant_field(obj.switch.name)} : #{tag_val},"
+    if c.body?
+      @output "#{@variant_field(go_label_prefixed)} : &v,"
+    @untab()
+    @output "}"
+    @untab()
+    @output "}"
+
+  emit_variant : ({obj, go_field_suffix}) ->
+    @emit_variant_object { obj, go_field_suffix }
+    @emit_variant_getters { obj, go_field_suffix }
+    @emit_variant_constructors { obj, go_field_suffix }
+
+  emit_variant_object : ({obj, go_field_suffix}) ->
+    @output "type #{@go_export_case(obj.name)} struct {"
+    @tab()
+    go_field_suffix = @variant_suffix()
+    @emit_field { name : obj.switch.name, type : obj.switch.type, go_field_suffix, exported : true }
+    for {label,body} in obj.cases when body?
+      name = @case_label_to_go { label : label.name, prefixed : true }
+      @emit_field { name : name, type : body, exported : true , pointed : true, go_field_suffix }
     @untab()
     @output "}"
 
@@ -97,6 +226,12 @@ exports.GoEmitter = class GoEmitter
   emit_types : ({types, go_field_suffix}) ->
     for type in types
       @emit_type { type, go_field_suffix }
+
+  count_variants : ({types}) ->
+    ret = 0
+    for type in types when type.type is "variant"
+      ret++
+    return ret
 
   emit_type : ({type, go_field_suffix}) ->
     @output_doc type.doc
@@ -110,19 +245,22 @@ exports.GoEmitter = class GoEmitter
         @emit_fixed type
       when "enum"
         @emit_enum type
+      when "variant"
+        @emit_variant { obj : type, go_field_suffix }
 
   emit_enum : (t) ->
-    @output "type #{t.name} int"
+    name = t.name
+    @output "type #{name} int"
     @output "const ("
     @tab()
     for s, i in t.symbols
       i = s.split("_").pop(-1);
       s = s.replace("_" + i, "");
-      @output "#{t.name}_#{s} #{t.name} = #{i}"
+      @output "#{name}_#{s} #{name} = #{i}"
     @untab()
     @output ")"
 
-    @output "var #{t.name}Map = map[string]#{t.name}{"
+    @output "var #{name}Map = map[string]#{name}{"
     @tab()
     for s, i in t.symbols
       i = s.split("_").pop(-1);
@@ -170,7 +308,7 @@ exports.GoEmitter = class GoEmitter
     @output ""
     @_pkg = namespace
 
-  emit_imports : ({imports, messages}) ->
+  emit_imports : ({imports, messages, types}) ->
     @output "import ("
     @tab()
     @output 'rpc "github.com/keybase/go-framed-msgpack-rpc"'
@@ -278,6 +416,7 @@ exports.GoEmitter = class GoEmitter
     res_types.push "error"
     @output_doc details.doc
     @output "#{@go_export_case(name)}(context.Context, #{args}) (#{res_types.join ","})"
+
 
   emit_message_client: ({protocol, name, details, async}) ->
     p = @go_export_case protocol

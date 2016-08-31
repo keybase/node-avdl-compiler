@@ -4,7 +4,7 @@
 */
 @namespace("sample.1")
 protocol sample {
-	import idl "github.com/keybase/client/go/protocol" as keybase1;
+	import idl "github.com/keybase/client/go/protocol/keybase" as keybase1;
 
 	/**
 	  Joe is an alias for an int.
@@ -30,4 +30,31 @@ protocol sample {
 	Notifier notifies the notifiee.
 	*/
 	void notifier(int i) oneway;
+
+	enum Types {
+		NONE_0,
+		BOZO_1,
+		BIPPY_2,
+		AGGLE_3,
+		FLAGGLE_4
+	}
+
+	variant Boozle switch (Types typ) {
+		case BOZO: int;
+		case BIPPY: string;
+		case AGGLE: array<int>;
+		case FLAGGLE: array<boolean>;
+		default: int;
+	}
+
+	variant Noozle switch (int version) {
+		case 1: string;
+		case 2: int;
+		default: void;
+	}
+
+	variant Blurp switch (boolean b) {
+		case true: string;
+		case false: int;
+	}
 }
