@@ -47,39 +47,39 @@ func (o *Boozle) Typ() Types {
 	return o.Typ__
 }
 
-func (o Boozle) Bozo() int {
+func (o Boozle) Bozo() *int {
 	if o.Typ__ != Types_BOZO {
 		panic("wrong case accessed")
 	}
-	return *o.Bozo__
+	return o.Bozo__
 }
 
-func (o Boozle) Bippy() string {
+func (o Boozle) Bippy() *string {
 	if o.Typ__ != Types_BIPPY {
 		panic("wrong case accessed")
 	}
-	return *o.Bippy__
+	return o.Bippy__
 }
 
-func (o Boozle) Aggle() []int {
+func (o Boozle) Aggle() *[]int {
 	if o.Typ__ != Types_AGGLE {
 		panic("wrong case accessed")
 	}
-	return *o.Aggle__
+	return o.Aggle__
 }
 
-func (o Boozle) Flaggle() []bool {
+func (o Boozle) Flaggle() *[]bool {
 	if o.Typ__ != Types_FLAGGLE {
 		panic("wrong case accessed")
 	}
-	return *o.Flaggle__
+	return o.Flaggle__
 }
 
-func (o Boozle) Default() int {
+func (o Boozle) Default() *int {
 	if o.Typ__ == Types_BOZO || o.Typ__ == Types_BIPPY || o.Typ__ == Types_AGGLE || o.Typ__ == Types_FLAGGLE {
 		panic("wrong case accessed")
 	}
-	return *o.Default__
+	return o.Default__
 }
 
 func NewBoozleWithBozo(v int) Boozle {
@@ -127,18 +127,18 @@ func (o *Noozle) Version() int {
 	return o.Version__
 }
 
-func (o Noozle) Int1() string {
+func (o Noozle) Int1() *string {
 	if o.Version__ != 1 {
 		panic("wrong case accessed")
 	}
-	return *o.Int1__
+	return o.Int1__
 }
 
-func (o Noozle) Int2() int {
+func (o Noozle) Int2() *int {
 	if o.Version__ != 2 {
 		panic("wrong case accessed")
 	}
-	return *o.Int2__
+	return o.Int2__
 }
 
 func NewNoozleWith1(v string) Noozle {
@@ -171,18 +171,18 @@ func (o *Blurp) B() bool {
 	return o.B__
 }
 
-func (o Blurp) True() string {
+func (o Blurp) True() *string {
 	if o.B__ != true {
 		panic("wrong case accessed")
 	}
-	return *o.True__
+	return o.True__
 }
 
-func (o Blurp) False() int {
+func (o Blurp) False() *int {
 	if o.B__ != false {
 		panic("wrong case accessed")
 	}
-	return *o.False__
+	return o.False__
 }
 
 func NewBlurpWithTrue(v string) Blurp {

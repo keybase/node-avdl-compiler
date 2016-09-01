@@ -148,7 +148,7 @@ exports.GoEmitter = class GoEmitter
     tag_val = c.label.name
     unless @is_primitive_switch_type obj.switch.type
       tag_val = @go_lint_capitalize(obj.switch.type) + "_" + tag_val
-    @output "func (o #{@go_export_case(obj.name)}) #{go_label}() #{ret_type} {"
+    @output "func (o #{@go_export_case(obj.name)}) #{go_label}() *#{ret_type} {"
     @tab()
     if def
       cases = ("o.#{@variant_field(obj.switch.name)} == #{v}" for v in cases)
@@ -159,7 +159,7 @@ exports.GoEmitter = class GoEmitter
     @output """panic("wrong case accessed")"""
     @untab()
     @output "}"
-    @output "return *o.#{@variant_field(go_label)}"
+    @output "return o.#{@variant_field(go_label)}"
     @untab()
     @output "}"
     return tag_val
