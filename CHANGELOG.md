@@ -1,3 +1,7 @@
+# 1.3.6 (2016-09-01)
+
+Bugfix: emitted types are lowercase
+
 # 1.3.5 (2016-08-31)
 
 - Add variant type

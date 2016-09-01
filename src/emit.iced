@@ -47,6 +47,13 @@ exports.GoEmitter = class GoEmitter
 
   is_primitive_switch_type : (m) -> m in [ "boolean", "long", "int" ]
 
+  go_default_value_for_type : (t) ->
+    switch t
+      when "int", "float32", "float32", "byte" then "0"
+      when "string" then '""'
+      when "bool" then "false"
+      else t + "{}"
+
   tabs : () -> ("\t" for i in [0...@_tabs]).join("")
   output : (l) ->
     @_code.push (@tabs() + l)
@@ -104,25 +111,44 @@ exports.GoEmitter = class GoEmitter
     @untab()
     @output "}"
 
-  go_unsnake : (n) ->
+  go_unsnake : ({n, is_private}) ->
     parts = n.split /_+/
-    recase = (n) -> n[0].toUpperCase() + n[1...].toLowerCase()
-    (recase(part) for part in parts).join("")
+    recase = (n,i) -> if (is_private and i is 0) then n.toLowerCase() else (n[0].toUpperCase() + n[1...].toLowerCase())
+    (recase(part,i) for part,i in parts).join("")
 
-  case_label_to_go : ({label, prefixed}) ->
-    if not label? then "Default"
+  case_label_to_go : ({label, prefixed, is_private}) ->
+    tmp = if not label? then "Default"
     else if typeof label is 'number'
       if prefixed then "Int" + label
       else label.toString()
-    else @go_unsnake label.toString()
+    else label.toString()
+    @go_unsnake { n : tmp, is_private }
 
   emit_variant_tag_getter : ({obj, go_field_suffix}) ->
     {type, optional} = @emit_field_type(obj.switch.type, {pointed : false})
     ret_type = type
     fname = @go_translate_identifier { name : obj.switch.name, exported : true }
-    @output "func (o *#{@go_export_case(obj.name)}) #{fname}() #{ret_type} {"
+    @output "func (o *#{@go_export_case(obj.name)}) #{fname}() (ret #{ret_type}, err error) {"
     @tab()
-    @output "return o.#{@variant_field(obj.switch.name)}"
+    @output "switch (o.#{@variant_field(obj.switch.name)}) {"
+    @tab()
+    for c in obj.cases when c.body
+      field = @variant_field @case_label_to_go { label : c.label.name, prefixed : true }
+      if c.label.name?
+        @output "case " + (@variant_switch_value { c, obj }) + ":"
+      else
+        @output "default:"
+      @tab()
+      @output "if o.#{field} == nil {"
+      @tab()
+      @output """err = errors.New("unexpected nil value for #{field}")"""
+      @output "return ret, err"
+      @untab()
+      @output "}"
+      @untab()
+    @untab()
+    @output "}"
+    @output "return o.#{@variant_field(obj.switch.name)}, nil"
     @untab()
     @output "}"
 
@@ -141,13 +167,18 @@ exports.GoEmitter = class GoEmitter
   variant_field : (name) ->
     @go_translate_identifier {name, go_field_suffix : @variant_suffix(), exported : true }
 
+  variant_switch_value : ({obj, c }) ->
+    tag_val = c.label.name
+    unless @is_primitive_switch_type obj.switch.type
+      tag_val = @go_lint_capitalize(obj.switch.type) + "_" + tag_val
+    return tag_val
+
   emit_variant_case_getter : ({obj, c, go_field_suffix, cases, def}) ->
     {type, optional} = @emit_field_type(c.body, {pointed : false})
     ret_type = type
     go_label = @case_label_to_go { label : c.label.name, prefixed : true }
-    tag_val = c.label.name
-    unless @is_primitive_switch_type obj.switch.type
-      tag_val = @go_lint_capitalize(obj.switch.type) + "_" + tag_val
+    tag_val = @variant_switch_value { obj, c }
+
     @output "func (o #{@go_export_case(obj.name)}) #{go_label}() #{ret_type} {"
     @tab()
     if def
@@ -157,6 +188,11 @@ exports.GoEmitter = class GoEmitter
       @output "if o.#{@variant_field(obj.switch.name)} != #{tag_val} {"
     @tab()
     @output """panic("wrong case accessed")"""
+    @untab()
+    @output "}"
+    @output "if o.#{@variant_field(go_label)} == nil {"
+    @tab()
+    @output "return " + @go_default_value_for_type(ret_type)
     @untab()
     @output "}"
     @output "return *o.#{@variant_field(go_label)}"
@@ -215,7 +251,7 @@ exports.GoEmitter = class GoEmitter
     go_field_suffix = @variant_suffix()
     @emit_field { name : obj.switch.name, type : obj.switch.type, go_field_suffix, exported : true }
     for {label,body} in obj.cases when body?
-      name = @case_label_to_go { label : label.name, prefixed : true }
+      name = @case_label_to_go { label : label.name, prefixed : true, is_private : true }
       @emit_field { name : name, type : body, exported : true , pointed : true, go_field_suffix }
     @untab()
     @output "}"
@@ -318,6 +354,8 @@ exports.GoEmitter = class GoEmitter
       line = import_as + " " if import_as?
       line += '"' + path + '"'
       @output line
+    if @count_variants({types}) > 0
+      @output '"errors"'
     @untab()
     @output ")"
     @output ""

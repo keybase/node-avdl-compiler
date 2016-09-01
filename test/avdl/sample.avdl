@@ -4,7 +4,7 @@
 */
 @namespace("sample.1")
 protocol sample {
-	import idl "github.com/keybase/client/go/protocol/keybase" as keybase1;
+	import idl "github.com/keybase/client/go/protocol/keybase1" as keybase1;
 
 	/**
 	  Joe is an alias for an int.
