@@ -47,6 +47,13 @@ exports.GoEmitter = class GoEmitter
 
   is_primitive_switch_type : (m) -> m in [ "boolean", "long", "int" ]
 
+  go_default_value_for_type : (t) ->
+    switch t
+      when "int", "float32", "float32", "byte" then "0"
+      when "string" then '""'
+      when "bool" then "false"
+      else t + "{}"
+
   tabs : () -> ("\t" for i in [0...@_tabs]).join("")
   output : (l) ->
     @_code.push (@tabs() + l)
@@ -148,7 +155,7 @@ exports.GoEmitter = class GoEmitter
     tag_val = c.label.name
     unless @is_primitive_switch_type obj.switch.type
       tag_val = @go_lint_capitalize(obj.switch.type) + "_" + tag_val
-    @output "func (o #{@go_export_case(obj.name)}) #{go_label}() *#{ret_type} {"
+    @output "func (o #{@go_export_case(obj.name)}) #{go_label}() #{ret_type} {"
     @tab()
     if def
       cases = ("o.#{@variant_field(obj.switch.name)} == #{v}" for v in cases)
@@ -159,7 +166,12 @@ exports.GoEmitter = class GoEmitter
     @output """panic("wrong case accessed")"""
     @untab()
     @output "}"
-    @output "return o.#{@variant_field(go_label)}"
+    @output "if o.#{@variant_field(go_label)} == nil {"
+    @tab()
+    @output "return " + @go_default_value_for_type(ret_type)
+    @untab()
+    @output "}"
+    @output "return *o.#{@variant_field(go_label)}"
     @untab()
     @output "}"
     return tag_val
