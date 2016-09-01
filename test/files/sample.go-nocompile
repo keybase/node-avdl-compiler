@@ -6,7 +6,8 @@ package sample1
 import (
 	rpc "github.com/keybase/go-framed-msgpack-rpc"
 	context "golang.org/x/net/context"
-	keybase1 "github.com/keybase/client/go/protocol/keybase"
+	keybase1 "github.com/keybase/client/go/protocol/keybase1"
+	"errors"
 )
 
 
@@ -40,11 +41,38 @@ type Boozle struct {
 	Bippy__	*string	`codec:"bippy,omitempty" json:"bippy,omitempty"`
 	Aggle__	*[]int	`codec:"aggle,omitempty" json:"aggle,omitempty"`
 	Flaggle__	*[]bool	`codec:"flaggle,omitempty" json:"flaggle,omitempty"`
-	Default__	*int	`codec:"Default,omitempty" json:"Default,omitempty"`
+	Default__	*int	`codec:"default,omitempty" json:"default,omitempty"`
 }
 
-func (o *Boozle) Typ() Types {
-	return o.Typ__
+func (o *Boozle) Typ() (ret Types, err error) {
+	switch (o.Typ__) {
+		case Types_BOZO:
+			if o.Bozo__ == nil {
+				err = errors.New("unexpected nil value for Bozo__")
+				return ret, err
+			}
+		case Types_BIPPY:
+			if o.Bippy__ == nil {
+				err = errors.New("unexpected nil value for Bippy__")
+				return ret, err
+			}
+		case Types_AGGLE:
+			if o.Aggle__ == nil {
+				err = errors.New("unexpected nil value for Aggle__")
+				return ret, err
+			}
+		case Types_FLAGGLE:
+			if o.Flaggle__ == nil {
+				err = errors.New("unexpected nil value for Flaggle__")
+				return ret, err
+			}
+		default:
+			if o.Default__ == nil {
+				err = errors.New("unexpected nil value for Default__")
+				return ret, err
+			}
+	}
+	return o.Typ__, nil
 }
 
 func (o Boozle) Bozo() int {
@@ -134,12 +162,24 @@ func NewBoozleDefault(typ Types, v int) Boozle {
 
 type Noozle struct {
 	Version__	int	`codec:"version" json:"version"`
-	Int1__	*string	`codec:"Int1,omitempty" json:"Int1,omitempty"`
-	Int2__	*int	`codec:"Int2,omitempty" json:"Int2,omitempty"`
+	Int1__	*string	`codec:"int1,omitempty" json:"int1,omitempty"`
+	Int2__	*int	`codec:"int2,omitempty" json:"int2,omitempty"`
 }
 
-func (o *Noozle) Version() int {
-	return o.Version__
+func (o *Noozle) Version() (ret int, err error) {
+	switch (o.Version__) {
+		case 1:
+			if o.Int1__ == nil {
+				err = errors.New("unexpected nil value for Int1__")
+				return ret, err
+			}
+		case 2:
+			if o.Int2__ == nil {
+				err = errors.New("unexpected nil value for Int2__")
+				return ret, err
+			}
+	}
+	return o.Version__, nil
 }
 
 func (o Noozle) Int1() string {
@@ -188,8 +228,20 @@ type Blurp struct {
 	False__	*int	`codec:"false,omitempty" json:"false,omitempty"`
 }
 
-func (o *Blurp) B() bool {
-	return o.B__
+func (o *Blurp) B() (ret bool, err error) {
+	switch (o.B__) {
+		case true:
+			if o.True__ == nil {
+				err = errors.New("unexpected nil value for True__")
+				return ret, err
+			}
+		case false:
+			if o.False__ == nil {
+				err = errors.New("unexpected nil value for False__")
+				return ret, err
+			}
+	}
+	return o.B__, nil
 }
 
 func (o Blurp) True() string {
