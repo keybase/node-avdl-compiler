@@ -104,17 +104,17 @@ exports.GoEmitter = class GoEmitter
     @untab()
     @output "}"
 
-  go_unsnake : (n) ->
+  go_unsnake : ({n, is_private}) ->
     parts = n.split /_+/
-    recase = (n) -> n[0].toUpperCase() + n[1...].toLowerCase()
-    (recase(part) for part in parts).join("")
+    recase = (n,i) -> if (is_private and i is 0) then n.toLowerCase() else (n[0].toUpperCase() + n[1...].toLowerCase())
+    (recase(part,i) for part,i in parts).join("")
 
-  case_label_to_go : ({label, prefixed}) ->
+  case_label_to_go : ({label, prefixed, is_private}) ->
     if not label? then "Default"
     else if typeof label is 'number'
       if prefixed then "Int" + label
       else label.toString()
-    else @go_unsnake label.toString()
+    else @go_unsnake { n : label.toString(), is_private }
 
   emit_variant_tag_getter : ({obj, go_field_suffix}) ->
     {type, optional} = @emit_field_type(obj.switch.type, {pointed : false})
@@ -215,7 +215,7 @@ exports.GoEmitter = class GoEmitter
     go_field_suffix = @variant_suffix()
     @emit_field { name : obj.switch.name, type : obj.switch.type, go_field_suffix, exported : true }
     for {label,body} in obj.cases when body?
-      name = @case_label_to_go { label : label.name, prefixed : true }
+      name = @case_label_to_go { label : label.name, prefixed : true, is_private : true }
       @emit_field { name : name, type : body, exported : true , pointed : true, go_field_suffix }
     @untab()
     @output "}"
