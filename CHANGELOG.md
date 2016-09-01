@@ -1,6 +1,8 @@
 # 1.3.6 (2016-09-01)
 
-Bugfix: emitted types are lowercase
+Bugfixes:
+ - emitted types are lowercase
+ - don't allow malicious sender to crash us out nil pointer
 
 # 1.3.5 (2016-08-31)
 
