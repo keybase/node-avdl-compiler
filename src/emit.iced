@@ -285,6 +285,7 @@ exports.GoEmitter = class GoEmitter
         @emit_variant { obj : type, go_field_suffix }
 
   emit_enum : (t) ->
+    # Type and constants
     name = t.name
     @output "type #{name} int"
     @output "const ("
@@ -296,12 +297,23 @@ exports.GoEmitter = class GoEmitter
     @untab()
     @output ")"
 
+    # Forward map
     @output "var #{name}Map = map[string]#{name}{"
     @tab()
     for s, i in t.symbols
       i = s.split("_").pop(-1);
       s = s.replace("_" + i, "");
       @output "\"#{s}\" : #{i},"
+    @untab()
+    @output "}"
+
+    # Reverse map
+    @output "var #{name}RevMap = map[#{name}]string{"
+    @tab()
+    for s, i in t.symbols
+      i = s.split("_").pop(-1);
+      s = s.replace("_" + i, "");
+      @output "#{i} : \"#{s}\","
     @untab()
     @output "}"
 
