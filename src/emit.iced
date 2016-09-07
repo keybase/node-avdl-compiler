@@ -290,10 +290,10 @@ exports.GoEmitter = class GoEmitter
     @output "type #{name} int"
     @output "const ("
     @tab()
-    for s, i in t.symbols
-      i = s.split("_").pop(-1);
-      s = s.replace("_" + i, "");
-      @output "#{name}_#{s} #{name} = #{i}"
+    for s, _ in t.symbols
+      [e_name..., e_num] = s.split("_")
+      e_name = e_name.join("_")
+      @output "#{name}_#{e_name} #{name} = #{e_num}"
     @untab()
     @output ")"
 
@@ -301,9 +301,9 @@ exports.GoEmitter = class GoEmitter
     @output "var #{name}Map = map[string]#{name}{"
     @tab()
     for s, i in t.symbols
-      i = s.split("_").pop(-1);
-      s = s.replace("_" + i, "");
-      @output "\"#{s}\" : #{i},"
+      [e_name..., e_num] = s.split("_")
+      e_name = e_name.join("_")
+      @output "\"#{e_name}\" : #{e_num},"
     @untab()
     @output "}"
 
@@ -311,9 +311,9 @@ exports.GoEmitter = class GoEmitter
     @output "var #{name}RevMap = map[#{name}]string{"
     @tab()
     for s, i in t.symbols
-      i = s.split("_").pop(-1);
-      s = s.replace("_" + i, "");
-      @output "#{i} : \"#{s}\","
+      [e_name..., e_num] = s.split("_")
+      e_name = e_name.join("_")
+      @output "#{e_num} : \"#{e_name}\","
     @untab()
     @output "}"
 
