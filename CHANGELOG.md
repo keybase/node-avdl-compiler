@@ -1,3 +1,7 @@
+# 1.3.7 (2016-09-7)
+
+- Add reverse map for enums in Go
+
 # 1.3.6 (2016-09-01)
 
 Bugfixes:
