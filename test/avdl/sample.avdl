@@ -47,6 +47,14 @@ protocol sample {
 		default: int;
 	}
 
+	variant Trixie switch (Types typ) {
+		case NONE: void;
+		case BOZO: void;
+		case BIPPY: int;
+		case AGGLE: void;
+		case FLAGGLE: void;
+	}
+
 	variant Noozle switch (int version) {
 		case 1: string;
 		case 2: int;

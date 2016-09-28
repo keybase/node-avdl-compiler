@@ -156,10 +156,10 @@ exports.GoEmitter = class GoEmitter
     cases = []
     def = null
     for c in obj.cases
-      if not c.label.def
-        cases.push @emit_variant_case_getter { obj, c : c, go_field_suffix }
-      else
+      if c.label.def
         def = c
+      else if c.body?
+        cases.push @emit_variant_case_getter { obj, c : c, go_field_suffix }
     if def and def.body?
       cases.push @emit_variant_case_getter { obj, c : def, go_field_suffix, cases, def : true }
 
@@ -222,7 +222,10 @@ exports.GoEmitter = class GoEmitter
       tag_val = c.label.name
       unless @is_primitive_switch_type obj.switch.type
         tag_val = @go_lint_capitalize(obj.switch.type) + "_" + tag_val
-      @output "func New#{klass}With#{go_label_unprefixed}(v #{case_type}) #{klass} {"
+      if c.body?
+        @output "func New#{klass}With#{go_label_unprefixed}(v #{case_type}) #{klass} {"
+      else
+        @output "func New#{klass}With#{go_label_unprefixed}() #{klass} {"
     else if c.body?
       @output "func New#{klass}Default(#{obj.switch.name} #{obj.switch.type}, v #{case_type}) #{klass} {"
       tag_val = obj.switch.name
