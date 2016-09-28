@@ -1,3 +1,7 @@
+# 1.3.8 (2016-09-28)
+
+- Support for `void` fields that aren't the default
+
 # 1.3.7 (2016-09-7)
 
 - Add reverse map for enums in Go
