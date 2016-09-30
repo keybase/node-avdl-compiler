@@ -362,7 +362,7 @@ exports.GoEmitter = class GoEmitter
   emit_imports : ({imports, messages, types}) ->
     @output "import ("
     @tab()
-    @output 'rpc "github.com/keybase/go-framed-msgpack-rpc"'
+    @output '"github.com/keybase/go-framed-msgpack-rpc/rpc"'
     @output 'context "golang.org/x/net/context"' if Object.keys(messages).length > 0
     for {import_as, path} in imports when path.indexOf('/') >= 0
       line = ""
