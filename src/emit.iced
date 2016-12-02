@@ -320,6 +320,17 @@ exports.GoEmitter = class GoEmitter
     @untab()
     @output "}"
 
+    @output "func (e " + name + ") String() string {"
+    @tab()
+    @output "if v, ok := TypesRevMap[e]; ok {"
+    @tab()
+    @output "return v"
+    @untab()
+    @output "}"
+    @output "return \"UNKNOWN\""
+    @untab()
+    @output "}"
+
   emit_wrapper_objects : ({messages}) ->
     for k,v of messages
       @emit_wrapper_object { name : k, details : v }

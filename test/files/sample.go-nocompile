@@ -44,7 +44,10 @@ var TypesRevMap = map[Types]string{
 }
 
 func (e Types) String() string {
-	return TypesRevMap[e]
+	if v, ok := TypesRevMap[e]; ok {
+		return v
+	}
+	return "UNKNOWN"
 }
 
 type Boozle struct {
