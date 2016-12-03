@@ -33,6 +33,7 @@ exports.GoEmitter = class GoEmitter
     n = n.replace /pgp/g, "PGP"
     n = n.replace /Pgp/g, "PGP"
     n = n.replace /^Tty/, 'TTY'
+    n = n.replace /^Tlfid/, 'TLFID'
     n = n.replace /^Tlf/, 'TLF'
     n = n.replace /^Uid/, 'UID'
     n = n.replace /^Kid/, 'KID'
