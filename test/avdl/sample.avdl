@@ -18,6 +18,11 @@ protocol sample {
 		keybase1.UID bar;
 	}
 
+  record Ha {
+    string tlfMessage;
+    string tlfid;
+  }
+
 	/**
 	 GetBaz will get a baz like you wouldn't believe.
 	 If this baz isn't gotten, then I'll eat my hat

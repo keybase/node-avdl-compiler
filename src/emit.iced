@@ -32,6 +32,31 @@ exports.GoEmitter = class GoEmitter
   go_lint_capitalize : (n) ->
     n = n.replace /pgp/g, "PGP"
     n = n.replace /Pgp/g, "PGP"
+    n = n.replace /^Tty/, 'TTY'
+    n = n.replace /^Tlfid/, 'TLFID'
+    n = n.replace /^Tlf/, 'TLF'
+    n = n.replace /^Uid/, 'UID'
+    n = n.replace /^Kid/, 'KID'
+    n = n.replace /^Cli/, 'CLI'
+    n = n.replace /^Api/, 'API'
+    n = n.replace /^Btc/, 'BTC'
+    n = n.replace /^Pgp/, 'PGP'
+    n = n.replace /^Gpg/, 'GPG'
+    n = n.replace /^Uri/, 'URI'
+    n = n.replace /^Gui/, 'GUI'
+
+    n = n.replace /^Kbfs/, 'KBFS'
+    n = n.replace /^Json/, 'JSON'
+
+    n = n.replace /Ed25519/, 'ED25519'
+
+    n = n.replace /^Id/, 'ID'
+    n = n.replace /^Kv/, 'KV'
+    n = n.replace /^Ui/, 'UI'
+    n = n.replace /^Fs/, 'FS'
+    n = n.replace /^Md/, 'MD'
+    n = n.replace /^Ok/, 'OK'
+
     n
 
   go_package : (n) -> n.replace(/[.-]/g, "")
