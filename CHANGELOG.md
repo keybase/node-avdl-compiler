@@ -1,3 +1,7 @@
+# 1.3.10 (2016-12-02)
+
+- Add String() method for enums
+
 # 1.3.9 (2016-09-30)
 
 - New location for RPC library

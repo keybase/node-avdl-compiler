@@ -39,6 +39,11 @@ protocol sample {
 		FLAGGLE_4
 	}
 
+	@go("nostring")
+	enum EnumNoString {
+		NOSTRING_0
+	}
+
 	variant Boozle switch (Types typ) {
 		case BOZO: int;
 		case BIPPY: string;

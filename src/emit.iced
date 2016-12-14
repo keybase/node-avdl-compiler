@@ -283,11 +283,12 @@ exports.GoEmitter = class GoEmitter
       when "fixed"
         @emit_fixed type
       when "enum"
-        @emit_enum type
+        nostring = (type.go is "nostring")
+        @emit_enum { t : type, nostring }
       when "variant"
         @emit_variant { obj : type, go_field_suffix }
 
-  emit_enum : (t) ->
+  emit_enum : ({t, nostring}) ->
     # Type and constants
     name = t.name
     @output "type #{name} int"
@@ -319,6 +320,18 @@ exports.GoEmitter = class GoEmitter
       @output "#{e_num} : \"#{e_name}\","
     @untab()
     @output "}"
+
+    unless nostring
+      @output "func (e " + name + ") String() string {"
+      @tab()
+      @output "if v, ok := TypesRevMap[e]; ok {"
+      @tab()
+      @output "return v"
+      @untab()
+      @output "}"
+      @output "return \"\""
+      @untab()
+      @output "}"
 
   emit_wrapper_objects : ({messages}) ->
     for k,v of messages
