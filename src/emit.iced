@@ -324,7 +324,7 @@ exports.GoEmitter = class GoEmitter
     unless nostring
       @output "func (e " + name + ") String() string {"
       @tab()
-      @output "if v, ok := TypesRevMap[e]; ok {"
+      @output "if v, ok := #{name}RevMap[e]; ok {"
       @tab()
       @output "return v"
       @untab()
