@@ -47,7 +47,7 @@ func (e Types) String() string {
 	if v, ok := TypesRevMap[e]; ok {
 		return v
 	}
-	return "UNKNOWN"
+	return ""
 }
 
 type EnumNoString int

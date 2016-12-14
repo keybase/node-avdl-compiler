@@ -329,7 +329,7 @@ exports.GoEmitter = class GoEmitter
       @output "return v"
       @untab()
       @output "}"
-      @output "return \"UNKNOWN\""
+      @output "return \"\""
       @untab()
       @output "}"
 
