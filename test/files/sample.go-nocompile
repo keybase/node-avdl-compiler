@@ -50,6 +50,19 @@ func (e Types) String() string {
 	return "UNKNOWN"
 }
 
+type EnumNoString int
+const (
+	EnumNoString_NOSTRING EnumNoString = 0
+)
+
+var EnumNoStringMap = map[string]EnumNoString{
+	"NOSTRING" : 0,
+}
+
+var EnumNoStringRevMap = map[EnumNoString]string{
+	0 : "NOSTRING",
+}
+
 type Boozle struct {
 	Typ__	Types	`codec:"typ" json:"typ"`
 	Bozo__	*int	`codec:"bozo,omitempty" json:"bozo,omitempty"`
