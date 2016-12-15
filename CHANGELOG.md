@@ -1,3 +1,7 @@
+# 1.3.11 (2016-12-14)
+
+- Fix invalid go codegen
+
 # 1.3.10 (2016-12-02)
 
 - Add String() method for enums
