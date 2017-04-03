@@ -57,7 +57,7 @@ protocol sample {
 		case BOZO: void;
 		case BIPPY: int;
 		case AGGLE: void;
-		case FLAGGLE: void;
+		case FLAGGLE: EnumNoString;
 	}
 
 	variant Noozle switch (int version) {
