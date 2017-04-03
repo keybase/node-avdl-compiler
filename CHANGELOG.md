@@ -1,3 +1,7 @@
+# 1.3.12 (2017-04-03)
+
+- Fix variants with enum values
+
 # 1.3.11 (2016-12-14)
 
 - Fix invalid go codegen
