@@ -16,6 +16,9 @@ protocol sample {
 	*/
 	record R {
 		keybase1.UID bar;
+
+		@jsonkey("baz_j_uid")
+		keybase1.UID baz;
 	}
 
 	/**

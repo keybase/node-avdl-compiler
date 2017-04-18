@@ -84,23 +84,30 @@ exports.GoEmitter = class GoEmitter
     @output "type #{t.name} #{@emit_field_type(t.typedef).type}"
     true
 
-  codec : (name, optional) ->
+  codec : ({name, optional, jsonkey}) ->
     omitempty = if optional then ",omitempty" else ""
-    "`codec:\"#{name}#{omitempty}\" json:\"#{name}#{omitempty}\"`"
+    unless jsonkey?
+      jsonkey = "#{name}"
+    "`codec:\"#{name}#{omitempty}\" json:\"#{jsonkey}#{omitempty}\"`"
 
-  emit_field : ({name, type, go_field_suffix, exported, pointed}) ->
+  emit_field : ({name, type, go_field_suffix, exported, pointed, jsonkey}) ->
     {type, optional} = @emit_field_type(type, {pointed})
     @output [
       @go_translate_identifier({ name, go_field_suffix, exported }),
       @go_lint_capitalize(type),
-      @codec(name, optional)
+      @codec({name, optional, jsonkey}),
     ].join "\t"
 
   emit_record : ({obj, go_field_suffix}) ->
     @output "type #{@go_export_case(obj.name)} struct {"
     @tab()
     for f in obj.fields
-      @emit_field { name : f.name, type : f.type, go_field_suffix, exported : true }
+      @emit_field
+        name : f.name
+        type : f.type
+        go_field_suffix: go_field_suffix
+        exported : true
+        jsonkey : f.jsonkey
     @untab()
     @output "}"
 
