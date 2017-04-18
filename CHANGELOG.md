@@ -1,3 +1,7 @@
+# 1.3.13 (2017-04-18)
+
+- Add jsonkey field decorator
+
 # 1.3.12 (2017-04-03)
 
 - Fix variants with enum values
