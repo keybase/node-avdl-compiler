@@ -384,6 +384,10 @@ func NewBlurpWithFalse(v int) Blurp {
 type Cat struct {
 	Bird	map[Blurp]Noozle	`codec:"bird" json:"bird"`
 	Bee	map[string]Noozle	`codec:"bee" json:"bee"`
+	Birds	map[Blurp][]Noozle	`codec:"birds" json:"birds"`
+	Pickles	map[Blurp]int	`codec:"pickles" json:"pickles"`
+	Penny	map[string]int	`codec:"penny" json:"penny"`
+	Pa	map[int]string	`codec:"pa" json:"pa"`
 }
 
 type GetBazArg struct {
