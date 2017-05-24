@@ -74,6 +74,10 @@ protocol sample {
 		case false: int;
 	}
 
+	record Simple {
+		union {null, Blurp} s;
+	}
+
 	record Cat {
 		map<Blurp,Noozle> bird;
 		map<Noozle> bee;
@@ -81,5 +85,6 @@ protocol sample {
 		map<Blurp,int> pickles;
 		map<string,int> penny;
 		map<int,string> pa;
+		array<map<Blurp,array<Noozle>>> wow;
 	}
 }
