@@ -68,7 +68,9 @@ exports.GoEmitter = class GoEmitter
         optional = true
         "*" + @go_primitive_type(t[1])
       else if t.type is "array" then "[]" + @go_primitive_type(t.items)
-      else if t.type is "map" then "map[string]" + @go_primitive_type(t.values)
+      else if t.type is "map"
+        key = if t.keys? then @go_lint_capitalize(@emit_field_type(t.keys).type) else "string"
+        "map[#{key}]" + @go_lint_capitalize(@emit_field_type(t.values).type)
       else "ERROR"
     else "ERROR"
     type = "*" + type if pointed

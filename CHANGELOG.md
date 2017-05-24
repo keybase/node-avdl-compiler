@@ -1,3 +1,7 @@
+# 1.3.14 (2017-05-24)
+
+- Add the ability to have a map<K,V> type, for K != 'string'
+
 # 1.3.13 (2017-04-18)
 
 - Add jsonkey field decorator
