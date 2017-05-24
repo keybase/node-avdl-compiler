@@ -73,4 +73,9 @@ protocol sample {
 		case true: string;
 		case false: int;
 	}
+
+	record Cat {
+		map<Blurp,Noozle> bird;
+		map<Noozle> bee;
+	}
 }
