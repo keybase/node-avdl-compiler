@@ -202,9 +202,9 @@ exports.GoEmitter = class GoEmitter
     @output "var ret #{type}"
     @output "for _, v := range x {"
     @tab()
-    @output "v = ", { frag : true }
+    @output "vCopy := ", { frag : true }
     @deep_copy { t : t.items, val : "v" }
-    @output "ret = append(ret, v)"
+    @output "ret = append(ret, vCopy)"
     @untab()
     @output "}"
     @output "return ret"
@@ -217,11 +217,13 @@ exports.GoEmitter = class GoEmitter
     @output "for k,v := range x {"
     @tab()
     if t.keys?
-      @output "k = ", {frag : true}
+      @output "kCopy := ", {frag : true}
       @deep_copy { t : t.keys, val : "k" }
-    @output "v = ", {frag : true}
+    else
+      @output "kCopy := k"
+    @output "vCopy := ", {frag : true}
     @deep_copy { t : t.values, val : "v" }
-    @output "ret[k] = v"
+    @output "ret[kCopy] = vCopy"
     @untab()
     @output "}"
     @output "return ret"
