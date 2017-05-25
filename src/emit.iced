@@ -159,9 +159,20 @@ exports.GoEmitter = class GoEmitter
     else
       @output "ERROR"
 
+
+  # We're not really supposed to have 'bool' or 'int64' AVDL types but
+  # they do show up from time to time. So handle them properly.
+  is_primitive_type_lax : (t) ->
+    t in [
+      'int64', 'long', 'int',
+      'float', 'double',
+      'string',
+      'boolean', 'bool'
+    ]
+
   deep_copy_simple : ({t, val}) ->
     if t is 'bytes' then val = "append([]byte(nil), #{val}...)"
-    else if t not in [ 'boolean', 'long', 'float', 'double', 'string', 'int' ] then val += ".DeepCopy()"
+    else if not @is_primitive_type_lax(t) then val += ".DeepCopy()"
     @output val
 
   deep_copy_preamble : ({type}) ->
