@@ -160,8 +160,8 @@ exports.GoEmitter = class GoEmitter
       @output "ERROR"
 
   deep_copy_simple : ({t, val}) ->
-    if t not in [ 'boolean', 'long', 'float', 'double', 'string', 'int' ] then val += ".DeepCopy()"
-    else if t is 'bytes' then val = "append([]byte(nil), #{val}...)"
+    if t is 'bytes' then val = "append([]byte(nil), #{val}...)"
+    else if t not in [ 'boolean', 'long', 'float', 'double', 'string', 'int' ] then val += ".DeepCopy()"
     @output val
 
   deep_copy_preamble : ({type}) ->
@@ -405,8 +405,19 @@ exports.GoEmitter = class GoEmitter
     @untab()
     @output "}"
 
+  emit_fixed_deep_copy : ({t}) ->
+    type = t.name
+    @output "func (o #{type}) DeepCopy() #{type} {"
+    @tab()
+    @output "var ret #{type}"
+    @output "copy(ret[:], o[:])"
+    @output "return ret"
+    @untab()
+    @output "}"
+
   emit_fixed : (t) ->
     @output "type #{t.name} [#{t.size}]byte"
+    @emit_fixed_deep_copy { t }
 
   emit_types : ({types, go_field_suffix}) ->
     for type in types
