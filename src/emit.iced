@@ -161,7 +161,7 @@ exports.GoEmitter = class GoEmitter
 
   deep_copy_simple : ({t, val}) ->
     if t not in [ 'boolean', 'long', 'float', 'double', 'string', 'int' ] then val += ".DeepCopy()"
-    else if t is 'bytes' then val = "append([]byte{}, #{val}...)"
+    else if t is 'bytes' then val = "append([]byte(nil), #{val}...)"
     @output val
 
   deep_copy_preamble : ({type}) ->
