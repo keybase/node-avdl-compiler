@@ -48,9 +48,18 @@ exports.GoEmitter = class GoEmitter
   is_primitive_switch_type : (m) -> m in [ "boolean", "long", "int" ]
 
   tabs : () -> ("\t" for i in [0...@_tabs]).join("")
-  output : (l) ->
-    @_code.push (@tabs() + l)
-    @_code.push("") if (l is "}" or l is ")") and @_tabs is 0
+  output : (l, {frag} = {}) ->
+    if @_last_frag
+      @_code[@_code.length-1] += l
+      @_last_frag = false
+    else
+      @_code.push (@tabs() + l)
+    if frag
+      @_last_frag = true
+    else
+      @_code.push("") if (l is "}" or l is ")") and @_tabs is 0
+  append_to_last : (s) ->
+    @_code[@_code.length-1] += s
 
   output_doc : (d) ->
     if d?
@@ -60,21 +69,38 @@ exports.GoEmitter = class GoEmitter
   tab : () -> @_tabs++
   untab : () -> @_tabs--
 
+  make_map_type : ({t}) ->
+    key = if t.keys? then @emit_field_type(t.keys).type else "string"
+    "map[#{key}]" + @emit_field_type(t.values).type
+
   emit_field_type : (t, {pointed} = {}) ->
     optional = !!pointed
     type = if typeof(t) is 'string' then @go_primitive_type(t)
     else if typeof(t) is 'object'
-      if Array.isArray(t) and not t[0]?
-        optional = true
-        "*" + @go_primitive_type(t[1])
-      else if t.type is "array" then "[]" + @go_primitive_type(t.items)
+      if Array.isArray(t)
+        if not t[0]?
+          optional = true
+          "*" + @emit_field_type(t[1]).type
+        else
+          "ERROR"
+      else if t.type is "array"
+        "[]" + @emit_field_type(t.items).type
       else if t.type is "map"
-        key = if t.keys? then @go_lint_capitalize(@emit_field_type(t.keys).type) else "string"
-        "map[#{key}]" + @go_lint_capitalize(@emit_field_type(t.values).type)
+        @make_map_type { t }
       else "ERROR"
     else "ERROR"
     type = "*" + type if pointed
     { type , optional }
+
+  emit_typedef_deep_copy : ({t}) ->
+    type = t.name
+    receiver = "o"
+    @output "func (#{receiver} #{type}) DeepCopy() #{type} {"
+    @tab()
+    @output "return ", {frag : true }
+    @deep_copy { t : t.typedef, val : receiver }
+    @untab()
+    @output "}"
 
   #
   # An example of an AVDL "typedef":
@@ -84,6 +110,7 @@ exports.GoEmitter = class GoEmitter
   #
   emit_typedef : (t) ->
     @output "type #{t.name} #{@emit_field_type(t.typedef).type}"
+    @emit_typedef_deep_copy { t }
     true
 
   codec : ({name, optional, jsonkey}) ->
@@ -101,6 +128,10 @@ exports.GoEmitter = class GoEmitter
     ].join "\t"
 
   emit_record : ({obj, go_field_suffix}) ->
+    @emit_record_struct { obj, go_field_suffix }
+    @emit_record_deep_copy { obj, go_field_suffix }
+
+  emit_record_struct : ({obj, go_field_suffix}) ->
     @output "type #{@go_export_case(obj.name)} struct {"
     @tab()
     for f in obj.fields
@@ -110,6 +141,109 @@ exports.GoEmitter = class GoEmitter
         go_field_suffix: go_field_suffix
         exported : true
         jsonkey : f.jsonkey
+    @untab()
+    @output "}"
+
+  deep_copy : ( {t, val}) ->
+    if typeof(t) is 'string'
+      @deep_copy_simple { t, val }
+    else if typeof(t) isnt 'object'
+      @output "ERROR"
+    else if Array.isArray(t)
+      if t[0]? then @output "ERROR"
+      else @deep_copy_pointer { t , val }
+    else if t.type is 'array'
+      @deep_copy_array { t, val }
+    else if t.type is 'map'
+      @deep_copy_map { t, val }
+    else
+      @output "ERROR"
+
+
+  # We're not really supposed to have 'bool' or 'int64' AVDL types but
+  # they do show up from time to time. So handle them properly.
+  is_primitive_type_lax : (t) ->
+    t in [
+      'int64', 'long', 'int',
+      'float', 'double',
+      'string',
+      'boolean', 'bool'
+    ]
+
+  deep_copy_simple : ({t, val}) ->
+    if t is 'bytes' then val = "append([]byte(nil), #{val}...)"
+    else if not @is_primitive_type_lax(t) then val += ".DeepCopy()"
+    @output val
+
+  deep_copy_preamble : ({type}) ->
+    @output "(func (x #{type}) #{type} {"
+    @tab()
+
+  deep_copy_postamble : ({val}) ->
+    @untab()
+    @output "})(#{val})"
+
+  deep_copy_pointer : ({t, val}) ->
+    type = @emit_field_type(t).type
+    @deep_copy_preamble {type}
+    @output "if x == nil {"
+    @tab()
+    @output "return nil"
+    @untab()
+    @output "}"
+    @output "tmp := ", {frag : true }
+    @deep_copy { t : t[1], val : "(*x)" }
+    @output "return &tmp"
+    @deep_copy_postamble { val }
+
+  deep_copy_array : ({t, val}) ->
+    type = @emit_field_type(t).type
+    @deep_copy_preamble {type}
+    @output "var ret #{type}"
+    @output "for _, v := range x {"
+    @tab()
+    @output "v = ", { frag : true }
+    @deep_copy { t : t.items, val : "v" }
+    @output "ret = append(ret, v)"
+    @untab()
+    @output "}"
+    @output "return ret"
+    @deep_copy_postamble { val }
+
+  deep_copy_map : ({t, val}) ->
+    type = @emit_field_type(t).type
+    @deep_copy_preamble { type }
+    @output "ret := make(#{type})"
+    @output "for k,v := range x {"
+    @tab()
+    if t.keys?
+      @output "k = ", {frag : true}
+      @deep_copy { t : t.keys, val : "k" }
+    @output "v = ", {frag : true}
+    @deep_copy { t : t.values, val : "v" }
+    @output "ret[k] = v"
+    @untab()
+    @output "}"
+    @output "return ret"
+    @deep_copy_postamble { val }
+
+  emit_deep_copy_field : ({t, name, go_field_suffix, receiver}) ->
+    field = @go_translate_identifier { name : name, go_field_suffix, exported : true }
+    @output (field + " : "), { frag : true }
+    @deep_copy { t, val : "#{receiver}.#{field}" }
+    @append_to_last ","
+
+  emit_record_deep_copy : ({obj, go_field_suffix}) ->
+    type = @go_export_case(obj.name)
+    receiver = "o"
+    @output "func (#{receiver} #{type}) DeepCopy() #{type} {"
+    @tab()
+    @output "return #{type}{"
+    @tab()
+    for f in obj.fields
+      @emit_deep_copy_field { t : f.type, name : f.name, go_field_suffix, receiver }
+    @untab()
+    @output "}"
     @untab()
     @output "}"
 
@@ -249,6 +383,7 @@ exports.GoEmitter = class GoEmitter
     @emit_variant_object { obj, go_field_suffix }
     @emit_variant_getters { obj, go_field_suffix }
     @emit_variant_constructors { obj, go_field_suffix }
+    @emit_variant_deep_copy { obj, go_field_suffix  }
 
   emit_variant_object : ({obj, go_field_suffix}) ->
     @output "type #{@go_export_case(obj.name)} struct {"
@@ -261,8 +396,39 @@ exports.GoEmitter = class GoEmitter
     @untab()
     @output "}"
 
+  emit_variant_deep_copy : ({obj, go_field_suffix}) ->
+    go_field_suffix = @variant_suffix()
+    type = @go_export_case(obj.name)
+    receiver = "o"
+    @output "func (#{receiver} #{type}) DeepCopy() #{type} {"
+    @tab()
+    @output "return #{type} {"
+    @tab()
+    @emit_deep_copy_field { t : obj.switch.type, name : obj.switch.name, go_field_suffix, receiver }
+    for {label,body} in obj.cases when body?
+      name = @case_label_to_go { label : label.name, prefixed : true, is_private : true }
+      # Cute hack here -- recall that the body is a pointer type since it might be null,
+      # so use our internal representation of `union { null, T }` for the bodies. This
+      # is done via [ null, body ] just below.
+      @emit_deep_copy_field { t : [ null, body ], name : name, go_field_suffix, receiver }
+    @untab()
+    @output "}"
+    @untab()
+    @output "}"
+
+  emit_fixed_deep_copy : ({t}) ->
+    type = t.name
+    @output "func (o #{type}) DeepCopy() #{type} {"
+    @tab()
+    @output "var ret #{type}"
+    @output "copy(ret[:], o[:])"
+    @output "return ret"
+    @untab()
+    @output "}"
+
   emit_fixed : (t) ->
     @output "type #{t.name} [#{t.size}]byte"
+    @emit_fixed_deep_copy { t }
 
   emit_types : ({types, go_field_suffix}) ->
     for type in types
@@ -302,6 +468,7 @@ exports.GoEmitter = class GoEmitter
       @output "#{name}_#{e_name} #{name} = #{e_num}"
     @untab()
     @output ")"
+    @output "func (o #{name}) DeepCopy() #{name} { return o }"
 
     # Forward map
     @output "var #{name}Map = map[string]#{name}{"
