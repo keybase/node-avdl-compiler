@@ -176,12 +176,12 @@ exports.GoEmitter = class GoEmitter
   deep_copy_bytes : ({t,val}) ->
     type = @emit_field_type(t).type
     @deep_copy_preamble {type}
-    @output "if #{val} == nil {"
+    @output "if x == nil {"
     @tab()
     @output "return nil"
     @untab()
     @output "}"
-    @output "return append([]byte(nil), #{val}...)"
+    @output "return append([]byte(nil), x...)"
     @deep_copy_postamble { val }
 
   deep_copy_simple : ({t, val}) ->
