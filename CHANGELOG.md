@@ -1,3 +1,7 @@
+# 1.3.17 (2017-06-06)
+
+- Fix DeepCopy() for `bytes` to not crash on `nil`
+
 # 1.3.16 (2017-05-27)
 
 - Satify GoVet w/r/t `v = v`, which wasn't liked

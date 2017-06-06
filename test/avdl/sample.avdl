@@ -78,6 +78,8 @@ protocol sample {
 		union {null, Blurp} s;
 	}
 
+	@typedef ("bytes") record Hash {}
+
 	record Cat {
 		map<Blurp,Noozle> bird;
 		map<Noozle> bee;
@@ -86,5 +88,7 @@ protocol sample {
 		map<string,int> penny;
 		map<int,string> pa;
 		array<map<Blurp,array<Noozle>>> wow;
+		bytes boo;
+		Hash hooHah;
 	}
 }

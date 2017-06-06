@@ -146,7 +146,10 @@ exports.GoEmitter = class GoEmitter
 
   deep_copy : ( {t, val}) ->
     if typeof(t) is 'string'
-      @deep_copy_simple { t, val }
+      if t is 'bytes'
+        @deep_copy_bytes { t, val }
+      else
+        @deep_copy_simple { t, val }
     else if typeof(t) isnt 'object'
       @output "ERROR"
     else if Array.isArray(t)
@@ -170,9 +173,19 @@ exports.GoEmitter = class GoEmitter
       'boolean', 'bool'
     ]
 
+  deep_copy_bytes : ({t,val}) ->
+    type = @emit_field_type(t).type
+    @deep_copy_preamble {type}
+    @output "if #{val} == nil {"
+    @tab()
+    @output "return nil"
+    @untab()
+    @output "}"
+    @output "return append([]byte(nil), #{val}...)"
+    @deep_copy_postamble { val }
+
   deep_copy_simple : ({t, val}) ->
-    if t is 'bytes' then val = "append([]byte(nil), #{val}...)"
-    else if not @is_primitive_type_lax(t) then val += ".DeepCopy()"
+    if not @is_primitive_type_lax(t) then val += ".DeepCopy()"
     @output val
 
   deep_copy_preamble : ({type}) ->
