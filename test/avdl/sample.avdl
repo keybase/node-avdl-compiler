@@ -91,4 +91,6 @@ protocol sample {
 		bytes boo;
 		Hash hooHah;
 	}
+
+	@typedef ("uint") record messageID {}
 }

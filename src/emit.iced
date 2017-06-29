@@ -170,7 +170,7 @@ exports.GoEmitter = class GoEmitter
       'int64', 'long', 'int',
       'float', 'double',
       'string',
-      'boolean', 'bool'
+      'boolean', 'bool', 'uint', 'unsigned'
     ]
 
   deep_copy_bytes : ({t,val}) ->

@@ -643,6 +643,11 @@ func (o Cat) DeepCopy() Cat {
 	}
 }
 
+type messageID uint
+func (o messageID) DeepCopy() messageID {
+	return o
+}
+
 type GetBazArg struct {
 	R	R	`codec:"r" json:"r"`
 	Beep	keybase1.DeviceID	`codec:"beep" json:"beep"`
