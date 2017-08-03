@@ -1,3 +1,9 @@
+# 1.3.19 (2017-08-03)
+- Fix DeepCopy() for 'uint64'
+
+# 1.3.18
+- Fix DeepCopy() for 'uint'
+
 # 1.3.17 (2017-06-06)
 
 - Fix DeepCopy() for `bytes` to not crash on `nil`
