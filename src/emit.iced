@@ -181,7 +181,7 @@ exports.GoEmitter = class GoEmitter
     @output "return nil"
     @untab()
     @output "}"
-    @output "return append([]byte(nil), x...)"
+    @output "return append([]byte{}, x...)"
     @deep_copy_postamble { val }
 
   deep_copy_simple : ({t, val}) ->
@@ -212,6 +212,11 @@ exports.GoEmitter = class GoEmitter
   deep_copy_array : ({t, val}) ->
     type = @emit_field_type(t).type
     @deep_copy_preamble {type}
+    @output "if x == nil {"
+    @tab()
+    @output "return nil"
+    @untab()
+    @output "}"
     @output "var ret #{type}"
     @output "for _, v := range x {"
     @tab()
@@ -226,6 +231,11 @@ exports.GoEmitter = class GoEmitter
   deep_copy_map : ({t, val}) ->
     type = @emit_field_type(t).type
     @deep_copy_preamble { type }
+    @output "if x == nil {"
+    @tab()
+    @output "return nil"
+    @untab()
+    @output "}"
     @output "ret := make(#{type})"
     @output "for k,v := range x {"
     @tab()
