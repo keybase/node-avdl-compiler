@@ -1,3 +1,6 @@
+# 1.3.20 (2017-09-27)
+- Preserve nil-ness of slices and maps
+
 # 1.3.19 (2017-08-03)
 - Fix DeepCopy() for 'uint64'
 
