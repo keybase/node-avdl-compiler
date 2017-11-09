@@ -127,9 +127,9 @@ exports.GoEmitter = class GoEmitter
       @codec({name, optional, jsonkey}),
     ].join "\t"
 
-  emit_record : ({obj, go_field_suffix}) ->
+  emit_record : ({obj, go_field_suffix, no_deep_copy}) ->
     @emit_record_struct { obj, go_field_suffix }
-    @emit_record_deep_copy { obj, go_field_suffix }
+    @emit_record_deep_copy { obj, go_field_suffix } unless no_deep_copy
 
   emit_record_struct : ({obj, go_field_suffix}) ->
     @output "type #{@go_export_case(obj.name)} struct {"
@@ -537,7 +537,7 @@ exports.GoEmitter = class GoEmitter
     obj =
       name : klass_name
       fields : args
-    @emit_record { obj }
+    @emit_record { obj, no_deep_copy : true }
     details.request = {
       type : klass_name
       name : "__arg"

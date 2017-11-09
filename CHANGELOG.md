@@ -1,3 +1,6 @@
+# 1.3.21 (2017-11-08)
+- Don't emit DeepCopy's for autogen Arg types
+
 # 1.3.20 (2017-09-27)
 - Preserve nil-ness of slices and maps
 
