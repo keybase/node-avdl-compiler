@@ -116,9 +116,9 @@ exports.GoEmitter = class GoEmitter
   codec : ({name, optional, jsonkey, mpackkey}) ->
     omitempty = if optional then ",omitempty" else ""
     unless jsonkey?
-      jsonkey = "#{name}"
+      jsonkey = name
     unless mpackkey?
-      mpackkey = "#{name}"
+      mpackkey = name
     "`codec:\"#{mpackkey}#{omitempty}\" json:\"#{jsonkey}#{omitempty}\"`"
 
   emit_field : ({name, type, go_field_suffix, exported, pointed, jsonkey, mpackkey}) ->
