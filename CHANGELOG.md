@@ -1,3 +1,6 @@
+# 1.3.22 (2017-11-18)
+- Add mpackkey field decorator
+
 # 1.3.21 (2017-11-08)
 - Don't emit DeepCopy's for autogen Arg types
 
