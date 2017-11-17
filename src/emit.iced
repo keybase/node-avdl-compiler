@@ -113,18 +113,20 @@ exports.GoEmitter = class GoEmitter
     @emit_typedef_deep_copy { t }
     true
 
-  codec : ({name, optional, jsonkey}) ->
+  codec : ({name, optional, jsonkey, mpackkey}) ->
     omitempty = if optional then ",omitempty" else ""
     unless jsonkey?
       jsonkey = "#{name}"
-    "`codec:\"#{name}#{omitempty}\" json:\"#{jsonkey}#{omitempty}\"`"
+    unless mpackkey?
+      mpackkey = "#{name}"
+    "`codec:\"#{mpackkey}#{omitempty}\" json:\"#{jsonkey}#{omitempty}\"`"
 
-  emit_field : ({name, type, go_field_suffix, exported, pointed, jsonkey}) ->
+  emit_field : ({name, type, go_field_suffix, exported, pointed, jsonkey, mpackkey}) ->
     {type, optional} = @emit_field_type(type, {pointed})
     @output [
       @go_translate_identifier({ name, go_field_suffix, exported }),
       @go_lint_capitalize(type),
-      @codec({name, optional, jsonkey}),
+      @codec({name, optional, jsonkey, mpackkey}),
     ].join "\t"
 
   emit_record : ({obj, go_field_suffix, no_deep_copy}) ->
@@ -141,6 +143,7 @@ exports.GoEmitter = class GoEmitter
         go_field_suffix: go_field_suffix
         exported : true
         jsonkey : f.jsonkey
+        mpackkey : f.mpackkey
     @untab()
     @output "}"
 
