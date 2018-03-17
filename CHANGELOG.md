@@ -1,3 +1,6 @@
+# 1.3.23 (2018-03-16)
+- Add `@internal("")` decorator, which means a field won't be exported; for internal purposes only
+
 # 1.3.22 (2017-11-18)
 - Add mpackkey field decorator
 

@@ -90,6 +90,7 @@ protocol sample {
 		array<map<Blurp,array<Noozle>>> wow;
 		bytes boo;
 		Hash hooHah;
+		@internal("") rpc.SeqNumber seqno;
 	}
 
 	@typedef ("uint") record messageID {}

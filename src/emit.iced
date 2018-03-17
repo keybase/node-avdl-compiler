@@ -98,7 +98,7 @@ exports.GoEmitter = class GoEmitter
     @output "func (#{receiver} #{type}) DeepCopy() #{type} {"
     @tab()
     @output "return ", {frag : true }
-    @deep_copy { t : t.typedef, val : receiver }
+    @deep_copy { t : t.typedef, val : receiver, exported : true }
     @untab()
     @output "}"
 
@@ -123,11 +123,12 @@ exports.GoEmitter = class GoEmitter
 
   emit_field : ({name, type, go_field_suffix, exported, pointed, jsonkey, mpackkey}) ->
     {type, optional} = @emit_field_type(type, {pointed})
-    @output [
+    cols = [
       @go_translate_identifier({ name, go_field_suffix, exported }),
-      @go_lint_capitalize(type),
-      @codec({name, optional, jsonkey, mpackkey}),
-    ].join "\t"
+      @go_lint_capitalize(type)
+    ]
+    cols.push(@codec({name, optional, jsonkey, mpackkey})) if exported
+    @output cols.join("\t")
 
   emit_record : ({obj, go_field_suffix, no_deep_copy}) ->
     @emit_record_struct { obj, go_field_suffix }
@@ -141,14 +142,15 @@ exports.GoEmitter = class GoEmitter
         name : f.name
         type : f.type
         go_field_suffix: go_field_suffix
-        exported : true
+        exported : not(f.internal?)
         jsonkey : f.jsonkey
         mpackkey : f.mpackkey
     @untab()
     @output "}"
 
-  deep_copy : ( {t, val}) ->
-    if typeof(t) is 'string'
+  deep_copy : ( {t, val, exported}) ->
+    if not(exported) then @output val
+    else if typeof(t) is 'string'
       if t is 'bytes'
         @deep_copy_bytes { t, val }
       else
@@ -208,7 +210,7 @@ exports.GoEmitter = class GoEmitter
     @untab()
     @output "}"
     @output "tmp := ", {frag : true }
-    @deep_copy { t : t[1], val : "(*x)" }
+    @deep_copy { t : t[1], val : "(*x)", exported : true }
     @output "return &tmp"
     @deep_copy_postamble { val }
 
@@ -224,7 +226,7 @@ exports.GoEmitter = class GoEmitter
     @output "for _, v := range x {"
     @tab()
     @output "vCopy := ", { frag : true }
-    @deep_copy { t : t.items, val : "v" }
+    @deep_copy { t : t.items, val : "v", exported : true  }
     @output "ret = append(ret, vCopy)"
     @untab()
     @output "}"
@@ -244,21 +246,21 @@ exports.GoEmitter = class GoEmitter
     @tab()
     if t.keys?
       @output "kCopy := ", {frag : true}
-      @deep_copy { t : t.keys, val : "k" }
+      @deep_copy { t : t.keys, val : "k", exported : true }
     else
       @output "kCopy := k"
     @output "vCopy := ", {frag : true}
-    @deep_copy { t : t.values, val : "v" }
+    @deep_copy { t : t.values, val : "v", exported : true }
     @output "ret[kCopy] = vCopy"
     @untab()
     @output "}"
     @output "return ret"
     @deep_copy_postamble { val }
 
-  emit_deep_copy_field : ({t, name, go_field_suffix, receiver}) ->
-    field = @go_translate_identifier { name : name, go_field_suffix, exported : true }
+  emit_deep_copy_field : ({t, name, go_field_suffix, receiver, exported}) ->
+    field = @go_translate_identifier { name : name, go_field_suffix, exported }
     @output (field + " : "), { frag : true }
-    @deep_copy { t, val : "#{receiver}.#{field}" }
+    @deep_copy { t, val : "#{receiver}.#{field}" , exported }
     @append_to_last ","
 
   emit_record_deep_copy : ({obj, go_field_suffix}) ->
@@ -269,7 +271,7 @@ exports.GoEmitter = class GoEmitter
     @output "return #{type}{"
     @tab()
     for f in obj.fields
-      @emit_deep_copy_field { t : f.type, name : f.name, go_field_suffix, receiver }
+      @emit_deep_copy_field { t : f.type, name : f.name, go_field_suffix, receiver, exported : not(f.internal?) }
     @untab()
     @output "}"
     @untab()
@@ -432,13 +434,13 @@ exports.GoEmitter = class GoEmitter
     @tab()
     @output "return #{type} {"
     @tab()
-    @emit_deep_copy_field { t : obj.switch.type, name : obj.switch.name, go_field_suffix, receiver }
+    @emit_deep_copy_field { t : obj.switch.type, name : obj.switch.name, go_field_suffix, receiver, exported : true }
     for {label,body} in obj.cases when body?
       name = @case_label_to_go { label : label.name, prefixed : true, is_private : true }
       # Cute hack here -- recall that the body is a pointer type since it might be null,
       # so use our internal representation of `union { null, T }` for the bodies. This
       # is done via [ null, body ] just below.
-      @emit_deep_copy_field { t : [ null, body ], name : name, go_field_suffix, receiver }
+      @emit_deep_copy_field { t : [ null, body ], name : name, go_field_suffix, receiver, exported : true }
     @untab()
     @output "}"
     @untab()
