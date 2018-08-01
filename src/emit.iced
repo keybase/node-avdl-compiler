@@ -241,7 +241,7 @@ exports.GoEmitter = class GoEmitter
     @output "return nil"
     @untab()
     @output "}"
-    @output "ret := make(#{type})"
+    @output "ret := make(#{type}, len(x))"
     @output "for k,v := range x {"
     @tab()
     if t.keys?
