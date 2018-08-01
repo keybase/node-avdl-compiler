@@ -222,12 +222,12 @@ exports.GoEmitter = class GoEmitter
     @output "return nil"
     @untab()
     @output "}"
-    @output "var ret #{type}"
-    @output "for _, v := range x {"
+    @output "ret := make(#{type}, len(x))"
+    @output "for i, v := range x {"
     @tab()
     @output "vCopy := ", { frag : true }
     @deep_copy { t : t.items, val : "v", exported : true  }
-    @output "ret = append(ret, vCopy)"
+    @output "ret[i] = vCopy"
     @untab()
     @output "}"
     @output "return ret"
