@@ -1,3 +1,6 @@
+# 1.3.24 (2018-08-01)
+- map and slice optimizations
+
 # 1.3.23 (2018-03-16)
 - Add `@internal("")` decorator, which means a field won't be exported; for internal purposes only
 
