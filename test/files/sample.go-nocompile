@@ -725,48 +725,48 @@ func SampleProtocol(i SampleInterface) rpc.Protocol {
 		Methods: map[string]rpc.ServeHandlerDescription{
 			"getBaz": {
 				MakeArg: func() interface{} {
-					ret := make([]GetBazArg, 1)
+					var ret [1]GetBazArg
 					return &ret
 				},
 				Handler: func(ctx context.Context, args interface{}) (ret interface{}, err error) {
-					typedArgs, ok := args.(*[]GetBazArg)
+					typedArgs, ok := args.(*[1]GetBazArg)
 					if !ok {
-						err = rpc.NewTypeError((*[]GetBazArg)(nil), args)
+						err = rpc.NewTypeError((*[1]GetBazArg)(nil), args)
 						return
 					}
-					ret, err = i.GetBaz(ctx, (*typedArgs)[0])
+					ret, err = i.GetBaz(ctx, typedArgs[0])
 					return
 				},
 				MethodType: rpc.MethodCall,
 			},
 			"notifier": {
 				MakeArg: func() interface{} {
-					ret := make([]NotifierArg, 1)
+					var ret [1]NotifierArg
 					return &ret
 				},
 				Handler: func(ctx context.Context, args interface{}) (ret interface{}, err error) {
-					typedArgs, ok := args.(*[]NotifierArg)
+					typedArgs, ok := args.(*[1]NotifierArg)
 					if !ok {
-						err = rpc.NewTypeError((*[]NotifierArg)(nil), args)
+						err = rpc.NewTypeError((*[1]NotifierArg)(nil), args)
 						return
 					}
-					err = i.Notifier(ctx, (*typedArgs)[0].I)
+					err = i.Notifier(ctx, typedArgs[0].I)
 					return
 				},
 				MethodType: rpc.MethodNotify,
 			},
 			"processBigBytes": {
 				MakeArg: func() interface{} {
-					ret := make([]ProcessBigBytesArg, 1)
+					var ret [1]ProcessBigBytesArg
 					return &ret
 				},
 				Handler: func(ctx context.Context, args interface{}) (ret interface{}, err error) {
-					typedArgs, ok := args.(*[]ProcessBigBytesArg)
+					typedArgs, ok := args.(*[1]ProcessBigBytesArg)
 					if !ok {
-						err = rpc.NewTypeError((*[]ProcessBigBytesArg)(nil), args)
+						err = rpc.NewTypeError((*[1]ProcessBigBytesArg)(nil), args)
 						return
 					}
-					err = i.ProcessBigBytes(ctx, (*typedArgs)[0].Bytes)
+					err = i.ProcessBigBytes(ctx, typedArgs[0].Bytes)
 					return
 				},
 				MethodType: rpc.MethodCall,
