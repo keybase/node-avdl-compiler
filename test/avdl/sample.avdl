@@ -94,4 +94,11 @@ protocol sample {
 	}
 
 	@typedef ("uint") record messageID {}
+
+	fixed BigBytes(10000);
+
+	/**
+	 ProcessBigBytes will try to process a bunch of bytes.
+	*/
+	void processBigBytes(BigBytes bytes);
 }
