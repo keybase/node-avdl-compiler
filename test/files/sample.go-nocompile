@@ -707,7 +707,7 @@ type SampleInterface interface {
 }
 
 func SampleProtocol(i SampleInterface) rpc.Protocol {
-	return rpc.Protocol {
+	return rpc.Protocol{
 		Name: "sample.1.sample",
 		Methods: map[string]rpc.ServeHandlerDescription{
 			"getBaz": {

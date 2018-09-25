@@ -8,7 +8,9 @@ import (
 )
 
 func TestCall(t *testing.T) {
-	c := SampleClient{}
-	_, err := c.GetBaz(context.Background(), GetBazArg{})
+	protocol := SampleProtocol(nil)
+	getBazDesc := protocol.Methods["getBaz"]
+	args := getBazDesc.MakeArg()
+	_, err := getBazDesc.Handler(context.Background(), args)
 	require.NoError(t, err)
 }
