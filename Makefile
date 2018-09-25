@@ -12,6 +12,6 @@ build-stamp: \
 	date > $@
 
 test:
-	(cd test && iced ./run.iced && cd files/ && cp sample.go-nocompile sample.go && (go test ; rm sample.go ) )
+	(cd test && ../$(ICED) ./run.iced && cd files/ && cp sample.go-nocompile sample.go && (go test ; rm sample.go ) )
 
 .PHONY: test
