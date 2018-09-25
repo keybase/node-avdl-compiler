@@ -49,6 +49,9 @@ func TestCallArgNoExpandOnDecode(t *testing.T) {
 	arg2 := processBigBytesDesc.MakeArg()
 
 	decoder := codec.NewDecoderBytes(b, &h)
+
+	// Test shouldn't hang here (i.e., it shouldn't try to decode
+	// all but the first argument element of badArgs).
 	err = decoder.Decode(arg2)
 	require.NoError(t, err)
 }
