@@ -617,12 +617,12 @@ exports.GoEmitter = class GoEmitter
 
     # Over the wire, we're expecting either an empty argument array,
     # or an array with one T in it. So we have to pass the decoder
-    # a pointer to a slice of T's. This is a little bit convoluted
+    # a pointer to a one-element T array. This is a little bit convoluted
     # but we're obeying the msgpack spec (which says RPCs take arrays
     # of arguments) and also the library's attempts to avoid unnecessary
     # copies of objects as they are passed from MakeArg, through the
     # decoder, and back into the Handler specified below.
-    @output "ret := make([]#{@go_primitive_type(arg.type)}, 1)"
+    @output "var ret [1]#{@go_primitive_type(arg.type)}"
     @output "return &ret"
     @untab()
     @output "},"
@@ -638,17 +638,17 @@ exports.GoEmitter = class GoEmitter
     @output "Handler: func(ctx context.Context, args interface{}) (ret interface{}, err error) {"
     @tab()
     if arg.nargs > 0
-      @output "typedArgs, ok := args.(*[]#{pt})"
+      @output "typedArgs, ok := args.(*[1]#{pt})"
       @output "if !ok {"
       @tab()
-      @output "err = rpc.NewTypeError((*[]#{pt})(nil), args)"
+      @output "err = rpc.NewTypeError((*[1]#{pt})(nil), args)"
       @output "return"
       @untab()
       @output "}"
     farg = if arg.nargs is 0 then ''
     else
       access = if arg.nargs is 1 then ".#{@go_export_case arg.single.name}" else ''
-      "(*typedArgs)[0]#{access}"
+      "typedArgs[0]#{access}"
     @output "#{resvar}err = i.#{@go_export_case(name)}(ctx, #{farg})"
     @output "return"
     @untab()
