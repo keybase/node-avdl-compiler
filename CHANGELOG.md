@@ -1,3 +1,6 @@
+# 1.3.25 (2018-09-28)
+- memory optimization: decode into arrays instead of slices
+
 # 1.3.24 (2018-08-01)
 - map and slice optimizations
 
