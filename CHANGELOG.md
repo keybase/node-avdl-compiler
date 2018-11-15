@@ -1,3 +1,8 @@
+# 1.3.27 (2018-11-16)
+- use `CallCompressed` RPC call
+- add `@compression_type("none|gzip")` to specify protocol/method level
+  compression for RPC responses.
+
 # 1.3.26 (2018-11-15)
 - continuous integration, fix codec library in `sample_test.go`
 

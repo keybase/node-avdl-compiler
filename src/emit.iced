@@ -7,7 +7,7 @@ pkg = require '../package.json'
 
 #====================================================================
 
-is_one_way = (d) -> (d.notify? or d.oneway)
+is_one_way = (d) -> (d.notify? or d.oneway?)
 
 #====================================================================
 
@@ -17,6 +17,7 @@ exports.GoEmitter = class GoEmitter
     @_code = []
     @_tabs = 0
     @_pkg = null
+    @_default_compression_type = "none"
 
   go_translate_identifier : ({name, go_field_suffix, exported}) ->
     if exported then @go_export_case name, { go_field_suffix }
@@ -43,6 +44,12 @@ exports.GoEmitter = class GoEmitter
       long : "int64"
       float : "float32"
       double : "float64"
+    map[m] or m
+
+  go_compression_type : (m) ->
+    map =
+      none : "rpc.CompressionNone"
+      gzip : "rpc.CompressionGzip"
     map[m] or m
 
   is_primitive_switch_type : (m) -> m in [ "boolean", "long", "int" ]
@@ -566,7 +573,9 @@ exports.GoEmitter = class GoEmitter
     for k,v of messages
       @emit_message_client { protocol, name : k, details : v, async : false }
 
-  emit_package : ({namespace}) ->
+  emit_package : ({namespace, compression_type}) ->
+    if compression_type?
+      @_default_compression_type = compression_type
     @output "package #{@go_package namespace}"
     @output ""
     @_pkg = namespace
@@ -628,7 +637,7 @@ exports.GoEmitter = class GoEmitter
     @output "},"
 
   emit_server_hook_method_type : ({name, details}) ->
-    @output "MethodType: rpc.Method#{if is_one_way(details) then 'Notify' else 'Call'},"
+    @output "MethodTypes: []rpc.MethodType{#{if is_one_way(details) then 'rpc.MethodNotify' else 'rpc.MethodCall, rpc.MethodCallCompressed'}},"
 
   emit_server_hook_make_handler : ({name, details}) ->
     arg = details.request
@@ -711,7 +720,11 @@ exports.GoEmitter = class GoEmitter
     oarg += "}"
     ow = is_one_way(details)
     res = if ow then "" else ", #{res_in}"
-    @output """err = c.Cli.#{if ow then "Notify" else "Call"}(ctx, "#{@_pkg}.#{protocol}.#{name}", #{oarg}#{res})"""
+    ctype = ""
+    unless ow
+      ctype_in = if details.compression_type? then details.compression_type else @_default_compression_type
+      ctype = ", #{@go_compression_type(ctype_in)}"
+    @output """err = c.Cli.#{if ow then "Notify" else "CallCompressed"}(ctx, "#{@_pkg}.#{protocol}.#{name}", #{oarg}#{res}#{ctype})"""
     @output "return"
     @untab()
     @output "}"

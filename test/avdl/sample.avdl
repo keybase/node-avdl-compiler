@@ -3,6 +3,7 @@
   SampleInterface protocol is a sample among samples.
 */
 @namespace("sample.1")
+@compression_type("gzip")
 protocol sample {
 	import idl "github.com/keybase/client/go/protocol/keybase1" as keybase1;
 
@@ -100,5 +101,7 @@ protocol sample {
 	/**
 	 ProcessBigBytes will try to process a bunch of bytes.
 	*/
+
+	@compression_type("none")
 	void processBigBytes(BigBytes bytes);
 }
