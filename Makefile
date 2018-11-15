@@ -16,6 +16,6 @@ install:
 	go get -t -v ./...
 
 test: build-stamp
-	cd test && ../$(ICED) ./run.iced && cd files/ && go test
+	cd test && ../$(ICED) ./run.iced && cd files/ && go test $(CI_TAGS)
 
 .PHONY: test

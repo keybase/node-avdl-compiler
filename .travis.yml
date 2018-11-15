@@ -17,5 +17,4 @@ before_script:
     - cd ${TRAVIS_HOME}/gopath/src/github.com/$REPO
 script:
  - make install
- - go build --tags "noresinit" ./...
- - make test
+ - make CI_TAGS="--tags=noresinit" test
