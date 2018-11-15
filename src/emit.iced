@@ -7,7 +7,7 @@ pkg = require '../package.json'
 
 #====================================================================
 
-is_one_way = (d) -> (d.notify? or d.oneway?)
+is_one_way = (d) -> (d.notify? or d.oneway)
 
 #====================================================================
 
@@ -615,7 +615,6 @@ exports.GoEmitter = class GoEmitter
     @tab()
     @emit_server_hook_make_arg { name, details }
     @emit_server_hook_make_handler { name, details }
-    @emit_server_hook_method_type { name, details }
     @untab()
     @output "},"
 
@@ -635,9 +634,6 @@ exports.GoEmitter = class GoEmitter
     @output "return &ret"
     @untab()
     @output "},"
-
-  emit_server_hook_method_type : ({name, details}) ->
-    @output "MethodTypes: []rpc.MethodType{#{if is_one_way(details) then 'rpc.MethodNotify' else 'rpc.MethodCall, rpc.MethodCallCompressed'}},"
 
   emit_server_hook_make_handler : ({name, details}) ->
     arg = details.request

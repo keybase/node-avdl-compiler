@@ -737,7 +737,6 @@ func SampleProtocol(i SampleInterface) rpc.Protocol {
 					ret, err = i.GetBaz(ctx, typedArgs[0])
 					return
 				},
-				MethodTypes: []rpc.MethodType{rpc.MethodCall, rpc.MethodCallCompressed},
 			},
 			"notifier": {
 				MakeArg: func() interface{} {
@@ -753,7 +752,6 @@ func SampleProtocol(i SampleInterface) rpc.Protocol {
 					err = i.Notifier(ctx, typedArgs[0].I)
 					return
 				},
-				MethodTypes: []rpc.MethodType{rpc.MethodNotify},
 			},
 			"processBigBytes": {
 				MakeArg: func() interface{} {
@@ -769,7 +767,6 @@ func SampleProtocol(i SampleInterface) rpc.Protocol {
 					err = i.ProcessBigBytes(ctx, typedArgs[0].Bytes)
 					return
 				},
-				MethodTypes: []rpc.MethodType{rpc.MethodCall, rpc.MethodCallCompressed},
 			},
 		},
 	}
