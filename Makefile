@@ -11,7 +11,11 @@ build-stamp: \
 	lib/emit.js
 	date > $@
 
-test:
+install:
+	npm install
+	go get ./...
+
+test: build-stamp
 	(cd test && ../$(ICED) ./run.iced && cd files/ && cp sample.go-nocompile sample.go && (go test ; rm sample.go ) )
 
 .PHONY: test
