@@ -4,8 +4,8 @@ import (
 	"testing"
 
 	"github.com/keybase/client/go/protocol/keybase1"
+	"github.com/keybase/go-codec/codec"
 	"github.com/stretchr/testify/require"
-	"github.com/ugorji/go/codec"
 	"golang.org/x/net/context"
 )
 
