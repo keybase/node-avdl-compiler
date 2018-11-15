@@ -13,7 +13,7 @@ build-stamp: \
 
 install:
 	npm install
-	go get -v ./...
+	go get -t -v ./...
 
 test: build-stamp
 	cd test && ../$(ICED) ./run.iced && cd files/ && go test
