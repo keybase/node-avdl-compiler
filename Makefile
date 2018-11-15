@@ -13,7 +13,7 @@ build-stamp: \
 
 install:
 	npm install
-	go get -t -v ./...
+	go get -d -t -v ./...
 
 test: build-stamp
 	(cd test && ../$(ICED) ./run.iced && cd files/ && cp sample.go-nocompile sample.go && (go test ; rm sample.go ) )
