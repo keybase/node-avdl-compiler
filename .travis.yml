@@ -1,0 +1,9 @@
+language: generic
+node_js:
+ - 8.9.3
+go:
+  - 1.9.x
+  - 1.10.x
+script:
+ - make install
+ - make test
