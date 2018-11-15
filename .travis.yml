@@ -4,6 +4,8 @@ before_script:
     # set. Docs
     # (https://docs.travis-ci.com/user/languages/minimal-and-generic/) are
     # pretty minimal for this setup
+    - curl -sL -o ~/bin/gimme https://raw.githubusercontent.com/travis-ci/gimme/master/gimme
+    - chmod +x ~/bin/gimme
     - GIMME_OUTPUT="$(gimme 1.10.x | tee -a ${TRAVIS_HOME}/.bashrc)" && eval "$GIMME_OUTPUT"
     - export REPO=keybase/node-avdl-compiler
     - export GOPATH=${TRAVIS_HOME}/gopath
