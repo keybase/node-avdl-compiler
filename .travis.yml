@@ -1,6 +1,13 @@
 language: generic
 before_script:
-    export GOPATH=$HOME/build/
+    - GIMME_OUTPUT="$(gimme 1.10.x | tee -a ${TRAVIS_HOME}/.bashrc)" && eval "$GIMME_OUTPUT"
+    - export REPO=keybase/node-avdl-compiler
+    - export GOPATH=${TRAVIS_HOME}/gopath
+    - export PATH=${TRAVIS_HOME}/gopath/bin:$PATH
+    - mkdir -p ${TRAVIS_HOME}/gopath/src/github.com/$REPO
+    - tar -Pczf ${TRAVIS_TMPDIR}/src_archive.tar.gz -C ${TRAVIS_BUILD_DIR} . && tar -Pxzf ${TRAVIS_TMPDIR}/src_archive.tar.gz -C ${TRAVIS_HOME}/gopath/src/github.com/$REPO
+    - export TRAVIS_BUILD_DIR=${TRAVIS_HOME}/gopath/src/github.com/$REPO
+    - cd ${TRAVIS_HOME}/gopath/src/github.com/$REPO
 script:
  - make install
  - make test
