@@ -1,3 +1,6 @@
+# 1.3.26 (2018-11-15)
+- continuous integration, fix codec library in `sample_test.go`
+
 # 1.3.25 (2018-09-28)
 - memory optimization: decode into arrays instead of slices
 
