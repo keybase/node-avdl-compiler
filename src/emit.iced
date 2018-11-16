@@ -717,10 +717,17 @@ exports.GoEmitter = class GoEmitter
     ow = is_one_way(details)
     res = if ow then "" else ", #{res_in}"
     ctype = ""
+    call_method = "Call"
     unless ow
       ctype_in = if details.compression_type? then details.compression_type else @_default_compression_type
-      ctype = ", #{@go_compression_type(ctype_in)}"
-    @output """err = c.Cli.#{if ow then "Notify" else "CallCompressed"}(ctx, "#{@_pkg}.#{protocol}.#{name}", #{oarg}#{res}#{ctype})"""
+      # NOTE: This is for initial backwards compatibility so services can
+      # understand `CallCompressed` before any client uses it. It also saves us
+      # an int encodeding `CompressionNone` on the wire.
+      if ctype_in isnt "none"
+        call_method = "CallCompressed"
+        ctype = ", #{@go_compression_type(ctype_in)}"
+
+    @output """err = c.Cli.#{if ow then "Notify" else call_method}(ctx, "#{@_pkg}.#{protocol}.#{name}", #{oarg}#{res}#{ctype})"""
     @output "return"
     @untab()
     @output "}"

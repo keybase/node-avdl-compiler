@@ -17,3 +17,5 @@ before_script:
 script:
  - make install
  - make CI_TAGS="--tags=noresinit" test
+ # make sure we built the package fully
+ - git diff --quiet --exit-code
