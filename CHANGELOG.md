@@ -1,4 +1,7 @@
-# 1.3.27 (2018-11-16)
+# 1.3.28 (2018-11-19)
+- fix path issue
+
+# 1.3.27 (2018-11-19)
 - use `CallCompressed` RPC call
 - add `@compression_type("none|gzip")` to specify protocol/method level
   compression for RPC responses.
