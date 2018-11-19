@@ -31,7 +31,6 @@
     "avdl2json": "^2.2.4",
     "iced-error": "0.0.9",
     "iced-runtime": "^1.0.3",
-    "minimist": "^1.2.0",
-    "path": "^0.12.7"
+    "minimist": "^1.2.0"
   }
 }

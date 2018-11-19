@@ -1,5 +1,5 @@
 # 1.3.28 (2018-11-19)
-- add missing dependencies
+- fix path issue
 
 # 1.3.27 (2018-11-19)
 - use `CallCompressed` RPC call
