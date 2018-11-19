@@ -1,6 +1,6 @@
 {
   "name": "avdl-compiler",
-  "version": "1.3.27",
+  "version": "1.3.28",
   "description": "AVDL to Go compiler written in IcedCoffeeScript (for node)",
   "main": "lib/main.js",
   "scripts": {
@@ -31,6 +31,7 @@
     "avdl2json": "^2.2.4",
     "iced-error": "0.0.9",
     "iced-runtime": "^1.0.3",
-    "minimist": "^1.2.0"
+    "minimist": "^1.2.0",
+    "path": "^0.12.7"
   }
 }
