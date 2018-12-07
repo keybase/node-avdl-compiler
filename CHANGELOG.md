@@ -1,3 +1,6 @@
+# 1.3.29 (2018-12-07)
+- add compression type `msgpackzip`
+
 # 1.3.28 (2018-11-19)
 - fix path issue
 
