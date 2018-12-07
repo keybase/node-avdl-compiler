@@ -51,6 +51,7 @@ exports.GoEmitter = class GoEmitter
     map =
       none : "rpc.CompressionNone"
       gzip : "rpc.CompressionGzip"
+      msgpackzip : "rpc.CompressionMsgpackzip"
     map[m] or m
 
   is_primitive_switch_type : (m) -> m in [ "boolean", "long", "int" ]
