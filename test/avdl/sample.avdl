@@ -81,6 +81,7 @@ protocol sample {
 
 	@typedef ("bytes") record Hash {}
 
+	@layout("array")
 	record Cat {
 		map<Blurp,Noozle> bird;
 		map<Noozle> bee;

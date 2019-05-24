@@ -146,6 +146,9 @@ exports.GoEmitter = class GoEmitter
   emit_record_struct : ({obj, go_field_suffix}) ->
     @output "type #{@go_export_case(obj.name)} struct {"
     @tab()
+    if obj.layout is 'array'
+      @output ["_struct", "bool", "`codec:\",toarray\"`" ].join("\t")
+
     for f in obj.fields
       @emit_field
         name : f.name

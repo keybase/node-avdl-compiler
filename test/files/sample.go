@@ -542,6 +542,7 @@ func (o Hash) DeepCopy() Hash {
 }
 
 type Cat struct {
+	_struct	bool	`codec:",toarray"`
 	Bird	map[Blurp]Noozle	`codec:"bird" json:"bird"`
 	Bee	map[string]Noozle	`codec:"bee" json:"bee"`
 	Birds	map[Blurp][]Noozle	`codec:"birds" json:"birds"`

@@ -1,3 +1,6 @@
+# 1.3.30
+- @layout("array") feature for laying out structs as arrays
+
 # 1.3.29 (2018-12-07)
 - add compression type `msgpackzip`
 
