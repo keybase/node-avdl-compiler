@@ -125,11 +125,11 @@ Bugfixes:
 
 # 1.3.1 (2016-03-21)
 
-- Also plumb through /\*_ ... _/-style docs to typedefs
+- Also plumb through `/** ... */`-style docs to typedefs
 
 # 1.3.0 (2016-03-21)
 
-- Plumb /\*_ .. _/-style docs through to output Go code.
+- Plumb `/** ... */`-style docs through to output Go code.
 
 # 1.2.0 (2016-03-21)
 
