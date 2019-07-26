@@ -742,12 +742,13 @@ exports.GoEmitter = class GoEmitter
     @output "//   Input file: #{path_lib.relative(process.cwd(), infile)}"
     @output ""
 
-  run : ({infile, json}) ->
+  run : ({infile, json, types_only}) ->
     @emit_preface {infile}
     @emit_package json
-    @emit_imports json
+    # Imports are only nessecary for interfaces
+    @emit_imports json unless types_only
     @emit_types json
-    @emit_interface json
+    @emit_interface json unless types_only
     @_code
 
 #====================================================================

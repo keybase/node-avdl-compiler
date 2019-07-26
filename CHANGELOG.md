@@ -1,42 +1,59 @@
+# 1.4.0
+
+- Adds a new `-t` argument, to output only the types defined in an AVDL file, excluding interface definitions.
+
 # 1.3.30
+
 - @layout("array") feature for laying out structs as arrays
 
 # 1.3.29 (2018-12-07)
+
 - add compression type `msgpackzip`
 
 # 1.3.28 (2018-11-19)
+
 - fix path issue
 
 # 1.3.27 (2018-11-19)
+
 - use `CallCompressed` RPC call
 - add `@compression_type("none|gzip")` to specify protocol/method level
   compression for RPC responses.
 
 # 1.3.26 (2018-11-15)
+
 - continuous integration, fix codec library in `sample_test.go`
 
 # 1.3.25 (2018-09-28)
+
 - memory optimization: decode into arrays instead of slices
 
 # 1.3.24 (2018-08-01)
+
 - map and slice optimizations
 
 # 1.3.23 (2018-03-16)
+
 - Add `@internal("")` decorator, which means a field won't be exported; for internal purposes only
 
 # 1.3.22 (2017-11-18)
+
 - Add mpackkey field decorator
 
 # 1.3.21 (2017-11-08)
+
 - Don't emit DeepCopy's for autogen Arg types
 
 # 1.3.20 (2017-09-27)
+
 - Preserve nil-ness of slices and maps
 
 # 1.3.19 (2017-08-03)
+
 - Fix DeepCopy() for 'uint64'
 
 # 1.3.18
+
 - Fix DeepCopy() for 'uint'
 
 # 1.3.17 (2017-06-06)
@@ -86,8 +103,9 @@
 # 1.3.6 (2016-09-01)
 
 Bugfixes:
- - emitted types are lowercase
- - don't allow malicious sender to crash us out nil pointer
+
+- emitted types are lowercase
+- don't allow malicious sender to crash us out nil pointer
 
 # 1.3.5 (2016-08-31)
 
@@ -107,11 +125,11 @@ Bugfixes:
 
 # 1.3.1 (2016-03-21)
 
-- Also plumb through /** ... */-style docs to typedefs
+- Also plumb through `/** ... */`-style docs to typedefs
 
 # 1.3.0 (2016-03-21)
 
-- Plumb /** .. */-style docs through to output Go code.
+- Plumb `/** ... */`-style docs through to output Go code.
 
 # 1.2.0 (2016-03-21)
 
