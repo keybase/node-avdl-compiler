@@ -82,8 +82,8 @@ exports.GoEmitter = class GoEmitter
     key = if t.keys? then @emit_field_type(t.keys).type else "string"
     "map[#{key}]" + @emit_field_type(t.values).type
 
-  emit_field_type : (t, {pointed} = {}) ->
-    optional = !!pointed
+  emit_field_type : (t, {pointed, optionalkey} = {}) ->
+    optional = !!pointed or optionalkey
     type = if typeof(t) is 'string' then @go_primitive_type(t)
     else if typeof(t) is 'object'
       if Array.isArray(t)
@@ -130,8 +130,8 @@ exports.GoEmitter = class GoEmitter
       mpackkey = name
     "`codec:\"#{mpackkey}#{omitempty}\" json:\"#{jsonkey}#{omitempty}\"`"
 
-  emit_field : ({name, type, go_field_suffix, exported, pointed, jsonkey, mpackkey}) ->
-    {type, optional} = @emit_field_type(type, {pointed})
+  emit_field : ({name, type, go_field_suffix, exported, optionalkey, pointed, jsonkey, mpackkey}) ->
+    {type, optional} = @emit_field_type(type, {pointed, optionalkey})
     cols = [
       @go_translate_identifier({ name, go_field_suffix, exported }),
       @go_lint_capitalize(type)
@@ -155,6 +155,7 @@ exports.GoEmitter = class GoEmitter
         type : f.type
         go_field_suffix: go_field_suffix
         exported : not(f.internal?)
+        optionalkey : f.optional
         jsonkey : f.jsonkey
         mpackkey : f.mpackkey
     @untab()

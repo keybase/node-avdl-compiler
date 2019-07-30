@@ -1,6 +1,7 @@
 package sample1
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/keybase/client/go/protocol/keybase1"
@@ -54,4 +55,22 @@ func TestCallArgNoExpandOnDecode(t *testing.T) {
 	// all but the first argument element of badArgs).
 	err = decoder.Decode(arg2)
 	require.NoError(t, err)
+}
+
+func TestOptionalKey(t *testing.T) {
+	withWoop := R{
+		Bar:  "blah blah",
+		Baz:  "bluh bluh",
+		Woop: "scoop woop",
+	}
+	output, err := json.Marshal(withWoop)
+	require.NoError(t, err)
+	require.Equal(t, string(output), `{"bar":"blah blah","baz_j_uid":"bluh bluh","woop":"scoop woop"}`)
+
+	noWoop := R{
+		Bar: "what's up",
+		Baz: "hello",
+	}
+	output, err = json.Marshal(noWoop)
+	require.Equal(t, string(output), `{"bar":"what's up","baz_j_uid":"hello"}`)
 }
