@@ -1,3 +1,7 @@
+# 1.4.1
+
+- Add `optional(true)` field decorator.
+
 # 1.4.0
 
 - Adds a new `-t` argument, to output only the types defined in an AVDL file, excluding interface definitions.
