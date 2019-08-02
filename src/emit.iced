@@ -747,7 +747,7 @@ exports.GoEmitter = class GoEmitter
     @output "}"
 
   emit_preface : ({infile, types_only}) ->
-    @output "// Auto-generated #{if types_only then 'types' else 'types and interfaces'} using #{pkg.name} v#{pkg.version} (#{pkg.homepage})"
+    @output "// Auto-generated to Go #{if types_only then 'types' else 'types and interfaces'} using #{pkg.name} v#{pkg.version} (#{pkg.homepage})"
     @output "//   Input file: #{path_lib.relative(process.cwd(), infile)}"
     @output ""
 
