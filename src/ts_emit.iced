@@ -23,11 +23,12 @@ exports.TypescriptEmitter = class TypescriptEmitter
     else
       @_code.push("") if (l is "}" or l is ")") and @_tabs is 0
 
-
   output_doc : (d) ->
     if d?
+      @output "/**"
       for line in d.split /\n/
-        @output "// " + line.replace /^\s*/, ''
+        @output " * " + line.replace /^\s$/, ''
+      @output " */"
 
   emit_preface : ({infile}) ->
     @output "/*"
@@ -44,6 +45,7 @@ exports.TypescriptEmitter = class TypescriptEmitter
       # line += '"' + path + '"'
       # @output line
       #
+      #
 
   emit_types : ({types, go_field_suffix}) ->
     for type in types
@@ -56,18 +58,74 @@ exports.TypescriptEmitter = class TypescriptEmitter
         if type.typedef
           @emit_typedef type
         else
-          @emit_record { obj : type, go_field_suffix }
-      when "fixed"
-        @emit_fixed type
+          @emit_record type
+    #   when "fixed"
+    #     @emit_fixed type
       when "enum"
         nostring = (type.go is "nostring")
         @emit_enum { t : type, nostring }
-      when "variant"
-        @emit_variant { obj : type, go_field_suffix }
+    #   when "variant"
+    #     @emit_variant { obj : type, go_field_suffix }
+    #
+    #
+    #
+    #
+    #
+  emit_enum : ({t, nostring}) ->
+    console.log t
+    # Type and constants
+    name = t.name
+    @output "enum #{name} {"
+    @tab()
+    for s, _ in t.symbols
+      [e_name..., e_num] = s.split("_")
+      e_name = e_name.join("_")
+      @output "#{e_name} = #{e_num}"
+    @untab()
+    @output "}"
+
+  convert_primitive_type : (m) ->
+    map =
+      bool : "boolean"
+      bytes : "Buffer"
+      long : "number"
+      float : "number"
+      double : "number"
+      uint : "number"
+      int : "number"
+    map[m] or m
+
+  emit_field_type : (t) ->
+    optional = false
+    type = if typeof(t) is 'string' then @convert_primitive_type(t)
+    { type, optional }
+
+  emit_typedef : (t) ->
+    @output "type #{t.name} = #{@emit_field_type(t.typedef).type}"
+    true
+
+  emit_field : ({name, type, go_field_suffix, exported, pointed, jsonkey, mpackkey}) ->
+    {type, optional} = @emit_field_type(type)
+    # cols.push(@codec({name, optional, jsonkey, mpackkey})) if exported
+    @output "#{name}: #{type}"
+
+  emit_record : (obj) ->
+    @output "type #{obj.name} = {"
+    @tab()
+    for f in obj.fields
+      @emit_field
+        name : f.name
+        type : f.type
+        exported : not(f.internal?)
+        jsonkey : f.jsonkey
+        mpackkey : f.mpackkey
+    @untab()
+    @output "}"
+
 
   run : ({infile, json, types_only}) ->
     @emit_preface {infile}
     @emit_imports json
-    # @emit_types json:
+    @emit_types json
     # TODO: add support for interfaces
     @_code
