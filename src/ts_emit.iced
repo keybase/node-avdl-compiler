@@ -47,9 +47,9 @@ exports.TypescriptEmitter = class TypescriptEmitter
       #
       #
 
-  emit_types : ({types, go_field_suffix}) ->
+  emit_types : ({types}) ->
     for type in types
-      @emit_type { type, go_field_suffix }
+      @emit_type { type }
 
   emit_type : ({type, go_field_suffix}) ->
     @output_doc type.doc
@@ -59,20 +59,21 @@ exports.TypescriptEmitter = class TypescriptEmitter
           @emit_typedef type
         else
           @emit_record type
-    #   when "fixed"
-    #     @emit_fixed type
+      when "fixed"
+        @emit_fixed type
       when "enum"
         nostring = (type.go is "nostring")
         @emit_enum { t : type, nostring }
-    #   when "variant"
-    #     @emit_variant { obj : type, go_field_suffix }
-    #
-    #
-    #
-    #
-    #
+      # when "variant"
+      #   @emit_variant { obj : type }
+
+  # emit_variant : ({obj}) ->
+
+
+  emit_fixed : (t) ->
+    @output "export type #{t.name} = string | null"
+
   emit_enum : ({t, nostring}) ->
-    console.log t
     # Type and constants
     name = t.name
     @output "enum #{name} {"
@@ -98,13 +99,31 @@ exports.TypescriptEmitter = class TypescriptEmitter
   emit_field_type : (t) ->
     optional = false
     type = if typeof(t) is 'string' then @convert_primitive_type(t)
+    else if typeof(t) is 'object'
+      if Array.isArray(t)
+        if not t[0]?
+          optional = true
+          @emit_field_type(t[1]).type
+        else
+          "ERROR"
+      else if t.type is "array"
+        @emit_field_type(t.items).type + "[]"
+      else if t.type is "map"
+        @make_map_type { t }
+      else "ERROR"
+    else "ERROR"
+    console.log 'type:', type
     { type, optional }
+
+  make_map_type : ({t}) ->
+    key = if t.keys? then @emit_field_type(t.keys).type else "string"
+    "Map<#{key}, #{@emit_field_type(t.values).type}>"
 
   emit_typedef : (t) ->
     @output "type #{t.name} = #{@emit_field_type(t.typedef).type}"
     true
 
-  emit_field : ({name, type, go_field_suffix, exported, pointed, jsonkey, mpackkey}) ->
+  emit_field : ({name, type, exported, pointed, jsonkey, mpackkey}) ->
     {type, optional} = @emit_field_type(type)
     # cols.push(@codec({name, optional, jsonkey, mpackkey})) if exported
     @output "#{name}: #{type}"
@@ -113,6 +132,7 @@ exports.TypescriptEmitter = class TypescriptEmitter
     @output "type #{obj.name} = {"
     @tab()
     for f in obj.fields
+      console.log 'f:', f
       @emit_field
         name : f.name
         type : f.type
@@ -124,6 +144,7 @@ exports.TypescriptEmitter = class TypescriptEmitter
 
 
   run : ({infile, json, types_only}) ->
+    console.log 'json:', json
     @emit_preface {infile}
     @emit_imports json
     @emit_types json
