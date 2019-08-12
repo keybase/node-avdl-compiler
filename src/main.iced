@@ -145,7 +145,7 @@ exports.Main = class Main
     if @batch
       await @do_batch_mode {}, esc defer()
     else
-      await @do_file { @infile, @outfile }, console.log defer()
+      await @do_file { @infile, @outfile }, esc defer()
     cb null
 
 #================================================
