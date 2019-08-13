@@ -1,7 +1,7 @@
 
 minimist = require 'minimist'
 avdl2json = require 'avdl2json'
-{GoEmitter} = require './emit'
+{GoEmitter} = require './go_emit'
 {TypescriptEmitter} = require './ts_emit'
 {make_esc} = require 'iced-error'
 fs = require 'fs'
