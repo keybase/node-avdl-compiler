@@ -748,11 +748,16 @@ exports.GoEmitter = class GoEmitter
 
   emit_preface : ({infile, types_only}) ->
     @output "// Auto-generated to Go #{if types_only then 'types' else 'types and interfaces'} using #{pkg.name} v#{pkg.version} (#{pkg.homepage})"
-    @output "//   Input file: #{path_lib.relative(process.cwd(), infile)}"
+    if infiles.length == 1
+      @output "//   Input file: #{path_lib.relative(process.cwd(), infile[0])}"
+    else
+      @output "//   Input files:"
+      for infile in infiles
+        @output "//   - #{path_lib.relative(process.cwd(), infile)}"
     @output ""
 
-  run : ({infile, outfile, json, types_only}) ->
-    @emit_preface {infile, types_only}
+  run : ({infiles, outfile, json, types_only}) ->
+    @emit_preface {infiles}
     @emit_package json
     # Imports are only nessecary for interfaces
     @emit_imports json, outfile, types_only

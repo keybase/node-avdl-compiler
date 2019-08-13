@@ -23,13 +23,12 @@ Use -t to only print types and ignore function definitions.
 
 #================================================
 
-emit = ( { infile, outfile, json, lang, types_only }, cb) ->
-  console.log 'lang:', lang
+emit = ( { infiles, outfile, json, lang, types_only }, cb) ->
   emitter = switch lang
     when "go" then new GoEmitter()
     when "typescript" then new TypescriptEmitter()
 
-  code = emitter.run { infile, outfile, json, types_only }
+  code = emitter.run { infiles, outfile, json, types_only }
   cb null, code
 
 #================================================
@@ -98,14 +97,14 @@ exports.Main = class Main
       console.log "Deleting #{outfile}" unless err?
     else
       await avdl2json.parse { infile, version : 2 }, esc defer ast
-      await emit { infile, outfile, json : ast.to_json(), @types_only, @lang }, esc defer code
+      await emit { infiles: [infile], outfile, json : ast.to_json(), @types_only, @lang }, esc defer code
       await output { code, outfile }, esc defer()
       console.log "Compiling #{infile} -> #{outfile}"
     cb null
 
   #---------------
 
-  do_files_as_one : ({infile, outfile}, cb) ->
+  do_files_as_one : ({outfile}, cb) ->
     esc = make_esc cb, "do_files_as_one"
     json = {imports: [], types: []}
     for infile in @infiles
@@ -113,8 +112,7 @@ exports.Main = class Main
       json.types = json.types.concat(ast.to_json().types)
       json.imports = json.imports.concat(ast.to_json().imports)
 
-    console.log 'json:', json
-    await emit { infile, json, types_only: true, @lang }, esc defer code
+    await emit { @infiles, json, types_only: true, @lang }, esc defer code
     await output { code, outfile }, esc defer()
     console.log "Compiling #{infile} -> #{outfile}"
 
@@ -134,7 +132,7 @@ exports.Main = class Main
           await @do_file { infile, outfile }, esc defer()
     else
       outfile = pathmod.join @outdir, 'index.ts'
-      await @do_files_as_one { infile, outfile }, esc defer()
+      await @do_files_as_one { outfile }, esc defer()
     cb null
 
   #---------------
