@@ -739,11 +739,16 @@ exports.GoEmitter = class GoEmitter
 
   emit_preface : ({infile}) ->
     @output "// Auto-generated to Go by #{pkg.name} v#{pkg.version} (#{pkg.homepage})"
-    @output "//   Input file: #{path_lib.relative(process.cwd(), infile)}"
+    if infiles.length == 1
+      @output "//   Input file: #{path_lib.relative(process.cwd(), infile[0])}"
+    else
+      @output "//   Input files:"
+      for infile in infiles
+        @output "//   - #{path_lib.relative(process.cwd(), infile)}"
     @output ""
 
-  run : ({infile, json, types_only}) ->
-    @emit_preface {infile}
+  run : ({infiles, json, types_only}) ->
+    @emit_preface {infiles}
     @emit_package json
     # Imports are only nessecary for interfaces
     @emit_imports json unless types_only

@@ -1,3 +1,4 @@
+_          = require 'lodash'
 path_lib   = require 'path'
 pkg        = require '../package.json'
 
@@ -30,22 +31,23 @@ exports.TypescriptEmitter = class TypescriptEmitter
         @output " * " + line.replace /^\s$/, ''
       @output " */"
 
-  emit_preface : ({infile}) ->
+  emit_preface : (infiles) ->
     @output "/*"
     @output " * Auto-generated to TypeScript by #{pkg.name} v#{pkg.version} (#{pkg.homepage})"
-    @output " *   Input file: #{path_lib.relative(process.cwd(), infile)}"
+    @output " *   Input files:"
+    for infile in infiles
+      @output " *   - #{path_lib.relative(process.cwd(), infile)}"
     @output " */"
     @output ""
 
   emit_imports : ({imports}) ->
-    for {import_as, path} in imports
-      console.log import_as, path
-      # line = ""
-      # line = import_as + " " if import_as?
-      # line += '"' + path + '"'
-      # @output line
-      #
-      #
+    imports = _.uniqWith imports, _.isEqual
+
+    for {import_as, path} in imports when path.indexOf('/') >= 0
+      if not import_as
+        continue
+      @output "import * as #{import_as} from '#{path}'"
+    @output ""
 
   emit_types : ({types}) ->
     for type in types
@@ -112,7 +114,6 @@ exports.TypescriptEmitter = class TypescriptEmitter
         @make_map_type { t }
       else "ERROR"
     else "ERROR"
-    console.log 'type:', type
     { type, optional }
 
   make_map_type : ({t}) ->
@@ -132,7 +133,6 @@ exports.TypescriptEmitter = class TypescriptEmitter
     @output "type #{obj.name} = {"
     @tab()
     for f in obj.fields
-      console.log 'f:', f
       @emit_field
         name : f.name
         type : f.type
@@ -143,9 +143,8 @@ exports.TypescriptEmitter = class TypescriptEmitter
     @output "}"
 
 
-  run : ({infile, json, types_only}) ->
-    console.log 'json:', json
-    @emit_preface {infile}
+  run : ({infiles, json, types_only}) ->
+    @emit_preface infiles
     @emit_imports json
     @emit_types json
     # TODO: add support for interfaces
