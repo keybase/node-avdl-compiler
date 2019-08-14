@@ -122,17 +122,18 @@ exports.Main = class Main
 
   do_batch_mode : (opts, cb) ->
     esc = make_esc cb, "do_batch_mode"
-    if @lang is "go"
-      for infile in @infiles
-        outfile = @make_outfile infile
-        skip = false
-        unless @clean
-          await @skip_infile { infile, outfile }, esc defer skip
-        unless skip
-          await @do_file { infile, outfile }, esc defer()
-    else
-      outfile = pathmod.join @outdir, 'index.ts'
-      await @do_files_as_one { outfile }, esc defer()
+    switch @lang
+      when "go"
+        for infile in @infiles
+          outfile = @make_outfile infile
+          skip = false
+          unless @clean
+            await @skip_infile { infile, outfile }, esc defer skip
+          unless skip
+            await @do_file { infile, outfile }, esc defer()
+      when "typescript"
+        outfile = pathmod.join @outdir, 'index.ts'
+        await @do_files_as_one { outfile }, esc defer()
     cb null
 
   #---------------
