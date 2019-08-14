@@ -66,19 +66,30 @@ exports.TypescriptEmitter = class TypescriptEmitter
       when "enum"
         nostring = (type.go is "nostring")
         @emit_enum { t : type, nostring }
-      # when "variant"
-      #   @emit_variant { obj : type }
+      when "variant"
+        @emit_variant type
 
-  # emit_variant : ({obj}) ->
+  emit_variant : (t) ->
+    cases = t.cases.map (c) ->
+      if c.label.def then return null
+      bodyType = switch
+        when c.body == null then 'null'
+        when typeof c.body == 'string' then c.body
+        when c.body.type == 'array' then c.body.items + '[]'
+        else ''
+      bodyStr = if c.body then ", #{c.label.name}: #{bodyType} | null" else ''
+      "{ #{t.switch.name}: #{t.switch.type}.#{c.label.name}#{bodyStr} }"
+
+    @output "export type #{t.name} = #{cases.join(" | ")}"
 
 
   emit_fixed : (t) ->
-    @output "export type #{t.name} = string | null"
+    @output "export export type #{t.name} = string | null"
 
   emit_enum : ({t, nostring}) ->
     # Type and constants
     name = t.name
-    @output "enum #{name} {"
+    @output "export enum #{name} {"
     @tab()
     for s, _ in t.symbols
       [e_name..., e_num] = s.split("_")
@@ -121,16 +132,15 @@ exports.TypescriptEmitter = class TypescriptEmitter
     "Map<#{key}, #{@emit_field_type(t.values).type}>"
 
   emit_typedef : (t) ->
-    @output "type #{t.name} = #{@emit_field_type(t.typedef).type}"
+    @output "export type #{t.name} = #{@emit_field_type(t.typedef).type}"
     true
 
   emit_field : ({name, type, exported, pointed, jsonkey, mpackkey}) ->
     {type, optional} = @emit_field_type(type)
-    # cols.push(@codec({name, optional, jsonkey, mpackkey})) if exported
     @output "#{name}: #{type}"
 
   emit_record : (obj) ->
-    @output "type #{obj.name} = {"
+    @output "export type #{obj.name} = {"
     @tab()
     for f in obj.fields
       @emit_field
