@@ -82,8 +82,8 @@ exports.GoEmitter = class GoEmitter
     key = if t.keys? then @emit_field_type(t.keys).type else "string"
     "map[#{key}]" + @emit_field_type(t.values).type
 
-  emit_field_type : (t, {pointed} = {}) ->
-    optional = !!pointed
+  emit_field_type : (t, {pointed, optionalkey} = {}) ->
+    optional = !!pointed or optionalkey
     type = if typeof(t) is 'string' then @go_primitive_type(t)
     else if typeof(t) is 'object'
       if Array.isArray(t)
@@ -130,8 +130,8 @@ exports.GoEmitter = class GoEmitter
       mpackkey = name
     "`codec:\"#{mpackkey}#{omitempty}\" json:\"#{jsonkey}#{omitempty}\"`"
 
-  emit_field : ({name, type, go_field_suffix, exported, pointed, jsonkey, mpackkey}) ->
-    {type, optional} = @emit_field_type(type, {pointed})
+  emit_field : ({name, type, go_field_suffix, exported, optionalkey, pointed, jsonkey, mpackkey}) ->
+    {type, optional} = @emit_field_type(type, {pointed, optionalkey})
     cols = [
       @go_translate_identifier({ name, go_field_suffix, exported }),
       @go_lint_capitalize(type)
@@ -155,6 +155,7 @@ exports.GoEmitter = class GoEmitter
         type : f.type
         go_field_suffix: go_field_suffix
         exported : not(f.internal?)
+        optionalkey : f.optional
         jsonkey : f.jsonkey
         mpackkey : f.mpackkey
     @untab()
@@ -585,12 +586,19 @@ exports.GoEmitter = class GoEmitter
     @output ""
     @_pkg = namespace
 
-  emit_imports : ({imports, messages, types}) ->
+  emit_imports : ({imports, messages, types}, outfile, types_only) ->
     @output "import ("
     @tab()
-    @output '"github.com/keybase/go-framed-msgpack-rpc/rpc"'
+    @output '"github.com/keybase/go-framed-msgpack-rpc/rpc"' unless types_only
     @output 'context "golang.org/x/net/context"' if Object.keys(messages).length > 0
+
+    prefix = process.env.GOPATH + '/src/'
+    relative_file = path_lib.resolve(outfile).replace(prefix, "")
+    relative_dir = path_lib.dirname(relative_file)
+
     for {import_as, path} in imports when path.indexOf('/') >= 0
+      if path.match /(\.\/|\.\.\/)/
+        path = path_lib.normalize(relative_dir + "/" + path)
       line = ""
       line = import_as + " " if import_as?
       line += '"' + path + '"'
@@ -742,11 +750,11 @@ exports.GoEmitter = class GoEmitter
     @output "//   Input file: #{path_lib.relative(process.cwd(), infile)}"
     @output ""
 
-  run : ({infile, json, types_only}) ->
+  run : ({infile, outfile, json, types_only}) ->
     @emit_preface {infile, types_only}
     @emit_package json
     # Imports are only nessecary for interfaces
-    @emit_imports json unless types_only
+    @emit_imports json, outfile, types_only
     @emit_types json
     @emit_interface json unless types_only
     @_code
