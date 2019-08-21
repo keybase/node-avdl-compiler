@@ -22,9 +22,9 @@ Use -t to only print types and ignore function definitions.
 
 #================================================
 
-emit = ( { infile, json, types_only }, cb) ->
+emit = ( { infile, outfile, json, types_only }, cb) ->
   e = new GoEmitter()
-  code = e.run { infile, json, types_only }
+  code = e.run { infile, outfile, json, types_only }
   cb null, code
 
 #================================================
@@ -89,7 +89,7 @@ exports.Main = class Main
       console.log "Deleting #{outfile}" unless err?
     else
       await avdl2json.parse { infile, version : 2 }, esc defer ast
-      await emit { infile, json : ast.to_json(), @types_only }, esc defer code
+      await emit { infile, outfile, json : ast.to_json(), @types_only }, esc defer code
       await output { code, outfile }, esc defer()
       console.log "Compiling #{infile} -> #{outfile}"
     cb null
