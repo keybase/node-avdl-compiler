@@ -21,12 +21,14 @@ func (o Joe) DeepCopy() Joe {
 type R struct {
 	Bar	keybase1.UID	`codec:"bar" json:"bar"`
 	Baz	keybase1.UID	`codec:"baz" json:"baz_j_uid"`
+	Woop	string	`codec:"woop,omitempty" json:"woop,omitempty"`
 }
 
 func (o R) DeepCopy() R {
 	return R{
 		Bar : o.Bar.DeepCopy(),
 		Baz : o.Baz.DeepCopy(),
+		Woop : o.Woop,
 	}
 }
 

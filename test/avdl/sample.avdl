@@ -20,6 +20,9 @@ protocol sample {
 
 		@jsonkey("baz_j_uid")
 		keybase1.UID baz;
+
+		@optional(true)
+		string woop;
 	}
 
 	/**
