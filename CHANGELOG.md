@@ -1,3 +1,9 @@
+# 1.4.1
+
+- Adds support for writing relative paths in AVDL files, which are resloved using your defined `$GOPATH`.
+- Adds support for `@optional(true)` to denote properties that are optional.
+- Changes the header slightly to display whether the file was built with `-t`.
+
 # 1.4.0
 
 - Adds a new `-t` argument, to output only the types defined in an AVDL file, excluding interface definitions.
