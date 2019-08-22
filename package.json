@@ -4,7 +4,8 @@
   "description": "AVDL to Go compiler written in IcedCoffeeScript (for node)",
   "main": "lib/main.js",
   "scripts": {
-    "test": "jest"
+    "test": "make test",
+    "test:unit": "jest"
   },
   "bin": {
     "avdlc": "bin/main.js"
@@ -26,7 +27,7 @@
   "devDependencies": {
     "iced-coffee-script": "^108.0.9",
     "iced-test": "0.0.22",
-    "jest": "^24.8.0"
+    "jest": "24.8.0"
   },
   "dependencies": {
     "avdl2json": "^2.2.4",
