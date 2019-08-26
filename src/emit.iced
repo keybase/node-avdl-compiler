@@ -589,8 +589,9 @@ exports.GoEmitter = class GoEmitter
   emit_imports : ({imports, messages, types}, outfile, types_only) ->
     @output "import ("
     @tab()
-    @output '"github.com/keybase/go-framed-msgpack-rpc/rpc"' unless types_only
-    @output 'context "golang.org/x/net/context"' if Object.keys(messages).length > 0
+    if not types_only
+      @output '"github.com/keybase/go-framed-msgpack-rpc/rpc"'
+      @output 'context "golang.org/x/net/context"' if Object.keys(messages).length > 0
 
     prefix = process.env.GOPATH + '/src/'
     relative_file = path_lib.resolve(outfile).replace(prefix, "")
