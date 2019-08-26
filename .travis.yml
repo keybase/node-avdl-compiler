@@ -17,6 +17,7 @@ before_script:
     - npm install -g npm@latest
     - npm install
 script:
+ - yarn test:unit
  - make install
  - make CI_TAGS="--tags=noresinit" test
  # make sure we built the package fully
