@@ -16,6 +16,7 @@ before_script:
     - cd ${TRAVIS_HOME}/gopath/src/github.com/$REPO
     - npm install -g npm@6.4.1
 script:
+ - yarn test:unit
  - make install
  - make CI_TAGS="--tags=noresinit" test
  # make sure we built the package fully
