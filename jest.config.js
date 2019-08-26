@@ -9,16 +9,13 @@ module.exports = {
   coverageDirectory: "coverage",
 
   // An array of file extensions your modules use
-  moduleFileExtensions: ["js", "iced"],
+  moduleFileExtensions: ["iced"],
 
   // The test environment that will be used for testing
   testEnvironment: "node",
 
   // The glob patterns Jest uses to detect test files
-  testMatch: [
-    // "**/__tests__/**/*.[jt]s?(x)",
-    "**/?(*.)+(spec|test).iced"
-  ],
+  testMatch: ["**/?(*.)+(spec|test).iced"],
 
   // A map from regular expressions to paths to transformers
   transform: {
