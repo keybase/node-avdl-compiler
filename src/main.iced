@@ -16,7 +16,7 @@ usage = () ->
 #{'  '}batch:       avdlc -l <lang> [-t] -b -o <outdir> <infiles...>
 
 avdlc can run in either batch or single-file mode. Specify which language
-to output code in. Currently, only "go" is fully supported. TypeScript is partially supported.
+to output code in. Currently, only "go" is fully supported. TypeScript and Python are partially supported.
 
 Use -t to only print types and ignore function definitions.
 """
@@ -27,6 +27,7 @@ emit = ( { infiles, outfile, json, lang, types_only }, cb) ->
   emitter = switch lang
     when "go" then new GoEmitter()
     when "typescript" then new TypescriptEmitter()
+    when "python" then new PythonEmitter()
 
   code = emitter.run { infiles, outfile, json, types_only }
   cb null, code
