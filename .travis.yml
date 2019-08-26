@@ -15,6 +15,7 @@ before_script:
     - export TRAVIS_BUILD_DIR=${TRAVIS_HOME}/gopath/src/github.com/$REPO
     - cd ${TRAVIS_HOME}/gopath/src/github.com/$REPO
     - npm install -g npm@6.4.1
+    - npm install
 script:
  - yarn test:unit
  - make install
