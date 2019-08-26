@@ -9,7 +9,7 @@ module.exports = {
   coverageDirectory: "coverage",
 
   // An array of file extensions your modules use
-  moduleFileExtensions: ["iced"],
+  moduleFileExtensions: ["js", "iced"],
 
   // The test environment that will be used for testing
   testEnvironment: "node",
