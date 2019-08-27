@@ -519,7 +519,7 @@ exports.GoEmitter = class GoEmitter
     for s, i in t.symbols
       [e_name..., e_num] = s.split("_")
       e_name = e_name.join("_")
-      @output "\"#{e_name}\" : #{e_num},"
+      @output "\"#{e_name}\": #{e_num},"
     @untab()
     @output "}"
 
@@ -529,7 +529,7 @@ exports.GoEmitter = class GoEmitter
     for s, i in t.symbols
       [e_name..., e_num] = s.split("_")
       e_name = e_name.join("_")
-      @output "#{e_num} : \"#{e_name}\","
+      @output "#{e_num}: \"#{e_name}\","
     @untab()
     @output "}"
 
