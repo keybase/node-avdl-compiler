@@ -27,4 +27,25 @@ describe "GoEmitter", () ->
       """)
       return
     return
+
+  describe "emit_typedef", () ->
+    it "Should emit a string typedef", () ->
+      type = {
+        type: "record"
+        name: "BuildPaymentID"
+        fields: []
+        typedef: "string"
+      }
+      emitter.emit_typedef type
+      code = emitter._code.join "\n"
+
+      expect(code).toBe("""
+        type BuildPaymentID string
+        func (o BuildPaymentID) DeepCopy() BuildPaymentID {
+        \treturn o
+        }\n
+      """)
+      return
+
+    return
   return
