@@ -8,7 +8,10 @@ lib/%.js: src/%.iced
 
 build-stamp: \
 	lib/main.js \
-	lib/emit.js
+	lib/py_emit.js \
+	lib/ts_emit.js \
+	lib/go_emit.js \
+	lib/base_emitter.js
 	date > $@
 
 install:
