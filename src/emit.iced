@@ -139,7 +139,7 @@ exports.GoEmitter = class GoEmitter
     cols.push(@codec({name, optional, jsonkey, mpackkey})) if exported
     @output cols.join("\t")
 
-  emit_record : ({obj, go_field_suffix, no_deep_copy}) ->
+  emit_record : (obj, {go_field_suffix, no_deep_copy} = {}) ->
     @emit_record_struct { obj, go_field_suffix }
     @emit_record_deep_copy { obj, go_field_suffix } unless no_deep_copy
 
@@ -272,7 +272,7 @@ exports.GoEmitter = class GoEmitter
 
   emit_deep_copy_field : ({t, name, go_field_suffix, receiver, exported}) ->
     field = @go_translate_identifier { name : name, go_field_suffix, exported }
-    @output (field + " : "), { frag : true }
+    @output (field + ": "), { frag : true }
     @deep_copy { t, val : "#{receiver}.#{field}" , exported }
     @append_to_last ","
 
@@ -490,7 +490,7 @@ exports.GoEmitter = class GoEmitter
         if type.typedef
           @emit_typedef type
         else
-          @emit_record { obj : type, go_field_suffix }
+          @emit_record type, { go_field_suffix }
       when "fixed"
         @emit_fixed type
       when "enum"
@@ -555,7 +555,7 @@ exports.GoEmitter = class GoEmitter
     obj =
       name : klass_name
       fields : args
-    @emit_record { obj, no_deep_copy : true }
+    @emit_record obj, { no_deep_copy : true }
     details.request = {
       type : klass_name
       name : "__arg"

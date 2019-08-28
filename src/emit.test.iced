@@ -49,10 +49,66 @@ describe "GoEmitter", () ->
     return
 
   describe "emit_record", () ->
-    it "Should emit a struct", () ->
+    it "Should emit a struct with primative value keys", () ->
+        record = {
+          type: "record"
+          name: "TestRecord"
+          fields: [
+            {
+              type: "string",
+              name: "statusDescription"
+            },
+            {
+              type: "boolean"
+              name: "isValidThing"
+            },
+            {
+              type: "long",
+              name: "longInt"
+            },
+            {
+              type: "double",
+              name: "doubleOrNothin"
+            }
+          ]
+        }
+
+        emitter.emit_record record
+        code = emitter._code.join "\n"
+
+        expect(code).toBe("""
+          type TestRecord struct {
+          \tStatusDescription\tstring\t`codec:"statusDescription" json:"statusDescription"`
+          \tIsValidThing\tbool\t`codec:"isValidThing" json:"isValidThing"`
+          \tLongInt\tint64\t`codec:"longInt" json:"longInt"`
+          \tDoubleOrNothin\tfloat64\t`codec:"doubleOrNothin" json:"doubleOrNothin"`
+          }
+
+          func (o TestRecord) DeepCopy() TestRecord {
+          \treturn TestRecord{
+          \t\tStatusDescription: o.StatusDescription,
+          \t\tIsValidThing: o.IsValidThing,
+          \t\tLongInt: o.LongInt,
+          \t\tDoubleOrNothin: o.DoubleOrNothin,
+          \t}
+          }\n
+        """)
+        return
 
       return
-    return
+
+    it "Should emit a struct with an array value", () ->
+
+      return
+
+    it "Should emit a struct with an optional type", () ->
+
+      return
+
+    it "Should emit a struct with a map type", () ->
+
+      return
+
 
   describe "emit_fixed", () ->
     it "Should emit a fixed length type", () ->
