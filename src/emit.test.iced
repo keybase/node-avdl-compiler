@@ -50,64 +50,141 @@ describe "GoEmitter", () ->
 
   describe "emit_record", () ->
     it "Should emit a struct with primative value keys", () ->
-        record = {
-          type: "record"
-          name: "TestRecord"
-          fields: [
-            {
-              type: "string",
-              name: "statusDescription"
-            },
-            {
-              type: "boolean"
-              name: "isValidThing"
-            },
-            {
-              type: "long",
-              name: "longInt"
-            },
-            {
-              type: "double",
-              name: "doubleOrNothin"
-            }
-          ]
+      record = {
+        type: "record"
+        name: "TestRecord"
+        fields: [
+          {
+            type: "string",
+            name: "statusDescription"
+          },
+          {
+            type: "boolean"
+            name: "isValidThing"
+          },
+          {
+            type: "long",
+            name: "longInt"
+          },
+          {
+            type: "double",
+            name: "doubleOrNothin"
+          }
+        ]
+      }
+      emitter.emit_record record
+      code = emitter._code.join "\n"
+
+      expect(code).toBe("""
+        type TestRecord struct {
+        \tStatusDescription\tstring\t`codec:"statusDescription" json:"statusDescription"`
+        \tIsValidThing\tbool\t`codec:"isValidThing" json:"isValidThing"`
+        \tLongInt\tint64\t`codec:"longInt" json:"longInt"`
+        \tDoubleOrNothin\tfloat64\t`codec:"doubleOrNothin" json:"doubleOrNothin"`
         }
 
-        emitter.emit_record record
-        code = emitter._code.join "\n"
-
-        expect(code).toBe("""
-          type TestRecord struct {
-          \tStatusDescription\tstring\t`codec:"statusDescription" json:"statusDescription"`
-          \tIsValidThing\tbool\t`codec:"isValidThing" json:"isValidThing"`
-          \tLongInt\tint64\t`codec:"longInt" json:"longInt"`
-          \tDoubleOrNothin\tfloat64\t`codec:"doubleOrNothin" json:"doubleOrNothin"`
-          }
-
-          func (o TestRecord) DeepCopy() TestRecord {
-          \treturn TestRecord{
-          \t\tStatusDescription: o.StatusDescription,
-          \t\tIsValidThing: o.IsValidThing,
-          \t\tLongInt: o.LongInt,
-          \t\tDoubleOrNothin: o.DoubleOrNothin,
-          \t}
-          }\n
-        """)
-        return
-
+        func (o TestRecord) DeepCopy() TestRecord {
+        \treturn TestRecord{
+        \t\tStatusDescription: o.StatusDescription,
+        \t\tIsValidThing: o.IsValidThing,
+        \t\tLongInt: o.LongInt,
+        \t\tDoubleOrNothin: o.DoubleOrNothin,
+        \t}
+        }\n
+      """)
       return
 
-    it "Should emit a struct with an array value", () ->
+    it "Should not emit a DeepCopy function in the option is given", () ->
+      record = {
+        type: "record"
+        name: "TestRecord"
+        fields: [
+          {
+            type: "string",
+            name: "statusDescription"
+          },
+        ]
+      }
+      emitter.emit_record record, { no_deep_copy: true }
+      code = emitter._code.join "\n"
 
+      expect(code).toBe("""
+        type TestRecord struct {
+        \tStatusDescription\tstring\t`codec:"statusDescription" json:"statusDescription"`
+        }\n
+      """)
+      return
+
+    it "Should support custom types as fields", () ->
+      record = {
+        type: "record"
+        name: "TestRecord"
+        fields: [
+          {
+            type: "MySuperCoolCustomType",
+            name: "superCool"
+          },
+        ]
+      }
+      emitter.emit_record record
+      code = emitter._code.join "\n"
+
+      expect(code).toBe("""
+        type TestRecord struct {
+        \tSuperCool\tMySuperCoolCustomType\t`codec:"superCool" json:"superCool"`
+        }
+
+        func (o TestRecord) DeepCopy() TestRecord {
+        \treturn TestRecord{
+        \t\tSuperCool: o.SuperCool.DeepCopy(),
+        \t}
+        }\n
+      """)
       return
 
     it "Should emit a struct with an optional type", () ->
+      record = {
+        type: "record"
+        name: "TestRecord"
+        fields: [
+          {
+            type: [null, "string"],
+            name: "maybeStatusDescription"
+          }
+        ]
+      }
+      emitter.emit_record record
+      code = emitter._code.join "\n"
 
+      expect(code).toBe("""
+        type TestRecord struct {
+        \tMaybeStatusDescription\t*string\t`codec:"maybeStatusDescription,omitempty" json:"maybeStatusDescription,omitempty"`
+        }
+
+        func (o TestRecord) DeepCopy() TestRecord {
+        \treturn TestRecord{
+        \t\tMaybeStatusDescription: (func (x *string) *string {
+        \t\t\tif x == nil {
+        \t\t\t\treturn nil
+        \t\t\t}
+        \t\t\ttmp := (*x)
+        \t\t\treturn &tmp
+        \t\t})(o.MaybeStatusDescription),
+        \t}
+        }\n
+      """)
       return
 
-    it "Should emit a struct with a map type", () ->
+    # it "Should emit a struct with an array value", () ->
 
-      return
+    #   return
+
+
+    # it "Should emit a struct with a map type", () ->
+
+    #   return
+
+    return
 
 
   describe "emit_fixed", () ->
