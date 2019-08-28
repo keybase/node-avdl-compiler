@@ -26,9 +26,9 @@ type R struct {
 
 func (o R) DeepCopy() R {
 	return R{
-		Bar : o.Bar.DeepCopy(),
-		Baz : o.Baz.DeepCopy(),
-		Woop : o.Woop,
+		Bar: o.Bar.DeepCopy(),
+		Baz: o.Baz.DeepCopy(),
+		Woop: o.Woop,
 	}
 }
 
@@ -43,19 +43,19 @@ const (
 
 func (o Types) DeepCopy() Types { return o }
 var TypesMap = map[string]Types{
-	"NONE" : 0,
-	"BOZO" : 1,
-	"BIPPY" : 2,
-	"AGGLE" : 3,
-	"FLAGGLE" : 4,
+	"NONE": 0,
+	"BOZO": 1,
+	"BIPPY": 2,
+	"AGGLE": 3,
+	"FLAGGLE": 4,
 }
 
 var TypesRevMap = map[Types]string{
-	0 : "NONE",
-	1 : "BOZO",
-	2 : "BIPPY",
-	3 : "AGGLE",
-	4 : "FLAGGLE",
+	0: "NONE",
+	1: "BOZO",
+	2: "BIPPY",
+	3: "AGGLE",
+	4: "FLAGGLE",
 }
 
 func (e Types) String() string {
@@ -72,11 +72,11 @@ const (
 
 func (o EnumNoString) DeepCopy() EnumNoString { return o }
 var EnumNoStringMap = map[string]EnumNoString{
-	"NOSTRING" : 0,
+	"NOSTRING": 0,
 }
 
 var EnumNoStringRevMap = map[EnumNoString]string{
-	0 : "NOSTRING",
+	0: "NOSTRING",
 }
 
 type Boozle struct {
@@ -206,22 +206,22 @@ func NewBoozleDefault(typ Types, v int) Boozle {
 
 func (o Boozle) DeepCopy() Boozle {
 	return Boozle {
-		Typ__ : o.Typ__.DeepCopy(),
-		Bozo__ : (func (x *int) *int {
+		Typ__: o.Typ__.DeepCopy(),
+		Bozo__: (func (x *int) *int {
 			if x == nil {
 				return nil
 			}
 			tmp := (*x)
 			return &tmp
 		})(o.Bozo__),
-		Bippy__ : (func (x *string) *string {
+		Bippy__: (func (x *string) *string {
 			if x == nil {
 				return nil
 			}
 			tmp := (*x)
 			return &tmp
 		})(o.Bippy__),
-		Aggle__ : (func (x *[]int) *[]int {
+		Aggle__: (func (x *[]int) *[]int {
 			if x == nil {
 				return nil
 			}
@@ -238,7 +238,7 @@ func (o Boozle) DeepCopy() Boozle {
 			})((*x))
 			return &tmp
 		})(o.Aggle__),
-		Flaggle__ : (func (x *[]bool) *[]bool {
+		Flaggle__: (func (x *[]bool) *[]bool {
 			if x == nil {
 				return nil
 			}
@@ -255,7 +255,7 @@ func (o Boozle) DeepCopy() Boozle {
 			})((*x))
 			return &tmp
 		})(o.Flaggle__),
-		Default__ : (func (x *int) *int {
+		Default__: (func (x *int) *int {
 			if x == nil {
 				return nil
 			}
@@ -341,15 +341,15 @@ func NewTrixieWithFlaggle(v EnumNoString) Trixie {
 
 func (o Trixie) DeepCopy() Trixie {
 	return Trixie {
-		Typ__ : o.Typ__.DeepCopy(),
-		Bippy__ : (func (x *int) *int {
+		Typ__: o.Typ__.DeepCopy(),
+		Bippy__: (func (x *int) *int {
 			if x == nil {
 				return nil
 			}
 			tmp := (*x)
 			return &tmp
 		})(o.Bippy__),
-		Flaggle__ : (func (x *EnumNoString) *EnumNoString {
+		Flaggle__: (func (x *EnumNoString) *EnumNoString {
 			if x == nil {
 				return nil
 			}
@@ -423,15 +423,15 @@ func NewNoozleDefault(version int) Noozle {
 
 func (o Noozle) DeepCopy() Noozle {
 	return Noozle {
-		Version__ : o.Version__,
-		Int1__ : (func (x *string) *string {
+		Version__: o.Version__,
+		Int1__: (func (x *string) *string {
 			if x == nil {
 				return nil
 			}
 			tmp := (*x)
 			return &tmp
 		})(o.Int1__),
-		Int2__ : (func (x *int) *int {
+		Int2__: (func (x *int) *int {
 			if x == nil {
 				return nil
 			}
@@ -499,15 +499,15 @@ func NewBlurpWithFalse(v int) Blurp {
 
 func (o Blurp) DeepCopy() Blurp {
 	return Blurp {
-		B__ : o.B__,
-		True__ : (func (x *string) *string {
+		B__: o.B__,
+		True__: (func (x *string) *string {
 			if x == nil {
 				return nil
 			}
 			tmp := (*x)
 			return &tmp
 		})(o.True__),
-		False__ : (func (x *int) *int {
+		False__: (func (x *int) *int {
 			if x == nil {
 				return nil
 			}
@@ -523,7 +523,7 @@ type Simple struct {
 
 func (o Simple) DeepCopy() Simple {
 	return Simple{
-		S : (func (x *Blurp) *Blurp {
+		S: (func (x *Blurp) *Blurp {
 			if x == nil {
 				return nil
 			}
@@ -559,36 +559,36 @@ type Cat struct {
 
 func (o Cat) DeepCopy() Cat {
 	return Cat{
-		Bird : (func (x map[Blurp]Noozle) map[Blurp]Noozle {
+		Bird: (func (x map[Blurp]Noozle) map[Blurp]Noozle {
 			if x == nil {
 				return nil
 			}
 			ret := make(map[Blurp]Noozle, len(x))
-			for k,v := range x {
+			for k, v := range x {
 				kCopy := k.DeepCopy()
 				vCopy := v.DeepCopy()
 				ret[kCopy] = vCopy
 			}
 			return ret
 		})(o.Bird),
-		Bee : (func (x map[string]Noozle) map[string]Noozle {
+		Bee: (func (x map[string]Noozle) map[string]Noozle {
 			if x == nil {
 				return nil
 			}
 			ret := make(map[string]Noozle, len(x))
-			for k,v := range x {
+			for k, v := range x {
 				kCopy := k
 				vCopy := v.DeepCopy()
 				ret[kCopy] = vCopy
 			}
 			return ret
 		})(o.Bee),
-		Birds : (func (x map[Blurp][]Noozle) map[Blurp][]Noozle {
+		Birds: (func (x map[Blurp][]Noozle) map[Blurp][]Noozle {
 			if x == nil {
 				return nil
 			}
 			ret := make(map[Blurp][]Noozle, len(x))
-			for k,v := range x {
+			for k, v := range x {
 				kCopy := k.DeepCopy()
 				vCopy := (func (x []Noozle) []Noozle {
 					if x == nil {
@@ -605,43 +605,43 @@ func (o Cat) DeepCopy() Cat {
 			}
 			return ret
 		})(o.Birds),
-		Pickles : (func (x map[Blurp]int) map[Blurp]int {
+		Pickles: (func (x map[Blurp]int) map[Blurp]int {
 			if x == nil {
 				return nil
 			}
 			ret := make(map[Blurp]int, len(x))
-			for k,v := range x {
+			for k, v := range x {
 				kCopy := k.DeepCopy()
 				vCopy := v
 				ret[kCopy] = vCopy
 			}
 			return ret
 		})(o.Pickles),
-		Penny : (func (x map[string]int) map[string]int {
+		Penny: (func (x map[string]int) map[string]int {
 			if x == nil {
 				return nil
 			}
 			ret := make(map[string]int, len(x))
-			for k,v := range x {
+			for k, v := range x {
 				kCopy := k
 				vCopy := v
 				ret[kCopy] = vCopy
 			}
 			return ret
 		})(o.Penny),
-		Pa : (func (x map[int]string) map[int]string {
+		Pa: (func (x map[int]string) map[int]string {
 			if x == nil {
 				return nil
 			}
 			ret := make(map[int]string, len(x))
-			for k,v := range x {
+			for k, v := range x {
 				kCopy := k
 				vCopy := v
 				ret[kCopy] = vCopy
 			}
 			return ret
 		})(o.Pa),
-		Wow : (func (x []map[Blurp][]Noozle) []map[Blurp][]Noozle {
+		Wow: (func (x []map[Blurp][]Noozle) []map[Blurp][]Noozle {
 			if x == nil {
 				return nil
 			}
@@ -652,7 +652,7 @@ func (o Cat) DeepCopy() Cat {
 						return nil
 					}
 					ret := make(map[Blurp][]Noozle, len(x))
-					for k,v := range x {
+					for k, v := range x {
 						kCopy := k.DeepCopy()
 						vCopy := (func (x []Noozle) []Noozle {
 							if x == nil {
@@ -673,14 +673,14 @@ func (o Cat) DeepCopy() Cat {
 			}
 			return ret
 		})(o.Wow),
-		Boo : (func (x []byte) []byte {
+		Boo: (func (x []byte) []byte {
 			if x == nil {
 				return nil
 			}
 			return append([]byte{}, x...)
 		})(o.Boo),
-		HooHah : o.HooHah.DeepCopy(),
-		seqno : o.seqno,
+		HooHah: o.HooHah.DeepCopy(),
+		seqno: o.seqno,
 	}
 }
 
