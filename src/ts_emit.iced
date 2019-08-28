@@ -36,6 +36,10 @@ exports.TypescriptEmitter = class TypescriptEmitter extends BaseEmitter
       int : "number"
     map[m] or m
 
+  make_map_type : ({t}) ->
+    key_type = if t.keys? then @emit_field_type(t.keys).type else "string"
+    "{[key: #{key_type}]: #{@emit_field_type(t.values).type}}"
+
   emit_field_type : (t) ->
     optional = false
     type = if typeof(t) is 'string' then @convert_primitive_type(t)
@@ -68,6 +72,23 @@ exports.TypescriptEmitter = class TypescriptEmitter extends BaseEmitter
 
   emit_fixed : (t) ->
     @output "export type #{t.name} = string | null"
+
+  emit_field : ({name, type, exported, pointed, jsonkey, mpackkey}) ->
+    {type, optional} = @emit_field_type(type)
+    @output "#{name}#{if optional then '?' else ''}: #{type}"
+
+  emit_record : (obj) ->
+    @output "export type #{obj.name} = {"
+    @tab()
+    for f in obj.fields
+      @emit_field
+        name : f.name
+        type : f.type
+        exported : not(f.internal?)
+        jsonkey : f.jsonkey
+        mpackkey : f.mpackkey
+    @untab()
+    @output "}"
 
   emit_enum : (t) ->
     @output "export enum #{t.name} {"

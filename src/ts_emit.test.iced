@@ -40,6 +40,146 @@ describe "TypescriptEmitter", () ->
       return
     return
 
+  describe "emit_record", () ->
+    it "should emit an ojbect with primative value keys", () ->
+      record = {
+        type: "record"
+        name: "TestRecord"
+        fields: [
+          {
+            type: "string",
+            name: "statusDescription"
+          },
+          {
+            type: "boolean"
+            name: "isValidThing"
+          },
+          {
+            type: "long",
+            name: "longInt"
+          },
+          {
+            type: "double",
+            name: "doubleOrNothin"
+          },
+          {
+            type: "bytes",
+            name: "takeAByteOfThisApple"
+          }
+        ]
+      }
+      emitter.emit_record record
+      code = emitter._code.join "\n"
+
+      expect(code).toBe("""
+        export type TestRecord = {
+          statusDescription: string
+          isValidThing: boolean
+          longInt: number
+          doubleOrNothin: number
+          takeAByteOfThisApple: Buffer
+        }\n
+      """)
+      return
+
+    it "Should support custom types as fields", () ->
+      record = {
+        type: "record"
+        name: "TestRecord"
+        fields: [
+          {
+            type: "MySuperCoolCustomType",
+            name: "superCool"
+          },
+        ]
+      }
+      emitter.emit_record record
+      code = emitter._code.join "\n"
+
+      expect(code).toBe("""
+        export type TestRecord = {
+          superCool: MySuperCoolCustomType
+        }
+      """)
+      return
+
+    it "Should emit a struct with an optional type", () ->
+      record = {
+        type: "record"
+        name: "TestRecord"
+        fields: [
+          {
+            type: [null, "string"],
+            name: "maybeStatusDescription"
+          }
+        ]
+      }
+      emitter.emit_record record
+      code = emitter._code.join "\n"
+
+      expect(code).toBe("""
+        export type TestRecord = {
+          maybeStatusDescription?: string
+        }\n
+      """)
+      return
+
+    it "Should emit a struct with an array value", () ->
+      record = {
+        type: "record",
+        name: "PaymentsPageLocal",
+        fields: [
+          {
+            type: {
+              type: "array",
+              items: "PaymentOrErrorLocal"
+            },
+            name: "payments"
+          },
+        ]
+      }
+      emitter.emit_record record
+      code = emitter._code.join "\n"
+
+      expect(code).toBe("""
+        export type PaymentsPageLocal = {
+          payments: PaymentOrErrorLocal[]
+        }\n
+      """)
+      return
+
+    it "Should emit a struct with a map type", () ->
+      record = {
+        type: "record"
+        name: "StellarServerDefinitions"
+        fields: [
+          {
+            type: "int",
+            name: "revision"
+          },
+          {
+            type: {
+              type: "map"
+              values: "OutsideCurrencyDefinition"
+              keys: "OutsideCurrencyCode"
+            }
+            name: "currencies"
+          }
+        ]
+      }
+      emitter.emit_record record
+      code = emitter._code.join "\n"
+
+      expect(code).toBe("""
+        export type StellarServerDefinitions = {
+          revision: number
+          currencies: {[key: OutsideCurrencyCode]: OutsideCurrencyDefinition}
+        }\n
+      """)
+      return
+
+    return
+
   describe "emit_fixed", () ->
     it "Should return a type with the given name and a type of string | null", () ->
       emitter.emit_fixed { name: "FunHash", size: 32 }
@@ -75,10 +215,6 @@ describe "TypescriptEmitter", () ->
         }\n
       """)
       return
-    return
-
-  describe "Name of the group", () ->
-
     return
 
   return
