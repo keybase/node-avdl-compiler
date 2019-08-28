@@ -376,7 +376,7 @@ describe "GoEmitter", () ->
           "V3_3"
         ]
       }
-      emitter.emit_enum { t: test_enum }
+      emitter.emit_enum test_enum
       code = emitter._code.join "\n"
 
       expect(code).toBe("""
@@ -423,7 +423,7 @@ describe "GoEmitter", () ->
           "V3_3"
         ]
       }
-      emitter.emit_enum { t: test_enum, nostring: true }
+      emitter.emit_enum test_enum, true
       code = emitter._code.join "\n"
 
       expect(code).toBe("""
