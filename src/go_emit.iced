@@ -4,6 +4,7 @@ minimist   = require 'minimist'
 path_lib   = require 'path'
 fs         = require 'fs'
 {make_esc} = require 'iced-error'
+{BaseEmitter} = require './base_emitter'
 pkg        = require '../package.json'
 
 #====================================================================
@@ -12,11 +13,10 @@ is_one_way = (d) -> (d.notify? or d.oneway)
 
 #====================================================================
 
-exports.GoEmitter = class GoEmitter
-
+exports.GoEmitter = class GoEmitter extends BaseEmitter
   constructor : () ->
-    @_code = []
-    @_tabs = 0
+    super
+    @_tab_char = '\t'
     @_pkg = null
     @_default_compression_type = "none"
 
@@ -56,17 +56,6 @@ exports.GoEmitter = class GoEmitter
 
   is_primitive_switch_type : (m) -> m in [ "boolean", "long", "int" ]
 
-  tabs : () -> ("\t" for i in [0...@_tabs]).join("")
-  output : (l, {frag} = {}) ->
-    if @_last_frag
-      @_code[@_code.length-1] += l
-      @_last_frag = false
-    else
-      @_code.push (@tabs() + l)
-    if frag
-      @_last_frag = true
-    else
-      @_code.push("") if (l is "}" or l is ")") and @_tabs is 0
   append_to_last : (s) ->
     @_code[@_code.length-1] += s
 
@@ -74,9 +63,6 @@ exports.GoEmitter = class GoEmitter
     if d?
       for line in d.split /\n/
         @output "// " + line.replace /^\s*/, ''
-
-  tab : () -> @_tabs++
-  untab : () -> @_tabs--
 
   make_map_type : ({t}) ->
     key = if t.keys? then @emit_field_type(t.keys).type else "string"
@@ -746,7 +732,7 @@ exports.GoEmitter = class GoEmitter
     @untab()
     @output "}"
 
-  emit_preface : ({infiles, types_only}) ->
+  emit_preface : (infiles, json, {types_only} = {}) ->
     @output "// Auto-generated to Go #{if types_only then 'types' else 'types and interfaces'} using #{pkg.name} v#{pkg.version} (#{pkg.homepage})"
     if infiles.length == 1
       @output "//   Input file: #{path_lib.relative(process.cwd(), infiles[0])}"
@@ -755,14 +741,6 @@ exports.GoEmitter = class GoEmitter
       for infile in infiles
         @output "//   - #{path_lib.relative(process.cwd(), infiles)}"
     @output ""
-
-  run : ({infiles, outfile, json, types_only}) ->
-    @emit_preface {infiles}
     @emit_package json
-    # Imports are only nessecary for interfaces
-    @emit_imports json, outfile, types_only
-    @emit_types json
-    @emit_interface json unless types_only
-    @_code
 
 #====================================================================

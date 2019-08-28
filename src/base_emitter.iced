@@ -47,7 +47,7 @@ exports.BaseEmitter = class BaseEmitter
   Returns an array of strings, with each element corresponding to the ith line of the output code.
   ###
   run : ({infiles, outfile, json, types_only}) ->
-    @emit_preface {infiles}
+    @emit_preface infiles, json, {types_only}
     @emit_imports json, outfile, types_only
     @emit_types json
     @emit_interface json unless types_only
@@ -59,9 +59,11 @@ exports.BaseEmitter = class BaseEmitter
 
   Arguments:
    - `infiles`: An array of strings. Each element is the path to an input file
-   - `types_only`: Whether just types or types and interfaces should be generated
+   - `json`: A representation of our abstract syntax tree
+   - `options`
+     - `types_only`: Whether just types or types and interfaces should be generated
   ###
-  emit_preface : (infiles, types_only) ->
+  emit_preface : (infiles, json, {types_only}) ->
     throw new TypeError("emit_preface should be implemented by the child class")
 
   ###

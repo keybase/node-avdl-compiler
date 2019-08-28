@@ -8,22 +8,26 @@ describe "GoEmitter", () ->
 
   describe "emit_preface", () ->
     it "Should emit a preface", () ->
-      emitter.emit_preface { infiles: ["./my_test_file.avdl"] }
+      emitter.emit_preface ["./my_test_file.avdl"], {namespace: "chat1"}
       code = emitter._code.join "\n"
 
       expect(code).toBe("""
         // Auto-generated to Go types and interfaces using avdl-compiler v#{pkg.version} (https://github.com/keybase/node-avdl-compiler)
-        //   Input file: my_test_file.avdl\n
+        //   Input file: my_test_file.avdl
+
+        package chat1\n
       """)
       return
 
     it "Should note that it only generated types if types_only is enabled", () ->
-      emitter.emit_preface { infiles: ["./my_test_file.avdl"], types_only: true }
+      emitter.emit_preface ["./my_test_file.avdl"], {namespace: "chat1"}, {types_only: true}
       code = emitter._code.join "\n"
 
       expect(code).toBe("""
         // Auto-generated to Go types using avdl-compiler v#{pkg.version} (https://github.com/keybase/node-avdl-compiler)
-        //   Input file: my_test_file.avdl\n
+        //   Input file: my_test_file.avdl
+
+        package chat1\n
       """)
       return
     return
