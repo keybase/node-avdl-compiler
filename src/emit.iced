@@ -255,7 +255,7 @@ exports.GoEmitter = class GoEmitter
     @untab()
     @output "}"
     @output "ret := make(#{type}, len(x))"
-    @output "for k,v := range x {"
+    @output "for k, v := range x {"
     @tab()
     if t.keys?
       @output "kCopy := ", {frag : true}

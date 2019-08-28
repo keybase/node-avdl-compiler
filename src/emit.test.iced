@@ -175,14 +175,93 @@ describe "GoEmitter", () ->
       """)
       return
 
-    # it "Should emit a struct with an array value", () ->
+    it "Should emit a struct with an array value", () ->
+      record = {
+        type: "record",
+        name: "PaymentsPageLocal",
+        fields: [
+          {
+            type: {
+              type: "array",
+              items: "PaymentOrErrorLocal"
+            },
+            name: "payments"
+          },
+        ]
+      }
+      emitter.emit_record record
+      code = emitter._code.join "\n"
 
-    #   return
+      expect(code).toBe("""
+        type PaymentsPageLocal struct {
+        \tPayments	[]PaymentOrErrorLocal	`codec:"payments" json:"payments"`
+        }
 
+        func (o PaymentsPageLocal) DeepCopy() PaymentsPageLocal {
+        \treturn PaymentsPageLocal{
+        \t\tPayments: (func (x []PaymentOrErrorLocal) []PaymentOrErrorLocal {
+        \t\t\tif x == nil {
+        \t\t\t\treturn nil
+        \t\t\t}
+        \t\t\tret := make([]PaymentOrErrorLocal, len(x))
+        \t\t\tfor i, v := range x {
+        \t\t\t\tvCopy := v.DeepCopy()
+        \t\t\t\tret[i] = vCopy
+        \t\t\t}
+        \t\t\treturn ret
+        \t\t})(o.Payments),
+        \t}
+        }\n
+      """)
+      return
 
-    # it "Should emit a struct with a map type", () ->
+    it "Should emit a struct with a map type", () ->
+      record = {
+        type: "record"
+        name: "StellarServerDefinitions"
+        fields: [
+          {
+            type: "int",
+            name: "revision"
+          },
+          {
+            type: {
+              type: "map"
+              values: "OutsideCurrencyDefinition"
+              keys: "OutsideCurrencyCode"
+            }
+            name: "currencies"
+          }
+        ]
+      }
+      emitter.emit_record record
+      code = emitter._code.join "\n"
 
-    #   return
+      expect(code).toBe("""
+        type StellarServerDefinitions struct {
+        \tRevision\tint\t`codec:"revision" json:"revision"`
+        \tCurrencies\tmap[OutsideCurrencyCode]OutsideCurrencyDefinition\t`codec:"currencies" json:"currencies"`
+        }
+
+        func (o StellarServerDefinitions) DeepCopy() StellarServerDefinitions {
+        \treturn StellarServerDefinitions{
+        \t\tRevision: o.Revision,
+        \t\tCurrencies: (func (x map[OutsideCurrencyCode]OutsideCurrencyDefinition) map[OutsideCurrencyCode]OutsideCurrencyDefinition {
+        \t\t\tif x == nil {
+        \t\t\t\treturn nil
+        \t\t\t}
+        \t\t\tret := make(map[OutsideCurrencyCode]OutsideCurrencyDefinition, len(x))
+        \t\t\tfor k, v := range x {
+        \t\t\t\tkCopy := k.DeepCopy()
+        \t\t\t\tvCopy := v.DeepCopy()
+        \t\t\t\tret[kCopy] = vCopy
+        \t\t\t}
+        \t\t\treturn ret
+        \t\t})(o.Currencies),
+        \t}
+        }\n
+      """)
+      return
 
     return
 
