@@ -107,6 +107,8 @@ exports.BaseEmitter = class BaseEmitter
         @emit_enum type, nostring
       when "variant"
         @emit_variant type
+      else
+        throw new Error "Unrecognized type: #{type}"
 
   ###
   Output any documentation comments associated with a type.
