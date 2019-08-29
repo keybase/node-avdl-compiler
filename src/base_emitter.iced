@@ -19,16 +19,16 @@ exports.BaseEmitter = class BaseEmitter
   untab : () -> @_tabs--
   tabs : () -> (@_tab_char for i in [0...@_tabs]).join("")
 
-  output : (l, {frag} = {}) ->
+  output : (line, {frag} = {}) ->
     if @_last_frag
-      @_code[@_code.length-1] += l
+      @_code[@_code.length-1] += line
       @_last_frag = false
     else
-      @_code.push (@tabs() + l)
+      @_code.push (@tabs() + line)
     if frag
       @_last_frag = true
     else
-      @_code.push("") if (l is "}" or l is ")") and @_tabs is 0
+      @_code.push("") if (line is "}" or line is ")") and @_tabs is 0
 
   ###
   Runs the emitter.
@@ -43,6 +43,7 @@ exports.BaseEmitter = class BaseEmitter
   Returns an array of strings, with each element corresponding to the ith line of the output code.
   ###
   run : (infiles, outfile, json, options = {}) ->
+    infiles = infiles.sort()
     @emit_preface infiles, json, options
     @emit_imports json, outfile, options
     @emit_types json
