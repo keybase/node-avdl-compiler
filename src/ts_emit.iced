@@ -35,6 +35,8 @@ exports.TypescriptEmitter = class TypescriptEmitter extends BaseEmitter
       double : "number"
       uint : "number"
       int : "number"
+      uint64 : "number"
+      int64 : "number"
     map[m] or m
 
   make_map_type : ({t}) ->
