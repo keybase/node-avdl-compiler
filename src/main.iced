@@ -106,6 +106,9 @@ exports.Main = class Main
 
   #---------------
 
+  # Unlike Go, where a package can be spread around multiple files, Python and TypeScript
+  # treat each file as it's own package/module. Since we want each avdl package to map to a package in the
+  # destintation language, we'll just put all the types in one file.
   do_files_as_one : ({outfile}, cb) ->
     esc = make_esc cb, "do_files_as_one"
     json = {imports: [], types: []}
@@ -116,7 +119,7 @@ exports.Main = class Main
 
     await emit { @infiles, json, types_only: true, @lang }, esc defer code
     await output { code, outfile }, esc defer()
-    console.log "Compiling #{infile} -> #{outfile}"
+    console.log "Compiling #{@infiles} -> #{outfile}"
 
     cb null
 
