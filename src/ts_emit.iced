@@ -75,7 +75,7 @@ exports.TypescriptEmitter = class TypescriptEmitter extends BaseEmitter
   emit_fixed : (t) ->
     @output "export type #{t.name} = string | null"
 
-  emit_field : ({name, type, exported, pointed, jsonkey, mpackkey}) ->
+  emit_field : ({name, type}) ->
     {type, optional} = @emit_field_type(type)
     @output "#{name}#{if optional then '?' else ''}: #{type}"
 
@@ -87,8 +87,6 @@ exports.TypescriptEmitter = class TypescriptEmitter extends BaseEmitter
         name : f.name
         type : f.type
         exported : not(f.internal?)
-        jsonkey : f.jsonkey
-        mpackkey : f.mpackkey
     @untab()
     @output "}"
 
@@ -101,3 +99,16 @@ exports.TypescriptEmitter = class TypescriptEmitter extends BaseEmitter
       @output "#{e_name} = #{e_num},"
     @untab()
     @output "}"
+
+  emit_variant : (t) ->
+    cases = t.cases.map (c) ->
+      if c.label.def then return null
+      bodyType = switch
+        when c.body == null then 'null'
+        when typeof c.body == 'string' then c.body
+        when c.body.type == 'array' then c.body.items + '[]'
+        else ''
+      bodyStr = if c.body then ", #{c.label.name}: #{bodyType} | null" else ''
+      "{ #{t.switch.name}: #{t.switch.type}.#{c.label.name}#{bodyStr} }"
+
+    @output "export type #{t.name} = #{cases.join(" | ")}"

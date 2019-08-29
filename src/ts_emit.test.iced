@@ -77,7 +77,7 @@ describe "TypescriptEmitter", () ->
     return
 
   describe "emit_record", () ->
-    it "should emit an ojbect with primative value keys", () ->
+    it "should emit an object with primative value keys", () ->
       record = {
         type: "record"
         name: "TestRecord"
@@ -249,6 +249,41 @@ describe "TypescriptEmitter", () ->
           V2 = 2,
           V3 = 3,
         }\n
+      """)
+      return
+    return
+
+  describe "emit_variant", () ->
+    it "should emit a variant", () ->
+      variant =
+        type: "variant",
+        name: "InboxView",
+        switch: {
+          type: "InboxResType",
+          name: "rtype"
+        },
+        cases: [
+          {
+            label: {
+              name: "VERSIONHIT",
+              def: false
+            },
+            body: null
+          },
+          {
+            label: {
+              name: "FULL",
+              def: false
+            },
+            body: "InboxViewFull"
+          }
+        ]
+
+      emitter.emit_variant variant
+      code = emitter._code.join "\n"
+
+      expect(code).toBe("""
+        export type InboxView = { rtype: InboxResType.VERSIONHIT } | { rtype: InboxResType.FULL, FULL: InboxViewFull | null }
       """)
       return
     return
