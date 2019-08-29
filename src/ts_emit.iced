@@ -104,11 +104,11 @@ exports.TypescriptEmitter = class TypescriptEmitter extends BaseEmitter
 
   emit_variant : (t) ->
     cases = t.cases
-      .map((c) ->
+      .map((c) =>
         if c.label.def then return null
         bodyType = switch
           when c.body == null then 'null'
-          when typeof c.body == 'string' then c.body
+          when typeof c.body == 'string' then @convert_primitive_type(c.body)
           when c.body.type == 'array' then c.body.items + '[]'
           else ''
         bodyStr = if c.body then ", #{c.label.name}: #{bodyType} | null" else ''

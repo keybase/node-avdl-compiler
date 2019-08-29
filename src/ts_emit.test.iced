@@ -222,7 +222,7 @@ describe "TypescriptEmitter", () ->
       expect(code).toBe("""
         export type StellarServerDefinitions = {
           revision: number
-          currencies: {[key: OutsideCurrencyCode]: OutsideCurrencyDefinition}
+          currencies: {[key: string]: OutsideCurrencyDefinition}
         }\n
       """)
       return
@@ -270,7 +270,7 @@ describe "TypescriptEmitter", () ->
     it "should emit a variant", () ->
       variant =
         type: "variant",
-        name: "InboxView",
+        name: "MyVariant",
         switch: {
           type: "InboxResType",
           name: "rtype"
@@ -289,14 +289,28 @@ describe "TypescriptEmitter", () ->
               def: false
             },
             body: "InboxViewFull"
-          }
+          },
+          {
+            label: {
+              name: "HELLO",
+              def: false
+            },
+            body: "bool"
+          },
+          {
+            label: {
+              name: "BLAH",
+              def: true
+            },
+            body: "int"
+          },
         ]
 
       emitter.emit_variant variant
       code = emitter._code.join "\n"
 
       expect(code).toBe("""
-        export type InboxView = { rtype: InboxResType.VERSIONHIT } | { rtype: InboxResType.FULL, FULL: InboxViewFull | null }\n
+        export type MyVariant = { rtype: InboxResType.VERSIONHIT } | { rtype: InboxResType.FULL, FULL: InboxViewFull | null } | { rtype: InboxResType.HELLO, HELLO: boolean | null }\n
       """)
       return
     return

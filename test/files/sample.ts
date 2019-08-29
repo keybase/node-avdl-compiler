@@ -34,13 +34,13 @@ export enum EnumNoString {
   NOSTRING = 0,
 }
 
-export type Boozle = { typ: Types.BOZO, BOZO: int | null } | { typ: Types.BIPPY, BIPPY: string | null } | { typ: Types.AGGLE, AGGLE: int[] | null } | { typ: Types.FLAGGLE, FLAGGLE: boolean[] | null }
+export type Boozle = { typ: Types.BOZO, BOZO: number | null } | { typ: Types.BIPPY, BIPPY: string | null } | { typ: Types.AGGLE, AGGLE: int[] | null } | { typ: Types.FLAGGLE, FLAGGLE: boolean[] | null }
 
-export type Trixie = { typ: Types.NONE } | { typ: Types.BOZO } | { typ: Types.BIPPY, BIPPY: int | null } | { typ: Types.AGGLE } | { typ: Types.FLAGGLE, FLAGGLE: EnumNoString | null }
+export type Trixie = { typ: Types.NONE } | { typ: Types.BOZO } | { typ: Types.BIPPY, BIPPY: number | null } | { typ: Types.AGGLE } | { typ: Types.FLAGGLE, FLAGGLE: EnumNoString | null }
 
-export type Noozle = { version: int.1, 1: string | null } | { version: int.2, 2: int | null }
+export type Noozle = { version: int.1, 1: string | null } | { version: int.2, 2: number | null }
 
-export type Blurp = { b: boolean.true, true: string | null } | { b: boolean.false, false: int | null }
+export type Blurp = { b: boolean.true, true: string | null } | { b: boolean.false, false: number | null }
 
 export type Simple = {
   s?: Blurp
@@ -49,13 +49,13 @@ export type Simple = {
 export type Hash = Buffer
 
 export type Cat = {
-  bird: {[key: Blurp]: Noozle}
+  bird: {[key: string]: Noozle}
   bee: {[key: string]: Noozle}
-  birds: {[key: Blurp]: Noozle[]}
-  pickles: {[key: Blurp]: number}
+  birds: {[key: string]: Noozle[]}
+  pickles: {[key: string]: number}
   penny: {[key: string]: number}
-  pa: {[key: number]: string}
-  wow: {[key: Blurp]: Noozle[]}[]
+  pa: {[key: string]: string}
+  wow: {[key: string]: Noozle[]}[]
   boo: Buffer
   hooHah: Hash
   seqno: rpc.SeqNumber
