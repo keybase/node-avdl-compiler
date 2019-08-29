@@ -5,10 +5,7 @@ pkg           = require '../package.json'
 exports.PythonEmitter = class PythonEmitter extends BaseEmitter
   constructor : () ->
     super
-    @_tab_char = " "*4
-
-
-  tabs : () -> ("    " for i in [0...@_tabs]).join("")
+    @_tab_char = " ".repeat(4)
 
   emit_preface : (infiles, {namespace}) ->
     @output '"""' + namespace

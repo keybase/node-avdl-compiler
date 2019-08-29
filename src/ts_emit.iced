@@ -5,7 +5,7 @@ pkg        = require '../package.json'
 exports.TypescriptEmitter = class TypescriptEmitter extends BaseEmitter
   constructor : () ->
     super
-    @_tab_char = " "*2
+    @_tab_char = " ".repeat(2)
 
   emit_preface : (infiles, {namespace}) ->
     @output "/*"
