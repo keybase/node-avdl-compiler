@@ -65,8 +65,8 @@ exports.Main = class Main
       @infile = argv.i
       unless @outfile? and @infile?
         err = new Error "need an [-i <infile>] and a [-o <outfile>]"
-    if not argv.l? or not argv.l.match /^(go|typescript)$/
-      err = new Error "must specify a language; candidates are: {'go', 'typescript'}"
+    if not argv.l? or not argv.l.match /^(go|typescript|python)$/
+      err = new Error "must specify a language; candidates are: {'go', 'typescript', 'python'}"
     else
       @lang = argv.l
     @clean = argv.c
@@ -78,6 +78,7 @@ exports.Main = class Main
     extension = switch @lang
       when "typescript" then ".ts"
       when "go" then ".go"
+      when "py" then ".py"
     pathmod.join @outdir, ((pathmod.basename f, '.avdl') + extension)
 
   #---------------
