@@ -28,6 +28,56 @@ describe "GoEmitter", () ->
       return
     return
 
+  describe "emit_imports", () ->
+    it "should handle both GOPATH based paths and relative paths", () ->
+      imports = [
+        {
+          path: "../gregor1",
+          type: "idl",
+          import_as: "gregor1"
+        },
+        {
+          path:  "github.com/keybase/client/go/protocol/keybase1",
+          type: "idl",
+          import_as: "keybase1"
+        },
+      ]
+
+      emitter.emit_imports {imports, messages: {}, types: []}, 'location/of/my/output.go', false
+      code = emitter._code.join "\n"
+
+      expect(code).toBe('''
+        import (
+        \tgregor1 "github.com/keybase/node-avdl-compiler/location/of/gregor1"
+        \tkeybase1 "github.com/keybase/client/go/protocol/keybase1"
+        )
+      ''')
+      return
+
+    it "should ignore packages that aren't imported with a package name", () ->
+      imports = [
+        {
+          path: "common.avdl",
+          type: "idl"
+        }
+      ]
+
+      emitter.emit_imports {imports, messages: {}, types: []}, 'location/of/my/output.go', false
+      code = emitter._code.join "\n"
+
+      expect(code).toBe("")
+      return
+
+    it "should only import the rpc and content packages if types_only is false", () ->
+
+      return
+
+    it "should output the errors package if there are variants", () ->
+
+      return
+
+    return
+
   describe "emit_typedef", () ->
     it "Should emit a string typedef", () ->
       type = {
