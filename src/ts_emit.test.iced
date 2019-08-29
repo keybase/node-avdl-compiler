@@ -6,6 +6,19 @@ describe "TypescriptEmitter", () ->
   beforeEach () ->
     emitter = new TypescriptEmitter
 
+  describe "output_doc", () ->
+    it "should output a TSDoc comment", () ->
+      emitter.output_doc "This is a test comment with\na new line."
+      code = emitter._code.join "\n"
+      expect(code).toBe("""
+        /**
+         * This is a test comment with
+         * a new line.
+         */
+      """)
+      return
+    return
+
   describe "emit_preface", () ->
     it "Should emit a preface", () ->
       emitter.emit_preface ["./my_test_file.avdl"], {namespace: "chat1"}
