@@ -84,7 +84,7 @@ describe "TypescriptEmitter", () ->
       code = emitter._code.join "\n"
 
       expect(code).toBe("""
-        export type BuildPaymentID = string
+        export type BuildPaymentID = string\n
       """)
       return
     return
@@ -296,7 +296,7 @@ describe "TypescriptEmitter", () ->
       code = emitter._code.join "\n"
 
       expect(code).toBe("""
-        export type InboxView = { rtype: InboxResType.VERSIONHIT } | { rtype: InboxResType.FULL, FULL: InboxViewFull | null }
+        export type InboxView = { rtype: InboxResType.VERSIONHIT } | { rtype: InboxResType.FULL, FULL: InboxViewFull | null }\n
       """)
       return
     return

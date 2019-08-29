@@ -61,6 +61,7 @@ exports.TypescriptEmitter = class TypescriptEmitter extends BaseEmitter
 
   emit_typedef : (t) ->
     @output "export type #{t.name} = #{@emit_field_type(t.typedef).type}"
+    @output ""
 
   emit_imports : ({imports}) ->
     imports = _.uniqWith imports, _.isEqual
@@ -101,14 +102,16 @@ exports.TypescriptEmitter = class TypescriptEmitter extends BaseEmitter
     @output "}"
 
   emit_variant : (t) ->
-    cases = t.cases.map (c) ->
-      if c.label.def then return null
-      bodyType = switch
-        when c.body == null then 'null'
-        when typeof c.body == 'string' then c.body
-        when c.body.type == 'array' then c.body.items + '[]'
-        else ''
-      bodyStr = if c.body then ", #{c.label.name}: #{bodyType} | null" else ''
-      "{ #{t.switch.name}: #{t.switch.type}.#{c.label.name}#{bodyStr} }"
-
+    cases = t.cases
+      .map((c) ->
+        if c.label.def then return null
+        bodyType = switch
+          when c.body == null then 'null'
+          when typeof c.body == 'string' then c.body
+          when c.body.type == 'array' then c.body.items + '[]'
+          else ''
+        bodyStr = if c.body then ", #{c.label.name}: #{bodyType} | null" else ''
+        "{ #{t.switch.name}: #{t.switch.type}.#{c.label.name}#{bodyStr} }")
+      .filter(Boolean)
     @output "export type #{t.name} = #{cases.join(" | ")}"
+    @output ""
