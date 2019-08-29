@@ -14,7 +14,8 @@ before_script:
     - tar -Pczf ${TRAVIS_TMPDIR}/src_archive.tar.gz -C ${TRAVIS_BUILD_DIR} . && tar -Pxzf ${TRAVIS_TMPDIR}/src_archive.tar.gz -C ${TRAVIS_HOME}/gopath/src/github.com/$REPO
     - export TRAVIS_BUILD_DIR=${TRAVIS_HOME}/gopath/src/github.com/$REPO
     - cd ${TRAVIS_HOME}/gopath/src/github.com/$REPO
-    - npm install -g npm@6.4.1
+    - npm install -g npm@latest
+    - npm install
 script:
  - make install
  - make CI_TAGS="--tags=noresinit" test
