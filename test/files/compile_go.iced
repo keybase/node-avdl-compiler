@@ -1,4 +1,3 @@
-
 {Main} = require '../..'
 fs = require 'fs'
 

@@ -47,7 +47,7 @@ describe "GoEmitter", () ->
         },
       ]
 
-      emitter.emit_imports {imports, messages: {}, types: []}, 'location/of/my/output.go', true
+      emitter.emit_imports {imports, messages: {}, types: []}, 'location/of/my/output.go', {types_only: true}
       code = emitter._code.join "\n"
 
       expect(code).toBe('''
@@ -66,7 +66,7 @@ describe "GoEmitter", () ->
         }
       ]
 
-      emitter.emit_imports {imports, messages: {}, types: []}, 'location/of/my/output.go', true
+      emitter.emit_imports {imports, messages: {}, types: []}, 'location/of/my/output.go', {types_only: true}
       code = emitter._code.join "\n"
       expect(code).toBe("""
       import (
@@ -75,7 +75,7 @@ describe "GoEmitter", () ->
       return
 
     it "should only import the rpc package if types_only is false", () ->
-      emitter.emit_imports {imports: [], messages: {}, types: []}, 'location/of/my/output.go', false
+      emitter.emit_imports {imports: [], messages: {}, types: []}, 'location/of/my/output.go', {types_only: false}
       code = emitter._code.join "\n"
       expect(code).toBe("""
         import (
@@ -85,7 +85,7 @@ describe "GoEmitter", () ->
       return
 
     it "should only import the content package if types_only is false and the file contains messages", () ->
-      emitter.emit_imports {imports: [], messages: {fake_message: 'blah'}, types: []}, 'location/of/my/output.go', false
+      emitter.emit_imports {imports: [], messages: {fake_message: 'blah'}, types: []}, 'location/of/my/output.go', {types_only: false}
       code = emitter._code.join "\n"
       expect(code).toBe("""
         import (
@@ -99,7 +99,7 @@ describe "GoEmitter", () ->
       emitter.emit_imports {imports: [], messages: {}, types: [{
         type: "variant",
         name: "TextPaymentResult",
-      }]}, 'location/of/my/output.go', true
+      }]}, 'location/of/my/output.go', {types_only: true}
       code = emitter._code.join "\n"
       expect(code).toBe("""
         import (

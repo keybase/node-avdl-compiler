@@ -19,3 +19,9 @@ exports.PythonEmitter = class PythonEmitter extends BaseEmitter
       @output " - #{path_lib.relative(process.cwd(), infile)}"
     @output '"""'
     @output ""
+
+
+  # TODO: This should be removed in favor of the complete definition in base_emitter once more methods are defined
+  run : (infiles, outfile, json, options) ->
+    @emit_preface infiles, json, options
+    @_code

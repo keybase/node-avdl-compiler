@@ -572,7 +572,7 @@ exports.GoEmitter = class GoEmitter extends BaseEmitter
     @output ""
     @_pkg = namespace
 
-  emit_imports : ({imports, messages, types}, outfile, types_only) ->
+  emit_imports : ({imports, messages, types}, outfile, {types_only}) ->
     @output "import ("
     @tab()
     if not types_only

@@ -36,7 +36,10 @@ exports.BaseEmitter = class BaseEmitter
 
   `run` takes 4 arguments:
    - `infiles`: An array of strings. Each element is the path to an input file.
-   - `
+   - `outfile`: The file to output.
+   - `json`: A representation of our abstract syntax tree
+   - `options`
+     - `types_only`: Whether just types or types and interfaces should be generated
 
   The emitter calls 3-4 different internal parsing functions. In order:
    - emit_prefice
@@ -46,11 +49,11 @@ exports.BaseEmitter = class BaseEmitter
 
   Returns an array of strings, with each element corresponding to the ith line of the output code.
   ###
-  run : ({infiles, outfile, json, types_only}) ->
-    @emit_preface infiles, json, {types_only}
-    @emit_imports json, outfile, types_only
+  run : (infiles, outfile, json, options = {}) ->
+    @emit_preface infiles, json, options
+    @emit_imports json, outfile, options
     @emit_types json
-    @emit_interface json unless types_only
+    @emit_interface json unless options.types_only
     @_code
 
 
@@ -74,7 +77,7 @@ exports.BaseEmitter = class BaseEmitter
    - `outfile`: A string representing the output file
    - `types_only`: Whether just types or types and interfaces should be generated
   ###
-  emit_imports : (json, outfile, types_only) ->
+  emit_imports : (json, outfile, {types_only}) ->
     throw new TypeError("emit_imports should be implemented by the child class")
 
 

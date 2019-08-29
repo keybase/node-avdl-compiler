@@ -29,7 +29,7 @@ emit = ( { infiles, outfile, json, lang, types_only }, cb) ->
     when "typescript" then new TypescriptEmitter()
     when "python" then new PythonEmitter()
 
-  code = emitter.run { infiles, outfile, json, types_only }
+  code = emitter.run infiles, outfile, json, {types_only}
   cb null, code
 
 #================================================
