@@ -13,7 +13,6 @@ exports.BaseEmitter = class BaseEmitter
       throw new TypeError("Can not construct abstract class.")
     @_code = []
     @_tabs = 0
-    # @_pkg = null
 
 
   tab : () -> @_tabs++
@@ -40,12 +39,6 @@ exports.BaseEmitter = class BaseEmitter
    - `json`: A representation of our abstract syntax tree
    - `options`
      - `types_only`: Whether just types or types and interfaces should be generated
-
-  The emitter calls 3-4 different internal parsing functions. In order:
-   - emit_prefice
-   - emit_imports
-   - emit_types
-   - emit_interface (Only called when types_only is false)
 
   Returns an array of strings, with each element corresponding to the ith line of the output code.
   ###
