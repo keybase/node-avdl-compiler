@@ -43,14 +43,14 @@ describe "GoEmitter", () ->
         },
       ]
 
-      emitter.emit_imports {imports, messages: {}, types: []}, 'location/of/my/output.go', false
+      emitter.emit_imports {imports, messages: {}, types: []}, 'location/of/my/output.go', true
       code = emitter._code.join "\n"
 
       expect(code).toBe('''
         import (
         \tgregor1 "github.com/keybase/node-avdl-compiler/location/of/gregor1"
         \tkeybase1 "github.com/keybase/client/go/protocol/keybase1"
-        )
+        )\n\n
       ''')
       return
 
@@ -62,18 +62,46 @@ describe "GoEmitter", () ->
         }
       ]
 
-      emitter.emit_imports {imports, messages: {}, types: []}, 'location/of/my/output.go', false
+      emitter.emit_imports {imports, messages: {}, types: []}, 'location/of/my/output.go', true
       code = emitter._code.join "\n"
-
-      expect(code).toBe("")
+      expect(code).toBe("""
+      import (
+      )\n\n
+      """)
       return
 
-    it "should only import the rpc and content packages if types_only is false", () ->
+    it "should only import the rpc package if types_only is false", () ->
+      emitter.emit_imports {imports: [], messages: {}, types: []}, 'location/of/my/output.go', false
+      code = emitter._code.join "\n"
+      expect(code).toBe("""
+        import (
+        \t"github.com/keybase/go-framed-msgpack-rpc/rpc"
+        )\n\n
+      """)
+      return
 
+    it "should only import the content package if types_only is false and the file contains messages", () ->
+      emitter.emit_imports {imports: [], messages: {fake_message: 'blah'}, types: []}, 'location/of/my/output.go', false
+      code = emitter._code.join "\n"
+      expect(code).toBe("""
+        import (
+        \t"github.com/keybase/go-framed-msgpack-rpc/rpc"
+        \tcontext "golang.org/x/net/context"
+        )\n\n
+      """)
       return
 
     it "should output the errors package if there are variants", () ->
-
+      emitter.emit_imports {imports: [], messages: {}, types: [{
+        type: "variant",
+        name: "TextPaymentResult",
+      }]}, 'location/of/my/output.go', true
+      code = emitter._code.join "\n"
+      expect(code).toBe("""
+        import (
+        \t"errors"
+        )\n\n
+      """)
       return
 
     return
