@@ -23,6 +23,42 @@ describe "TypescriptEmitter", () ->
       return
     return
 
+  describe "emit_imports", () ->
+    it "should not modify the given path", () ->
+      imports = [
+        {
+          path: "../gregor1",
+          type: "idl",
+          import_as: "gregor1"
+        },
+        {
+          path:  "github.com/keybase/client/go/protocol/keybase1",
+          type: "idl",
+          import_as: "keybase1"
+        }
+      ]
+      emitter.emit_imports {imports, messages: {}, types: []}, 'location/of/my/output.go'
+      code = emitter._code.join "\n"
+      expect(code).toBe("""
+        import * as gregor1 from '../gregor1'
+        import * as keybase1 from 'github.com/keybase/client/go/protocol/keybase1'\n
+      """)
+
+      return
+
+    it "should ignore packages without an import_as field", () ->
+      imports = [
+        {
+          path: "../common.avdl",
+          type: "idl",
+        }
+      ]
+      emitter.emit_imports {imports, messages: {}, types: []}, 'location/of/my/output.go'
+      code = emitter._code.join "\n"
+      expect(code).toBe("")
+      return
+    return
+
   describe "emit_typedef", () ->
     it "should emit a type definition/alias", () ->
       type = {
@@ -99,7 +135,7 @@ describe "TypescriptEmitter", () ->
       expect(code).toBe("""
         export type TestRecord = {
           superCool: MySuperCoolCustomType
-        }
+        }\n
       """)
       return
 

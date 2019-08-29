@@ -1,6 +1,7 @@
 path_lib   = require 'path'
 {BaseEmitter} = require './base_emitter'
 pkg        = require '../package.json'
+_ = require('lodash')
 
 exports.TypescriptEmitter = class TypescriptEmitter extends BaseEmitter
   constructor : () ->
@@ -63,12 +64,13 @@ exports.TypescriptEmitter = class TypescriptEmitter extends BaseEmitter
 
   emit_imports : ({imports}) ->
     imports = _.uniqWith imports, _.isEqual
+    imports_to_emit = imports.filter((imp) -> imp.path.indexOf('/') >= 0)
 
-    for {import_as, path} in imports when path.indexOf('/') >= 0
+    for {import_as, path} in imports_to_emit
       if not import_as
         continue
       @output "import * as #{import_as} from '#{path}'"
-    @output ""
+    @output "" if imports_to_emit.length > 0
 
   emit_fixed : (t) ->
     @output "export type #{t.name} = string | null"
