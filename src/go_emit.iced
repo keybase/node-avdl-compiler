@@ -77,13 +77,15 @@ exports.GoEmitter = class GoEmitter extends BaseEmitter
           optional = true
           "*" + @emit_field_type(t[1]).type
         else
-          "ERROR"
+          throw new Error "Unrecognized type"
       else if t.type is "array"
         "[]" + @emit_field_type(t.items).type
       else if t.type is "map"
         @make_map_type { t }
-      else "ERROR"
-    else "ERROR"
+      else
+        throw new Error "Unrecognized type"
+    else
+      throw new Error "Unrecognized type"
     type = "*" + type if pointed
     { type , optional }
 
