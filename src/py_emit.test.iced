@@ -101,12 +101,17 @@ describe "PythonEmitter", () ->
           "V2_2",
           "V3_3"
         ]
+        "doc": "This is a docstring\nhi"
       }
       emitter.emit_enum test_enum
       code = emitter._code.join "\n"
 
       expect(code).toBe("""
         class AuditVersion(Enum):
+            \"\"\"
+            This is a docstring
+            hi
+            \"\"\"
             V0 = 0
             V1 = 1
             V2 = 2

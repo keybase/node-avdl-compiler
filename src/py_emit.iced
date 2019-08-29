@@ -8,6 +8,27 @@ exports.PythonEmitter = class PythonEmitter extends BaseEmitter
     super
     @_tab_char = " ".repeat(4)
 
+  output_doc : (d) ->
+    if d?
+      @output '"""'
+      for line in d.split /\n/
+        @output line.replace /^\s*/, ''
+      @output '"""'
+
+  emit_type : (type) ->
+    switch type.type
+      when "record"
+        if type.typedef
+          @emit_typedef type
+        else
+          @emit_record type
+      when "fixed"
+        @emit_fixed type
+      when "enum"
+        @emit_enum type
+      when "variant"
+        @emit_variant type
+
   emit_primitive_type : (m) ->
     map =
       string : "str"
@@ -62,6 +83,7 @@ exports.PythonEmitter = class PythonEmitter extends BaseEmitter
   emit_enum : (t) ->
     @output "class #{t.name}(Enum):"
     @tab()
+    @output_doc t.doc
     for s, _ in t.symbols
       [e_name..., e_num] = s.split("_")
       e_name = e_name.join("_")
