@@ -40,8 +40,7 @@ exports.TypescriptEmitter = class TypescriptEmitter extends BaseEmitter
     map[m] or m
 
   make_map_type : ({t}) ->
-    key_type = if t.keys? then @emit_field_type(t.keys).type else "string"
-    "{[key: #{key_type}]: #{@emit_field_type(t.values).type}}"
+    "{[key: string]: #{@emit_field_type(t.values).type}}"
 
   emit_field_type : (t) ->
     optional = false
