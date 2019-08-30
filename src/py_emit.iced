@@ -19,6 +19,6 @@ exports.PythonEmitter = class PythonEmitter extends BaseEmitter
 
 
   # TODO: This should be removed in favor of the complete definition in base_emitter once more methods are defined
-  run : (infiles, outfile, json, options) ->
+  run : ({infiles, outfile, json, options}) ->
     @emit_preface infiles, json, options
     @_code

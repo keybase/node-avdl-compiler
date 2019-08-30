@@ -314,5 +314,4 @@ describe "TypescriptEmitter", () ->
       """)
       return
     return
-
   return

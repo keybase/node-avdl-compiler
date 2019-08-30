@@ -29,8 +29,9 @@ emit = ( { infiles, outfile, json, lang, types_only }, cb) ->
     when "go" then new GoEmitter()
     when "typescript" then new TypescriptEmitter()
     when "python" then new PythonEmitter()
+    else throw new Error "Unrecognized language: #{@lang}"
 
-  code = emitter.run infiles, outfile, json, {types_only}
+  code = emitter.run {infiles, outfile, json, options: {types_only}}
   cb null, code
 
 #================================================
@@ -90,6 +91,7 @@ exports.Main = class Main
       when "typescript" then ".ts"
       when "go" then ".go"
       when "py" then ".py"
+      else throw new Error "Unrecognized language: #{@lang}"
     pathmod.join @outdir, ((pathmod.basename f, '.avdl') + extension)
 
   #---------------
@@ -151,6 +153,8 @@ exports.Main = class Main
       when "python"
         outfile = pathmod.join @outdir, '__init__.py'
         await @do_files_as_one { outfile }, esc defer()
+      else
+        throw new Error "Unrecognized language: #{@lang}"
     cb null
 
   #---------------

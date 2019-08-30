@@ -10,26 +10,24 @@ BaseEmitter is an abstract base class that every emitter should inherit from. It
 exports.BaseEmitter = class BaseEmitter
   constructor : () ->
     if this.constructor == BaseEmitter
-      throw new TypeError("Can not construct abstract class.")
+      throw new Error "Can not construct abstract class."
     @_code = []
     @_tabs = 0
-    # @_pkg = null
-
 
   tab : () -> @_tabs++
   untab : () -> @_tabs--
   tabs : () -> (@_tab_char for i in [0...@_tabs]).join("")
 
-  output : (l, {frag} = {}) ->
+  output : (line, {frag} = {}) ->
     if @_last_frag
-      @_code[@_code.length-1] += l
+      @_code[@_code.length-1] += line
       @_last_frag = false
     else
-      @_code.push (@tabs() + l)
+      @_code.push (@tabs() + line)
     if frag
       @_last_frag = true
     else
-      @_code.push("") if (l is "}" or l is ")") and @_tabs is 0
+      @_code.push("") if (line is "}" or line is ")") and @_tabs is 0
 
   ###
   Runs the emitter.
@@ -41,15 +39,11 @@ exports.BaseEmitter = class BaseEmitter
    - `options`
      - `types_only`: Whether just types or types and interfaces should be generated
 
-  The emitter calls 3-4 different internal parsing functions. In order:
-   - emit_prefice
-   - emit_imports
-   - emit_types
-   - emit_interface (Only called when types_only is false)
-
   Returns an array of strings, with each element corresponding to the ith line of the output code.
   ###
-  run : (infiles, outfile, json, options = {}) ->
+  run : ({infiles, outfile, json, options}) ->
+    options = {} unless options?
+    infiles.sort()
     @emit_preface infiles, json, options
     @emit_imports json, outfile, options
     @emit_types json
@@ -67,7 +61,7 @@ exports.BaseEmitter = class BaseEmitter
      - `types_only`: Whether just types or types and interfaces should be generated
   ###
   emit_preface : (infiles, json, {types_only}) ->
-    throw new TypeError("emit_preface should be implemented by the child class")
+    throw new Error "emit_preface should be implemented by the child class"
 
   ###
   Emits a preface to the generated file noting information such as the output language, package name, input files, and version of the compiler.
@@ -78,7 +72,7 @@ exports.BaseEmitter = class BaseEmitter
    - `types_only`: Whether just types or types and interfaces should be generated
   ###
   emit_imports : (json, outfile, {types_only}) ->
-    throw new TypeError("emit_imports should be implemented by the child class")
+    throw new Error "emit_imports should be implemented by the child class"
 
 
   ###
@@ -112,6 +106,8 @@ exports.BaseEmitter = class BaseEmitter
         @emit_enum type, nostring
       when "variant"
         @emit_variant type
+      else
+        throw new Error "Unrecognized type: #{type}"
 
   ###
   Output any documentation comments associated with a type.
@@ -120,7 +116,7 @@ exports.BaseEmitter = class BaseEmitter
    - `doc`: The doc string that should be emitted.
   ###
   output_doc : (doc) ->
-    throw new TypeError("output_doc should be implemented by the child class")
+    throw new Error "output_doc should be implemented by the child class"
 
   ###
   Emit a type alias.
@@ -130,7 +126,7 @@ exports.BaseEmitter = class BaseEmitter
    - `type`: The type object that should be emitted.
   ###
   emit_typedef : (type) ->
-    throw new TypeError("emit_typedef should be implemented by the child class")
+    throw new Error "emit_typedef should be implemented by the child class"
 
   ###
   Emit a record/object.
@@ -140,7 +136,7 @@ exports.BaseEmitter = class BaseEmitter
    - `type`: The type object that should be emitted.
   ###
   emit_record : (type) ->
-    throw new TypeError("emit_record should be implemented by the child class")
+    throw new Error "emit_record should be implemented by the child class"
 
   ###
   Emit a fixed length field.
@@ -150,7 +146,7 @@ exports.BaseEmitter = class BaseEmitter
    - `type`: The type object that should be emitted.
   ###
   emit_fixed : (type) ->
-    throw new TypeError("emit_fixed should be implemented by the child class")
+    throw new Error "emit_fixed should be implemented by the child class"
 
   ###
   Emit an enum.
@@ -160,7 +156,7 @@ exports.BaseEmitter = class BaseEmitter
    - `type`: The type object that should be emitted.
   ###
   emit_enum : (type) ->
-    throw new TypeError("emit_enum should be implemented by the child class")
+    throw new Error "emit_enum should be implemented by the child class"
 
   ###
   Emits a variant.
@@ -172,7 +168,7 @@ exports.BaseEmitter = class BaseEmitter
    - `type`: The type object that should be emitted.
   ###
   emit_variant : (type) ->
-    throw new TypeError("emit_variant should be implemented by the child class")
+    throw new Error "emit_variant should be implemented by the child class"
 
   ###
   Emit all functions defined in the input file(s).
@@ -181,4 +177,4 @@ exports.BaseEmitter = class BaseEmitter
    - `json`: A representation of our abstract syntax tree
   ###
   emit_interface : ({protocol, messages, doc}) ->
-    throw new TypeError("emit_interface should be implemented by the child class")
+    throw new Error "emit_interface should be implemented by the child class"
