@@ -20,7 +20,7 @@ export type Joe = number
 export type R = {
   bar: keybase1.UID
   baz: keybase1.UID
-  woop: string
+  woop?: string
 }
 
 export enum Types {
