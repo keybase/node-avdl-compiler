@@ -8,9 +8,10 @@ exports.TypescriptEmitter = class TypescriptEmitter extends BaseEmitter
     super
     @_tab_char = " ".repeat(2)
 
-  emit_preface : (infiles, {namespace}) ->
+  emit_preface : (infiles, {namespace, doc}) ->
     @output "/*"
     @output " * #{namespace}"
+    @output " * #{doc}" if doc
     @output " *"
     @output " * Auto-generated to TypeScript types by #{pkg.name} v#{pkg.version} (#{pkg.homepage})"
     @output " * Input files:"
@@ -102,17 +103,17 @@ exports.TypescriptEmitter = class TypescriptEmitter extends BaseEmitter
     @untab()
     @output "}"
 
-  emit_variant : (t) ->
-    cases = t.cases
-      .map((c) =>
-        if c.label.def then return null
+  emit_variant : (type) ->
+    cases = type.cases
+      .map((type_case) =>
+        if type_case.label.def then return null
         bodyType = switch
-          when c.body == null then 'null'
-          when typeof c.body == 'string' then @convert_primitive_type(c.body)
-          when c.body.type == 'array' then c.body.items + '[]'
+          when type_case.body == null then 'null'
+          when typeof type_case.body == 'string' then @convert_primitive_type type_case.body
+          when type_case.body.type == 'array' then @convert_primitive_type(type_case.body.items) + '[]'
           else ''
-        bodyStr = if c.body then ", #{c.label.name}: #{bodyType} | null" else ''
-        "{ #{t.switch.name}: #{t.switch.type}.#{c.label.name}#{bodyStr} }")
+        bodyStr = if type_case.body then ", #{type_case.label.name}: #{bodyType} | null" else ''
+        "{ #{type.switch.name}: #{type.switch.type}.#{type_case.label.name}#{bodyStr} }")
       .filter(Boolean)
-    @output "export type #{t.name} = #{cases.join(" | ")}"
+    @output "export type #{type.name} = #{cases.join(" | ")}"
     @output ""

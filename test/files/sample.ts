@@ -1,5 +1,6 @@
 /*
  * sample.1
+ * SampleInterface protocol is a sample among samples.
  *
  * Auto-generated to TypeScript types by avdl-compiler v1.4.1 (https://github.com/keybase/node-avdl-compiler)
  * Input files:
