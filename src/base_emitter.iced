@@ -14,6 +14,7 @@ exports.BaseEmitter = class BaseEmitter
     @_code = []
     @_tabs = 0
 
+
   tab : () -> @_tabs++
   untab : () -> @_tabs--
   tabs : () -> (@_tab_char for i in [0...@_tabs]).join("")
@@ -117,6 +118,7 @@ exports.BaseEmitter = class BaseEmitter
   ###
   output_doc : (doc) ->
     throw new Error "output_doc should be implemented by the child class"
+
 
   ###
   Emit a type alias.

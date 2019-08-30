@@ -304,13 +304,23 @@ describe "TypescriptEmitter", () ->
             },
             body: "int"
           },
+          {
+            label: {
+              name: "DECK",
+              def: false
+            },
+            body: {
+              type: "array",
+              items: "int"
+            }
+          }
         ]
 
       emitter.emit_variant variant
       code = emitter._code.join "\n"
 
       expect(code).toBe("""
-        export type MyVariant = { rtype: InboxResType.VERSIONHIT } | { rtype: InboxResType.FULL, FULL: InboxViewFull | null } | { rtype: InboxResType.HELLO, HELLO: boolean | null }\n
+        export type MyVariant = { rtype: InboxResType.VERSIONHIT } | { rtype: InboxResType.FULL, FULL: InboxViewFull | null } | { rtype: InboxResType.HELLO, HELLO: boolean | null } | { rtype: InboxResType.DECK, DECK: number[] | null }\n
       """)
       return
     return

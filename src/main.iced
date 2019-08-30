@@ -49,7 +49,6 @@ merge_asts = (ast1, ast2) ->
     else
       return undefined
 
-
 #================================================
 
 exports.Main = class Main
