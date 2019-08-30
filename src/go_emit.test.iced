@@ -1,4 +1,4 @@
-{GoEmitter} = require("./emit");
+{GoEmitter} = require("./go_emit");
 pkg         = require '../package.json'
 
 describe "GoEmitter", () ->
@@ -8,22 +8,26 @@ describe "GoEmitter", () ->
 
   describe "emit_preface", () ->
     it "Should emit a preface", () ->
-      emitter.emit_preface { infile: "./my_test_file.avdl" }
+      emitter.emit_preface ["./my_test_file.avdl"], {namespace: "chat1"}
       code = emitter._code.join "\n"
 
       expect(code).toBe("""
-        // Auto-generated types and interfaces using avdl-compiler v#{pkg.version} (https://github.com/keybase/node-avdl-compiler)
-        //   Input file: my_test_file.avdl\n
+        // Auto-generated to Go types and interfaces using avdl-compiler v#{pkg.version} (https://github.com/keybase/node-avdl-compiler)
+        //   Input file: my_test_file.avdl
+
+        package chat1\n
       """)
       return
 
     it "Should note that it only generated types if types_only is enabled", () ->
-      emitter.emit_preface { infile: "./my_test_file.avdl", types_only: true }
+      emitter.emit_preface ["./my_test_file.avdl"], {namespace: "chat1"}, {types_only: true}
       code = emitter._code.join "\n"
 
       expect(code).toBe("""
-        // Auto-generated types using avdl-compiler v#{pkg.version} (https://github.com/keybase/node-avdl-compiler)
-        //   Input file: my_test_file.avdl\n
+        // Auto-generated to Go types using avdl-compiler v#{pkg.version} (https://github.com/keybase/node-avdl-compiler)
+        //   Input file: my_test_file.avdl
+
+        package chat1\n
       """)
       return
     return
@@ -43,7 +47,7 @@ describe "GoEmitter", () ->
         },
       ]
 
-      emitter.emit_imports {imports, messages: {}, types: []}, 'location/of/my/output.go', true
+      emitter.emit_imports {imports, messages: {}, types: []}, 'location/of/my/output.go', {types_only: true}
       code = emitter._code.join "\n"
 
       expect(code).toBe('''
@@ -62,7 +66,7 @@ describe "GoEmitter", () ->
         }
       ]
 
-      emitter.emit_imports {imports, messages: {}, types: []}, 'location/of/my/output.go', true
+      emitter.emit_imports {imports, messages: {}, types: []}, 'location/of/my/output.go', {types_only: true}
       code = emitter._code.join "\n"
       expect(code).toBe("""
       import (
@@ -71,7 +75,7 @@ describe "GoEmitter", () ->
       return
 
     it "should only import the rpc package if types_only is false", () ->
-      emitter.emit_imports {imports: [], messages: {}, types: []}, 'location/of/my/output.go', false
+      emitter.emit_imports {imports: [], messages: {}, types: []}, 'location/of/my/output.go', {types_only: false}
       code = emitter._code.join "\n"
       expect(code).toBe("""
         import (
@@ -81,7 +85,7 @@ describe "GoEmitter", () ->
       return
 
     it "should only import the content package if types_only is false and the file contains messages", () ->
-      emitter.emit_imports {imports: [], messages: {fake_message: 'blah'}, types: []}, 'location/of/my/output.go', false
+      emitter.emit_imports {imports: [], messages: {fake_message: 'blah'}, types: []}, 'location/of/my/output.go', {types_only: false}
       code = emitter._code.join "\n"
       expect(code).toBe("""
         import (
@@ -95,7 +99,7 @@ describe "GoEmitter", () ->
       emitter.emit_imports {imports: [], messages: {}, types: [{
         type: "variant",
         name: "TextPaymentResult",
-      }]}, 'location/of/my/output.go', true
+      }]}, 'location/of/my/output.go', {types_only: true}
       code = emitter._code.join "\n"
       expect(code).toBe("""
         import (
