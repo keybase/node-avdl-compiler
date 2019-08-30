@@ -11,7 +11,9 @@ exports.TypescriptEmitter = class TypescriptEmitter extends BaseEmitter
   emit_preface : (infiles, {namespace, doc}) ->
     @output "/*"
     @output " * #{namespace}"
-    @output " * #{doc}" if doc
+    if doc?
+      for line in doc.split /\n/
+        @output " * " + line.replace /^\s$/, ''
     @output " *"
     @output " * Auto-generated to TypeScript types by #{pkg.name} v#{pkg.version} (#{pkg.homepage})"
     @output " * Input files:"
@@ -20,14 +22,14 @@ exports.TypescriptEmitter = class TypescriptEmitter extends BaseEmitter
     @output " */"
     @output ""
 
-  output_doc : (d) ->
-    if d?
+  output_doc : (doc) ->
+    if doc?
       @output "/**"
-      for line in d.split /\n/
+      for line in doc.split /\n/
         @output " * " + line.replace /^\s$/, ''
       @output " */"
 
-  convert_primitive_type : (m) ->
+  convert_primitive_type : (type) ->
     map =
       bool : "boolean"
       bytes : "Buffer"
@@ -38,10 +40,10 @@ exports.TypescriptEmitter = class TypescriptEmitter extends BaseEmitter
       int : "number"
       uint64 : "number"
       int64 : "number"
-    map[m] or m
+    map[type] or type
 
-  make_map_type : ({t}) ->
-    "{[key: string]: #{@emit_field_type(t.values).type}}"
+  make_map_type : (type) ->
+    "{[key: string]: #{@emit_field_type(type.values).type}}"
 
   emit_field_type : (t) ->
     optional = false
@@ -56,13 +58,13 @@ exports.TypescriptEmitter = class TypescriptEmitter extends BaseEmitter
       else if t.type is "array"
         @emit_field_type(t.items).type + "[]"
       else if t.type is "map"
-        @make_map_type { t }
+        @make_map_type t
       else "ERROR"
     else "ERROR"
     { type, optional }
 
-  emit_typedef : (t) ->
-    @output "export type #{t.name} = #{@emit_field_type(t.typedef).type}"
+  emit_typedef : (type) ->
+    @output "export type #{type.name} = #{@emit_field_type(type.typedef).type}"
     @output ""
 
   emit_imports : ({imports}) ->
@@ -70,33 +72,31 @@ exports.TypescriptEmitter = class TypescriptEmitter extends BaseEmitter
     imports_to_emit = imports.filter((imp) -> imp.path.indexOf('/') >= 0)
 
     for {import_as, path} in imports_to_emit
-      if not import_as
-        continue
-      @output "import * as #{import_as} from '#{path}'"
+      @output "import * as #{import_as} from '#{path}'" if import_as
     @output "" if imports_to_emit.length > 0
 
-  emit_fixed : (t) ->
-    @output "export type #{t.name} = string | null"
+
+  emit_fixed : (type) ->
+    @output "export type #{type.name} = string | null"
 
   emit_field : ({name, type}) ->
     {type, optional} = @emit_field_type(type)
     @output "#{name}#{if optional then '?' else ''}: #{type}"
 
-  emit_record : (obj) ->
-    @output "export type #{obj.name} = {"
+  emit_record : (record) ->
+    @output "export type #{record.name} = {"
     @tab()
-    for f in obj.fields
+    for f in record.fields
       @emit_field
         name : f.name
         type : f.type
-        exported : not(f.internal?)
     @untab()
     @output "}"
 
-  emit_enum : (t) ->
-    @output "export enum #{t.name} {"
+  emit_enum : (type) ->
+    @output "export enum #{type.name} {"
     @tab()
-    for s, _ in t.symbols
+    for s, _ in type.symbols
       [e_name..., e_num] = s.split("_")
       e_name = e_name.join("_")
       @output "#{e_name} = #{e_num},"

@@ -35,7 +35,7 @@ export enum EnumNoString {
   NOSTRING = 0,
 }
 
-export type Boozle = { typ: Types.BOZO, BOZO: number | null } | { typ: Types.BIPPY, BIPPY: string | null } | { typ: Types.AGGLE, AGGLE: int[] | null } | { typ: Types.FLAGGLE, FLAGGLE: boolean[] | null }
+export type Boozle = { typ: Types.BOZO, BOZO: number | null } | { typ: Types.BIPPY, BIPPY: string | null } | { typ: Types.AGGLE, AGGLE: number[] | null } | { typ: Types.FLAGGLE, FLAGGLE: boolean[] | null }
 
 export type Trixie = { typ: Types.NONE } | { typ: Types.BOZO } | { typ: Types.BIPPY, BIPPY: number | null } | { typ: Types.AGGLE } | { typ: Types.FLAGGLE, FLAGGLE: EnumNoString | null }
 
