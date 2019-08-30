@@ -160,7 +160,13 @@ describe "TypescriptEmitter", () ->
           {
             type: [null, "string"],
             name: "maybeStatusDescription"
-          }
+          },
+          {
+            type: "boolean",
+            name: "offline",
+            jsonkey: "offline",
+            optional: true
+          },
         ]
       }
       emitter.emit_record record
@@ -169,6 +175,7 @@ describe "TypescriptEmitter", () ->
       expect(code).toBe("""
         export type TestRecord = {
           maybeStatusDescription?: string
+          offline?: boolean
         }\n
       """)
       return

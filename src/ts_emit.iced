@@ -45,8 +45,8 @@ exports.TypescriptEmitter = class TypescriptEmitter extends BaseEmitter
   make_map_type : (type) ->
     "{[key: string]: #{@emit_field_type(type.values).type}}"
 
-  emit_field_type : (t) ->
-    optional = false
+  emit_field_type : (t, {optionalkey} = {}) ->
+    optional = optionalkey?
     type = if typeof(t) is 'string' then @convert_primitive_type(t)
     else if typeof(t) is 'object'
       if Array.isArray(t)
@@ -79,8 +79,8 @@ exports.TypescriptEmitter = class TypescriptEmitter extends BaseEmitter
   emit_fixed : (type) ->
     @output "export type #{type.name} = string | null"
 
-  emit_field : ({name, type}) ->
-    {type, optional} = @emit_field_type(type)
+  emit_field : ({name, type, optionalkey}) ->
+    {type, optional} = @emit_field_type(type, {optionalkey})
     @output "#{name}#{if optional then '?' else ''}: #{type}"
 
   emit_record : (record) ->
@@ -90,6 +90,7 @@ exports.TypescriptEmitter = class TypescriptEmitter extends BaseEmitter
       @emit_field
         name : f.name
         type : f.type
+        optionalkey : f.optional
     @untab()
     @output "}"
 
