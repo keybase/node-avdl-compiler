@@ -1,7 +1,7 @@
 path_lib   = require 'path'
 {BaseEmitter} = require './base_emitter'
 pkg        = require '../package.json'
-_ = require('lodash')
+{camelCase, uniqBy, uniqWith, isEqual} = require('lodash')
 
 exports.TypescriptEmitter = class TypescriptEmitter extends BaseEmitter
   constructor : () ->
@@ -68,7 +68,7 @@ exports.TypescriptEmitter = class TypescriptEmitter extends BaseEmitter
     @output ""
 
   emit_imports : ({imports}) ->
-    imports = _.uniqWith imports, _.isEqual
+    imports = uniqWith imports, isEqual
     imports_to_emit = imports.filter((imp) -> imp.path.indexOf('/') >= 0)
 
     for {import_as, path} in imports_to_emit
@@ -79,17 +79,22 @@ exports.TypescriptEmitter = class TypescriptEmitter extends BaseEmitter
   emit_fixed : (type) ->
     @output "export type #{type.name} = string | null"
 
-  emit_field : ({name, type, optionalkey}) ->
+  emit_field : ({name, type, jsonkey, optionalkey}) ->
     {type, optional} = @emit_field_type(type, {optionalkey})
-    @output "#{name}#{if optional then '?' else ''}: #{type}"
+    fieldName = camelCase(jsonkey or name)
+    @output "#{fieldName}#{if optional then '?' else ''}: #{type}"
 
   emit_record : (record) ->
     @output "export type #{record.name} = {"
     @tab()
-    for f in record.fields
+    fields = uniqWith record.fields, (a, b) ->
+      camelCase(a.jsonkey or a.name) == camelCase(b.jsonkey or b.name)
+
+    for f in fields
       @emit_field
         name : f.name
         type : f.type
+        jsonkey : f.jsonkey
         optionalkey : f.optional
     @untab()
     @output "}"
@@ -100,7 +105,7 @@ exports.TypescriptEmitter = class TypescriptEmitter extends BaseEmitter
     for s, _ in type.symbols
       [e_name..., e_num] = s.split("_")
       e_name = e_name.join("_")
-      @output "#{e_name} = #{e_num},"
+      @output "#{e_name} = '#{e_name.toLowerCase()}',"
     @untab()
     @output "}"
 

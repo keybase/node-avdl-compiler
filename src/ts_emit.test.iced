@@ -204,6 +204,37 @@ describe "TypescriptEmitter", () ->
       """)
       return
 
+    it "Should use a field's name unless a json key is provided", () ->
+      record = {
+        type: "record",
+        name: "SendRes",
+        fields: [
+          {
+            type: "string",
+            name: "message",
+            jsonkey: "message"
+          },
+          {
+            type: [
+              null,
+              "MessageID"
+            ],
+            name: "messageID",
+            jsonkey: "id"
+          }
+        ]
+      }
+      emitter.emit_record record
+      code = emitter._code.join "\n"
+
+      expect(code).toBe("""
+        export type SendRes = {
+          message: string
+          id?: MessageID
+        }\n
+      """)
+      return
+
     it "Should emit a struct with a map type", () ->
       record = {
         type: "record"
@@ -232,6 +263,39 @@ describe "TypescriptEmitter", () ->
           currencies: {[key: string]: OutsideCurrencyDefinition}
         }\n
       """)
+      return
+
+    it "should remove duplicates", () ->
+      record = {
+        "type": "record",
+        "name": "UnreadUpdate",
+        "fields": [
+          {
+            type: "ConversationID",
+            name: "convID"
+          },
+          {
+            type: "int",
+            name: "unreadMessages"
+          },
+          {
+            type: "int",
+            name: "compatUnreadMessages",
+            mpackkey: "UnreadMessages",
+            jsonkey: "UnreadMessages"
+          }
+        ]
+      }
+      emitter.emit_record record
+      code = emitter._code.join "\n"
+
+      expect(code).toBe("""
+        export type UnreadUpdate = {
+          convId: ConversationID
+          unreadMessages: number
+        }\n
+      """)
+
       return
 
     return
@@ -264,10 +328,10 @@ describe "TypescriptEmitter", () ->
 
       expect(code).toBe("""
         export enum AuditVersion {
-          V0 = 0,
-          V1 = 1,
-          V2 = 2,
-          V3 = 3,
+          V0 = 'v0',
+          V1 = 'v1',
+          V2 = 'v2',
+          V3 = 'v3',
         }\n
       """)
       return

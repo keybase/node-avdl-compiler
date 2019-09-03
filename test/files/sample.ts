@@ -19,20 +19,20 @@ export type Joe = number
  */
 export type R = {
   bar: keybase1.UID
-  baz: keybase1.UID
+  bazJUid: keybase1.UID
   woop?: string
 }
 
 export enum Types {
-  NONE = 0,
-  BOZO = 1,
-  BIPPY = 2,
-  AGGLE = 3,
-  FLAGGLE = 4,
+  NONE = 'none',
+  BOZO = 'bozo',
+  BIPPY = 'bippy',
+  AGGLE = 'aggle',
+  FLAGGLE = 'flaggle',
 }
 
 export enum EnumNoString {
-  NOSTRING = 0,
+  NOSTRING = 'nostring',
 }
 
 export type Boozle = { typ: Types.BOZO, BOZO: number | null } | { typ: Types.BIPPY, BIPPY: string | null } | { typ: Types.AGGLE, AGGLE: number[] | null } | { typ: Types.FLAGGLE, FLAGGLE: boolean[] | null }

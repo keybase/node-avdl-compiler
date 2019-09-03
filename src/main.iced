@@ -6,7 +6,7 @@ avdl2json = require 'avdl2json'
 {make_esc} = require 'iced-error'
 fs = require 'fs'
 pathmod = require 'path'
-_ = require 'lodash'
+{mergeWith} = require 'lodash'
 
 #================================================
 
@@ -43,7 +43,7 @@ output = ({outfile, code}, cb) ->
 #================================================
 
 merge_asts = (ast1, ast2) ->
-  _.mergeWith ast1, ast2, (value1, value2) ->
+  mergeWith ast1, ast2, (value1, value2) ->
     if Array.isArray(value1)
       return value1.concat value2
     else
