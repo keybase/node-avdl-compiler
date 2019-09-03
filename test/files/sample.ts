@@ -52,11 +52,11 @@ export type Hash = Buffer
 export type Cat = {
   bird: {[key: string]: Noozle}
   bee: {[key: string]: Noozle}
-  birds: {[key: string]: Noozle[]}
+  birds: {[key: string]: Noozle[] | null}
   pickles: {[key: string]: number}
   penny: {[key: string]: number}
   pa: {[key: string]: string}
-  wow: {[key: string]: Noozle[]}[]
+  wow: {[key: string]: Noozle[] | null}[] | null
   boo: Buffer
   hooHah: Hash
   seqno: rpc.SeqNumber
