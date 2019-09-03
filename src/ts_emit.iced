@@ -118,7 +118,7 @@ exports.TypescriptEmitter = class TypescriptEmitter extends BaseEmitter
         bodyType = switch
           when type_case.body == null then 'null'
           when typeof type_case.body == 'string' then @convert_primitive_type type_case.body
-          when type_case.body.type == 'array' then @convert_primitive_type(type_case.body.items) + '[] | null'
+          when type_case.body.type == 'array' then @convert_primitive_type(type_case.body.items) + '[]'
           else
             throw new Error "Unrecognized type"
         bodyStr = if type_case.body then ", #{type_case.label.name}: #{bodyType} | null" else ''

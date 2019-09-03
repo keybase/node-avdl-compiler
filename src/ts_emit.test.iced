@@ -199,7 +199,7 @@ describe "TypescriptEmitter", () ->
 
       expect(code).toBe("""
         export type PaymentsPageLocal = {
-          payments: PaymentOrErrorLocal[]
+          payments: PaymentOrErrorLocal[] | null
         }\n
       """)
       return
