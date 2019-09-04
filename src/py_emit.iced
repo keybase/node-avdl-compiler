@@ -32,6 +32,7 @@ exports.PythonEmitter = class PythonEmitter extends BaseEmitter
   emit_primitive_type : (m) ->
     map =
       string : "str"
+      boolean : "bool"
     map[m] or m
 
   emit_field_type : (t, {pointed, optionalkey} = {}) ->
@@ -41,11 +42,11 @@ exports.PythonEmitter = class PythonEmitter extends BaseEmitter
       if Array.isArray(t)
         if not t[0]?
           optional = true
-          "*" + @emit_field_type(t[1]).type
+          @emit_field_type(t[1]).type
         else
           throw new Error "Unrecognized type"
       else if t.type is "array"
-        "[]" + @emit_field_type(t.items).type
+        "List[#{@emit_field_type(t.items).type}]"
       else if t.type is "map"
         @make_map_type t
       else
@@ -68,13 +69,20 @@ exports.PythonEmitter = class PythonEmitter extends BaseEmitter
     @output ""
 
   emit_imports : ({imports}, outfile) ->
+    @output "from dataclasses import dataclass"
+    @output "from enum import Enum"
+    @output "from typing import Dict, List, Optional, Union"
+    @output ""
+    @output "from mashumaro import DataClassJSONMixin"
+    @output ""
+
     imports = uniqWith imports, isEqual
     for {import_as, path} in imports when path.indexOf('/') >= 0
       if not import_as
         continue
-      path = path.replace '/', '.'
+      path = path.replace /\//g, '.'
       # remove the first `.`, since it's extra
-      path = path.slice(1)
+      path = path.slice(1) if path[0] is '.'
       @output "from #{path} import * as #{import_as}"
     @output ""
 
@@ -124,7 +132,7 @@ exports.PythonEmitter = class PythonEmitter extends BaseEmitter
         bodyType = switch
           when type_case.body == null then 'null'
           when typeof type_case.body == 'string' then @emit_primitive_type type_case.body
-          when type_case.body.type == 'array' then @emit_primitive_type(type_case.body.items) + '[]'
+          when type_case.body.type == 'array' then "List[#{@emit_primitive_type(type_case.body.items)}]"
           else
             throw new Error "Unrecognized type"
         @output "@dataclass"

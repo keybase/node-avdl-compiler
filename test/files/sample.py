@@ -5,7 +5,13 @@ Input files:
  - avdl/sample.avdl
 """
 
-from ithub.com.keybase/client/go/protocol/keybase1 import * as keybase1
+from dataclasses import dataclass
+from enum import Enum
+from typing import Dict, List, Optional, Union
+
+from mashumaro import DataClassJSONMixin
+
+from github.com.keybase.client.go.protocol.keybase1 import * as keybase1
 
 Joe = int
 @dataclass
@@ -13,7 +19,6 @@ class R(DataClassJSONMixin):
     bar: keybase1.UID
     bazJUid: keybase1.UID
     woop: Optional[str]
-
 
 
 class Types(Enum):
@@ -39,11 +44,11 @@ class BoozleBIPPY:
 @dataclass
 class BoozleAGGLE:
     typ: Types.AGGLE
-    AGGLE: Optional[int[]]
+    AGGLE: Optional[List[int]]
 @dataclass
 class BoozleFLAGGLE:
     typ: Types.FLAGGLE
-    FLAGGLE: Optional[boolean[]]
+    FLAGGLE: Optional[List[bool]]
 Boozle = Union[BoozleBOZO, BoozleBIPPY, BoozleAGGLE, BoozleFLAGGLE]
 
 @dataclass
@@ -90,8 +95,7 @@ Blurp = Union[Blurptrue, Blurpfalse]
 
 @dataclass
 class Simple(DataClassJSONMixin):
-    s: Optional[*Blurp]
-
+    s: Optional[Blurp]
 
 
 Hash = bytes
@@ -99,15 +103,14 @@ Hash = bytes
 class Cat(DataClassJSONMixin):
     bird: Dict[str, Noozle]
     bee: Dict[str, Noozle]
-    birds: Dict[str, []Noozle]
+    birds: Dict[str, List[Noozle]]
     pickles: Dict[str, int]
     penny: Dict[str, int]
     pa: Dict[str, str]
-    wow: []Dict[str, []Noozle]
+    wow: List[Dict[str, List[Noozle]]]
     boo: bytes
     hooHah: Hash
     seqno: rpc.SeqNumber
-
 
 
 messageID = uint

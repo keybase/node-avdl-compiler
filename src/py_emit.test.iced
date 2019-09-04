@@ -56,6 +56,12 @@ describe "PythonEmitter", () ->
       code = emitter._code.join "\n"
 
       expect(code).toBe("""
+        from dataclasses import dataclass
+        from enum import Enum
+        from typing import Dict, List, Optional, Union
+
+        from mashumaro import DataClassJSONMixin
+
         from ..gregor1 import * as gregor1
         from ..keybase1 import * as keybase1\n
       """)
