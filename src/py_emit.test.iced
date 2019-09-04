@@ -3,6 +3,7 @@ pkg             = require '../package.json'
 
 describe "PythonEmitter", () ->
   emitter = null
+
   beforeEach () ->
     emitter = new PythonEmitter
 
@@ -62,8 +63,8 @@ describe "PythonEmitter", () ->
 
         from mashumaro import DataClassJSONMixin
 
-        from ..gregor1 import * as gregor1
-        from ..keybase1 import * as keybase1\n
+        import gregor1
+        import keybase1\n
       """)
       return
     return

@@ -11,7 +11,7 @@ from typing import Dict, List, Optional, Union
 
 from mashumaro import DataClassJSONMixin
 
-from github.com.keybase.client.go.protocol.keybase1 import * as keybase1
+import keybase1
 
 Joe = int
 @dataclass
@@ -113,5 +113,5 @@ class Cat(DataClassJSONMixin):
     seqno: rpc.SeqNumber
 
 
-messageID = uint
+messageID = int
 BigBytes = Optional[str]

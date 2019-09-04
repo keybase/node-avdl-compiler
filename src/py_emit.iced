@@ -7,6 +7,10 @@ exports.PythonEmitter = class PythonEmitter extends BaseEmitter
   constructor : () ->
     super
     @_tab_char = " ".repeat(4)
+    @_keywords = new Set ['False', 'None', 'True', 'and', 'as', 'assert', 'break', 'class', 'continue', 'def', 'del', 'elif', 'else', 'except', 'finally', 'for', 'from', 'global', 'if', 'import', 'in', 'is', 'lambda', 'nonlocal', 'not', 'or', 'pass', 'raise', 'return', 'try', 'while', 'with', 'yield']
+
+  # format_name : (name, jsonkey) ->
+
 
   output_doc : (d) ->
     if d?
@@ -33,6 +37,11 @@ exports.PythonEmitter = class PythonEmitter extends BaseEmitter
     map =
       string : "str"
       boolean : "bool"
+      double : "float"
+      long : "int"
+      int64 : "int"
+      uint : "int"
+      uint64 : "int"
     map[m] or m
 
   emit_field_type : (t, {pointed, optionalkey} = {}) ->
@@ -80,10 +89,11 @@ exports.PythonEmitter = class PythonEmitter extends BaseEmitter
     for {import_as, path} in imports when path.indexOf('/') >= 0
       if not import_as
         continue
-      path = path.replace /\//g, '.'
-      # remove the first `.`, since it's extra
-      path = path.slice(1) if path[0] is '.'
-      @output "from #{path} import * as #{import_as}"
+      # path = path.replace /\//g, '.'
+      # # remove the first `.`, since it's extra
+      # path = path.slice(1) if path[0] is '.'
+      # @output "import #{path} as #{import_as}"
+      @output "import #{import_as}"
     @output ""
 
   emit_typedef : (type) ->
@@ -99,6 +109,8 @@ exports.PythonEmitter = class PythonEmitter extends BaseEmitter
     @output "#{fieldName}: #{type}"
 
   emit_record : (record) ->
+    if record.fields.length is 0
+      return
     @output "@dataclass"
     @output "class #{record.name}(DataClassJSONMixin):"
     @tab()
