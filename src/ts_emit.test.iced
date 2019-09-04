@@ -124,7 +124,7 @@ describe "TypescriptEmitter", () ->
         export type TestRecord = {
           statusDescription: string
           isValidThing: boolean
-          longInt: number
+          longInt: never
           doubleOrNothin: number
           takeAByteOfThisApple: Buffer
         }\n

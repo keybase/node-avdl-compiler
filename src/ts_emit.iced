@@ -33,13 +33,13 @@ exports.TypescriptEmitter = class TypescriptEmitter extends BaseEmitter
     map =
       bool : "boolean"
       bytes : "Buffer"
-      long : "number"
+      long : "never"
       float : "number"
       double : "number"
       uint : "number"
       int : "number"
-      uint64 : "number"
-      int64 : "number"
+      uint64 : "never"
+      int64 : "never"
     map[type] or type
 
   make_map_type : (type) ->
