@@ -1,5 +1,6 @@
 path_lib   = require 'path'
 pkg        = require '../package.json'
+{is_primitive} = require './utils'
 
 ###
 An Emitter is a class that can transform a json ast from an avdl file to generated code in a language.
@@ -30,6 +31,69 @@ exports.BaseEmitter = class BaseEmitter
     else
       @_code.push("") if (line is "}" or line is ")") and @_tabs is 0
 
+
+  get_field_type : (type) ->
+    if typeof type is 'string'
+      return type
+    else
+      if Array.isArray type
+        return type[1]
+      else if type.type is 'array'
+        return @get_field_type type.items
+      else if type.type is 'map'
+        return @get_field_type type.values
+
+
+  create_dep_graph : (types) ->
+    graph = {}
+    for type in types
+      graph[type.name] = {type, in_count: 0, children: []}
+
+    for type in types
+      switch type.type
+        when "record"
+          if type.typedef and not is_primitive type.typedef
+            graph[type.typedef].children = [type.name]
+            graph[type.name].in_count++
+          else
+            for field in type.fields
+              field_type = @get_field_type field.type
+              if not is_primitive(field_type) and not graph[field_type].children.includes type.name
+                graph[field_type].children.push type.name
+                graph[type.name].in_count++
+        when "variant"
+          for case_ in type.cases
+            if not case_.body?
+              continue
+            case_type = if typeof case_.body == 'object' then case_.body.items else case_.body
+            if not is_primitive(case_type) and not graph[case_type].children.includes type.name
+              graph[case_type].children.push type.name
+              graph[type.name].in_count++
+
+    graph
+
+  sort_types : (types) ->
+    graph = @create_dep_graph types
+
+    console.log 'graph:', graph
+    # Topological sort
+    res_types = []
+    prev_length = Object.keys(graph).length
+    while Object.keys(graph).length > 0
+      sources = Object.values(graph).filter((node) => node.in_count == 0)
+      for type in sources
+        res_types.push type.type
+        for child in type.children
+          graph[child].in_count--
+        delete graph[type.type.name]
+      if Object.keys(graph).length == prev_length
+        # we're in a cycle, break with everything appended
+        res_types.concat Object.keys(graph).map((type) -> type.type)
+        break
+      prev_length = Object.keys(graph).length
+
+    res_types
+
   ###
   Runs the emitter.
 
@@ -45,6 +109,8 @@ exports.BaseEmitter = class BaseEmitter
   run : ({infiles, outfile, json, options}) ->
     options = {} unless options?
     infiles.sort()
+    json.types = @sort_types json.types
+    @create_dep_graph json.types
     @emit_preface infiles, json, options
     @emit_imports json, outfile, options
     @emit_types json

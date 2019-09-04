@@ -109,20 +109,19 @@ exports.PythonEmitter = class PythonEmitter extends BaseEmitter
     @output "#{fieldName}: #{type}"
 
   emit_record : (record) ->
-    if record.fields.length is 0
-      return
     @output "@dataclass"
     @output "class #{record.name}(DataClassJSONMixin):"
     @tab()
     fields = uniqWith record.fields, (a, b) ->
       camelCase(a.jsonkey or a.name) == camelCase(b.jsonkey or b.name)
-
     for f in fields
       @emit_field
         name : f.name
         type : f.type
         jsonkey : f.jsonkey
         optionalkey : f.optional
+    if fields.length is 0
+      @output "pass"
     @untab()
     @output "\n"
 

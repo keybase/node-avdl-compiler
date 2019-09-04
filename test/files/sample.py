@@ -52,6 +52,49 @@ class BoozleFLAGGLE:
 Boozle = Union[BoozleBOZO, BoozleBIPPY, BoozleAGGLE, BoozleFLAGGLE]
 
 @dataclass
+class Noozle1:
+    version: int.1
+    1: Optional[str]
+@dataclass
+class Noozle2:
+    version: int.2
+    2: Optional[int]
+Noozle = Union[Noozle1, Noozle2]
+
+@dataclass
+class Blurptrue:
+    b: boolean.true
+    true: Optional[str]
+@dataclass
+class Blurpfalse:
+    b: boolean.false
+    false: Optional[int]
+Blurp = Union[Blurptrue, Blurpfalse]
+
+Hash = bytes
+messageID = int
+BigBytes = Optional[str]
+class TeamInviteCategory(Enum):
+    NONE = 'none'
+    UNKNOWN = 'unknown'
+    KEYBASE = 'keybase'
+    EMAIL = 'email'
+    SBS = 'sbs'
+    SEITAN = 'seitan'
+    PHONE = 'phone'
+
+
+@dataclass
+class TeamInviteTypeUNKNOWN:
+    c: TeamInviteCategory.UNKNOWN
+    UNKNOWN: Optional[str]
+@dataclass
+class TeamInviteTypeSBS:
+    c: TeamInviteCategory.SBS
+    SBS: Optional[int]
+TeamInviteType = Union[TeamInviteTypeUNKNOWN, TeamInviteTypeSBS]
+
+@dataclass
 class TrixieNONE:
     typ: Types.NONE
     NONE: Optional[null]
@@ -74,31 +117,10 @@ class TrixieFLAGGLE:
 Trixie = Union[TrixieNONE, TrixieBOZO, TrixieBIPPY, TrixieAGGLE, TrixieFLAGGLE]
 
 @dataclass
-class Noozle1:
-    version: int.1
-    1: Optional[str]
-@dataclass
-class Noozle2:
-    version: int.2
-    2: Optional[int]
-Noozle = Union[Noozle1, Noozle2]
-
-@dataclass
-class Blurptrue:
-    b: boolean.true
-    true: Optional[str]
-@dataclass
-class Blurpfalse:
-    b: boolean.false
-    false: Optional[int]
-Blurp = Union[Blurptrue, Blurpfalse]
-
-@dataclass
 class Simple(DataClassJSONMixin):
     s: Optional[Blurp]
 
 
-Hash = bytes
 @dataclass
 class Cat(DataClassJSONMixin):
     bird: Dict[str, Noozle]
@@ -111,7 +133,3 @@ class Cat(DataClassJSONMixin):
     boo: bytes
     hooHah: Hash
     seqno: rpc.SeqNumber
-
-
-messageID = int
-BigBytes = Optional[str]
