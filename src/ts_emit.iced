@@ -112,7 +112,12 @@ exports.TypescriptEmitter = class TypescriptEmitter extends BaseEmitter
     @output "}"
 
   emit_variant : (type) ->
-    cases = type.cases
+    # Probably a little hacky, but let's assume that lowercase first letter means primitive switch type
+    first_char = type.switch.type.charAt 0
+    is_switch_primitive = first_char is first_char.toLowerCase() and first_char isnt first_char.toUpperCase()
+
+    handled_cases = []
+    case_strings = type.cases
       .map((type_case) =>
         if type_case.label.def then return null
         bodyType = switch
@@ -121,8 +126,13 @@ exports.TypescriptEmitter = class TypescriptEmitter extends BaseEmitter
           when type_case.body.type == 'array' then @convert_primitive_type(type_case.body.items) + '[]'
           else
             throw new Error "Unrecognized type"
-        bodyStr = if type_case.body then ", #{type_case.label.name}: #{bodyType} | null" else ''
-        "{ #{type.switch.name}: #{type.switch.type}.#{type_case.label.name}#{bodyStr} }")
+
+        handled_cases.push "#{type.switch.type}.#{type_case.label.name}"
+        bodyStr = if type_case.body then ", '#{type_case.label.name}': #{bodyType} | null" else ''
+        "{ #{type.switch.name}: #{if is_switch_primitive then '' else type.switch.type + '.'}#{type_case.label.name}#{bodyStr} }")
       .filter(Boolean)
-    @output "export type #{type.name} = #{cases.join(" | ")}"
+
+    case_strings.push "{ #{type.switch.name}: Exclude<#{type.switch.type}, #{handled_cases.join ' | '}> }"
+
+    @output "export type #{type.name} = #{case_strings.join(" | ")}"
     @output ""

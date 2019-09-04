@@ -35,13 +35,13 @@ export enum EnumNoString {
   NOSTRING = 'nostring',
 }
 
-export type Boozle = { typ: Types.BOZO, BOZO: number | null } | { typ: Types.BIPPY, BIPPY: string | null } | { typ: Types.AGGLE, AGGLE: number[] | null } | { typ: Types.FLAGGLE, FLAGGLE: boolean[] | null }
+export type Boozle = { typ: Types.BOZO, 'BOZO': number | null } | { typ: Types.BIPPY, 'BIPPY': string | null } | { typ: Types.AGGLE, 'AGGLE': number[] | null } | { typ: Types.FLAGGLE, 'FLAGGLE': boolean[] | null } | { typ: Exclude<Types, Types.BOZO | Types.BIPPY | Types.AGGLE | Types.FLAGGLE> }
 
-export type Trixie = { typ: Types.NONE } | { typ: Types.BOZO } | { typ: Types.BIPPY, BIPPY: number | null } | { typ: Types.AGGLE } | { typ: Types.FLAGGLE, FLAGGLE: EnumNoString | null }
+export type Trixie = { typ: Types.NONE } | { typ: Types.BOZO } | { typ: Types.BIPPY, 'BIPPY': number | null } | { typ: Types.AGGLE } | { typ: Types.FLAGGLE, 'FLAGGLE': EnumNoString | null } | { typ: Exclude<Types, Types.NONE | Types.BOZO | Types.BIPPY | Types.AGGLE | Types.FLAGGLE> }
 
-export type Noozle = { version: int.1, 1: string | null } | { version: int.2, 2: number | null }
+export type Noozle = { version: 1, '1': string | null } | { version: 2, '2': number | null } | { version: Exclude<int, int.1 | int.2> }
 
-export type Blurp = { b: boolean.true, true: string | null } | { b: boolean.false, false: number | null }
+export type Blurp = { b: true, 'true': string | null } | { b: false, 'false': number | null } | { b: Exclude<boolean, boolean.true | boolean.false> }
 
 export type Simple = {
   s?: Blurp
@@ -65,3 +65,14 @@ export type Cat = {
 export type messageID = number
 
 export type BigBytes = string | null
+export enum TeamInviteCategory {
+  NONE = 'none',
+  UNKNOWN = 'unknown',
+  KEYBASE = 'keybase',
+  EMAIL = 'email',
+  SBS = 'sbs',
+  SEITAN = 'seitan',
+  PHONE = 'phone',
+}
+
+export type TeamInviteType = { c: TeamInviteCategory.UNKNOWN, 'UNKNOWN': string | null } | { c: TeamInviteCategory.SBS, 'SBS': number | null } | { c: Exclude<TeamInviteCategory, TeamInviteCategory.UNKNOWN | TeamInviteCategory.SBS> }

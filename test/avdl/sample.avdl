@@ -108,4 +108,20 @@ protocol sample {
 
 	@compression_type("none")
 	void processBigBytes(BigBytes bytes);
+
+	enum TeamInviteCategory {
+		NONE_0,
+		UNKNOWN_1,
+		KEYBASE_2,
+		EMAIL_3,
+		SBS_4,
+		SEITAN_5,
+		PHONE_6
+	}
+
+	variant TeamInviteType switch (TeamInviteCategory c) {
+		case UNKNOWN: string;
+		case SBS: int;
+		default: void;
+	}
 }
