@@ -112,7 +112,7 @@ exports.TypescriptEmitter = class TypescriptEmitter extends BaseEmitter
     @output "}"
 
   emit_variant : (type) ->
-    # Probably a little hacky, but let's assume that lowercase first letter means primitive switch type
+    # Assume that lowercase first letter means primitive switch type
     first_char = type.switch.type.charAt 0
     is_switch_primitive = first_char is first_char.toLowerCase() and first_char isnt first_char.toUpperCase()
 
