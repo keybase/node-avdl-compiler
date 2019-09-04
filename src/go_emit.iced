@@ -483,11 +483,11 @@ exports.GoEmitter = class GoEmitter extends BaseEmitter
         @emit_fixed type
       when "enum"
         nostring = (type.go is "nostring")
-        @emit_enum { t : type, nostring }
+        @emit_enum type, nostring
       when "variant"
         @emit_variant { obj : type, go_field_suffix }
 
-  emit_enum : ({t, nostring}) ->
+  emit_enum : (t, nostring) ->
     # Type and constants
     name = t.name
     @output "type #{name} int"

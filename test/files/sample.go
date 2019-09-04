@@ -696,6 +696,127 @@ func (o BigBytes) DeepCopy() BigBytes {
 	return ret
 }
 
+type TeamInviteCategory int
+const (
+	TeamInviteCategory_NONE TeamInviteCategory = 0
+	TeamInviteCategory_UNKNOWN TeamInviteCategory = 1
+	TeamInviteCategory_KEYBASE TeamInviteCategory = 2
+	TeamInviteCategory_EMAIL TeamInviteCategory = 3
+	TeamInviteCategory_SBS TeamInviteCategory = 4
+	TeamInviteCategory_SEITAN TeamInviteCategory = 5
+	TeamInviteCategory_PHONE TeamInviteCategory = 6
+)
+
+func (o TeamInviteCategory) DeepCopy() TeamInviteCategory { return o }
+var TeamInviteCategoryMap = map[string]TeamInviteCategory{
+	"NONE": 0,
+	"UNKNOWN": 1,
+	"KEYBASE": 2,
+	"EMAIL": 3,
+	"SBS": 4,
+	"SEITAN": 5,
+	"PHONE": 6,
+}
+
+var TeamInviteCategoryRevMap = map[TeamInviteCategory]string{
+	0: "NONE",
+	1: "UNKNOWN",
+	2: "KEYBASE",
+	3: "EMAIL",
+	4: "SBS",
+	5: "SEITAN",
+	6: "PHONE",
+}
+
+func (e TeamInviteCategory) String() string {
+	if v, ok := TeamInviteCategoryRevMap[e]; ok {
+		return v
+	}
+	return ""
+}
+
+type TeamInviteType struct {
+	C__	TeamInviteCategory	`codec:"c" json:"c"`
+	Unknown__	*string	`codec:"unknown,omitempty" json:"unknown,omitempty"`
+	Sbs__	*int	`codec:"sbs,omitempty" json:"sbs,omitempty"`
+}
+
+func (o *TeamInviteType) C() (ret TeamInviteCategory, err error) {
+	switch (o.C__) {
+		case TeamInviteCategory_UNKNOWN:
+			if o.Unknown__ == nil {
+				err = errors.New("unexpected nil value for Unknown__")
+				return ret, err
+			}
+		case TeamInviteCategory_SBS:
+			if o.Sbs__ == nil {
+				err = errors.New("unexpected nil value for Sbs__")
+				return ret, err
+			}
+	}
+	return o.C__, nil
+}
+
+func (o TeamInviteType) Unknown() (res string) {
+	if o.C__ != TeamInviteCategory_UNKNOWN {
+		panic("wrong case accessed")
+	}
+	if o.Unknown__ == nil {
+		return
+	}
+	return *o.Unknown__
+}
+
+func (o TeamInviteType) Sbs() (res int) {
+	if o.C__ != TeamInviteCategory_SBS {
+		panic("wrong case accessed")
+	}
+	if o.Sbs__ == nil {
+		return
+	}
+	return *o.Sbs__
+}
+
+func NewTeamInviteTypeWithUnknown(v string) TeamInviteType {
+	return TeamInviteType{
+		C__ : TeamInviteCategory_UNKNOWN,
+		Unknown__ : &v,
+	}
+}
+
+func NewTeamInviteTypeWithSbs(v int) TeamInviteType {
+	return TeamInviteType{
+		C__ : TeamInviteCategory_SBS,
+		Sbs__ : &v,
+	}
+}
+
+func NewTeamInviteTypeDefault(c TeamInviteCategory) TeamInviteType {
+	return TeamInviteType{
+		C__ : c,
+	}
+}
+
+func (o TeamInviteType) DeepCopy() TeamInviteType {
+	return TeamInviteType {
+		C__: o.C__.DeepCopy(),
+		Unknown__: (func (x *string) *string {
+			if x == nil {
+				return nil
+			}
+			tmp := (*x)
+			return &tmp
+		})(o.Unknown__),
+		Sbs__: (func (x *int) *int {
+			if x == nil {
+				return nil
+			}
+			tmp := (*x)
+			return &tmp
+		})(o.Sbs__),
+	}
+}
+
 type GetBazArg struct {
 	R	R	`codec:"r" json:"r"`
 	Beep	keybase1.DeviceID	`codec:"beep" json:"beep"`

@@ -6,6 +6,7 @@ avdl2json = require 'avdl2json'
 {make_esc} = require 'iced-error'
 fs = require 'fs'
 pathmod = require 'path'
+{mergeWith} = require 'lodash'
 
 #================================================
 
@@ -38,6 +39,15 @@ emit = ( { infiles, outfile, json, lang, types_only }, cb) ->
 output = ({outfile, code}, cb) ->
   await fs.writeFile outfile, code.join("\n"), defer err
   cb err
+
+#================================================
+
+merge_asts = (ast1, ast2) ->
+  mergeWith ast1, ast2, (value1, value2) ->
+    if Array.isArray(value1)
+      return value1.concat value2
+    else
+      return undefined
 
 #================================================
 
@@ -113,12 +123,10 @@ exports.Main = class Main
   # destintation language, we'll just put all the types in one file.
   do_files_as_one : ({outfile}, cb) ->
     esc = make_esc cb, "do_files_as_one"
-    json = {imports: [], types: []}
+    json = {}
     for infile in @infiles
       await avdl2json.parse { infile, version: 2 }, esc defer ast
-      json.types = json.types.concat(ast.to_json().types)
-      json.imports = json.imports.concat(ast.to_json().imports)
-
+      merge_asts json, ast.to_json()
     await emit { @infiles, json, types_only: true, @lang }, esc defer code
     await output { code, outfile }, esc defer()
     console.log "Compiling #{@infiles} -> #{outfile}"
