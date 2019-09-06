@@ -348,6 +348,7 @@ describe "PythonEmitter", () ->
         @dataclass
         class MyVariant__VERSIONHIT:
             rtype: Literal[InboxResTypeStrings.VERSIONHIT]
+            VERSIONHIT: None
         @dataclass_json
         @dataclass
         class MyVariant__FULL:
