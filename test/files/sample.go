@@ -265,100 +265,6 @@ func (o Boozle) DeepCopy() Boozle {
 	}
 }
 
-type Trixie struct {
-	Typ__	Types	`codec:"typ" json:"typ"`
-	Bippy__	*int	`codec:"bippy,omitempty" json:"bippy,omitempty"`
-	Flaggle__	*EnumNoString	`codec:"flaggle,omitempty" json:"flaggle,omitempty"`
-}
-
-func (o *Trixie) Typ() (ret Types, err error) {
-	switch (o.Typ__) {
-		case Types_BIPPY:
-			if o.Bippy__ == nil {
-				err = errors.New("unexpected nil value for Bippy__")
-				return ret, err
-			}
-		case Types_FLAGGLE:
-			if o.Flaggle__ == nil {
-				err = errors.New("unexpected nil value for Flaggle__")
-				return ret, err
-			}
-	}
-	return o.Typ__, nil
-}
-
-func (o Trixie) Bippy() (res int) {
-	if o.Typ__ != Types_BIPPY {
-		panic("wrong case accessed")
-	}
-	if o.Bippy__ == nil {
-		return
-	}
-	return *o.Bippy__
-}
-
-func (o Trixie) Flaggle() (res EnumNoString) {
-	if o.Typ__ != Types_FLAGGLE {
-		panic("wrong case accessed")
-	}
-	if o.Flaggle__ == nil {
-		return
-	}
-	return *o.Flaggle__
-}
-
-func NewTrixieWithNone() Trixie {
-	return Trixie{
-		Typ__ : Types_NONE,
-	}
-}
-
-func NewTrixieWithBozo() Trixie {
-	return Trixie{
-		Typ__ : Types_BOZO,
-	}
-}
-
-func NewTrixieWithBippy(v int) Trixie {
-	return Trixie{
-		Typ__ : Types_BIPPY,
-		Bippy__ : &v,
-	}
-}
-
-func NewTrixieWithAggle() Trixie {
-	return Trixie{
-		Typ__ : Types_AGGLE,
-	}
-}
-
-func NewTrixieWithFlaggle(v EnumNoString) Trixie {
-	return Trixie{
-		Typ__ : Types_FLAGGLE,
-		Flaggle__ : &v,
-	}
-}
-
-func (o Trixie) DeepCopy() Trixie {
-	return Trixie {
-		Typ__: o.Typ__.DeepCopy(),
-		Bippy__: (func (x *int) *int {
-			if x == nil {
-				return nil
-			}
-			tmp := (*x)
-			return &tmp
-		})(o.Bippy__),
-		Flaggle__: (func (x *EnumNoString) *EnumNoString {
-			if x == nil {
-				return nil
-			}
-			tmp := (*x).DeepCopy()
-			return &tmp
-		})(o.Flaggle__),
-	}
-}
-
 type Noozle struct {
 	Version__	int	`codec:"version" json:"version"`
 	Int1__	*string	`codec:"int1,omitempty" json:"int1,omitempty"`
@@ -517,6 +423,243 @@ func (o Blurp) DeepCopy() Blurp {
 	}
 }
 
+type Hash []byte
+func (o Hash) DeepCopy() Hash {
+	return (func (x []byte) []byte {
+		if x == nil {
+			return nil
+		}
+		return append([]byte{}, x...)
+	})(o)
+}
+
+type messageID uint
+func (o messageID) DeepCopy() messageID {
+	return o
+}
+
+type BigBytes [10000]byte
+func (o BigBytes) DeepCopy() BigBytes {
+	var ret BigBytes
+	copy(ret[:], o[:])
+	return ret
+}
+
+type TeamInviteCategory int
+const (
+	TeamInviteCategory_NONE TeamInviteCategory = 0
+	TeamInviteCategory_UNKNOWN TeamInviteCategory = 1
+	TeamInviteCategory_KEYBASE TeamInviteCategory = 2
+	TeamInviteCategory_EMAIL TeamInviteCategory = 3
+	TeamInviteCategory_SBS TeamInviteCategory = 4
+	TeamInviteCategory_SEITAN TeamInviteCategory = 5
+	TeamInviteCategory_PHONE TeamInviteCategory = 6
+)
+
+func (o TeamInviteCategory) DeepCopy() TeamInviteCategory { return o }
+var TeamInviteCategoryMap = map[string]TeamInviteCategory{
+	"NONE": 0,
+	"UNKNOWN": 1,
+	"KEYBASE": 2,
+	"EMAIL": 3,
+	"SBS": 4,
+	"SEITAN": 5,
+	"PHONE": 6,
+}
+
+var TeamInviteCategoryRevMap = map[TeamInviteCategory]string{
+	0: "NONE",
+	1: "UNKNOWN",
+	2: "KEYBASE",
+	3: "EMAIL",
+	4: "SBS",
+	5: "SEITAN",
+	6: "PHONE",
+}
+
+func (e TeamInviteCategory) String() string {
+	if v, ok := TeamInviteCategoryRevMap[e]; ok {
+		return v
+	}
+	return ""
+}
+
+type TeamInviteType struct {
+	C__	TeamInviteCategory	`codec:"c" json:"c"`
+	Unknown__	*string	`codec:"unknown,omitempty" json:"unknown,omitempty"`
+	Sbs__	*int	`codec:"sbs,omitempty" json:"sbs,omitempty"`
+}
+
+func (o *TeamInviteType) C() (ret TeamInviteCategory, err error) {
+	switch (o.C__) {
+		case TeamInviteCategory_UNKNOWN:
+			if o.Unknown__ == nil {
+				err = errors.New("unexpected nil value for Unknown__")
+				return ret, err
+			}
+		case TeamInviteCategory_SBS:
+			if o.Sbs__ == nil {
+				err = errors.New("unexpected nil value for Sbs__")
+				return ret, err
+			}
+	}
+	return o.C__, nil
+}
+
+func (o TeamInviteType) Unknown() (res string) {
+	if o.C__ != TeamInviteCategory_UNKNOWN {
+		panic("wrong case accessed")
+	}
+	if o.Unknown__ == nil {
+		return
+	}
+	return *o.Unknown__
+}
+
+func (o TeamInviteType) Sbs() (res int) {
+	if o.C__ != TeamInviteCategory_SBS {
+		panic("wrong case accessed")
+	}
+	if o.Sbs__ == nil {
+		return
+	}
+	return *o.Sbs__
+}
+
+func NewTeamInviteTypeWithUnknown(v string) TeamInviteType {
+	return TeamInviteType{
+		C__ : TeamInviteCategory_UNKNOWN,
+		Unknown__ : &v,
+	}
+}
+
+func NewTeamInviteTypeWithSbs(v int) TeamInviteType {
+	return TeamInviteType{
+		C__ : TeamInviteCategory_SBS,
+		Sbs__ : &v,
+	}
+}
+
+func NewTeamInviteTypeDefault(c TeamInviteCategory) TeamInviteType {
+	return TeamInviteType{
+		C__ : c,
+	}
+}
+
+func (o TeamInviteType) DeepCopy() TeamInviteType {
+	return TeamInviteType {
+		C__: o.C__.DeepCopy(),
+		Unknown__: (func (x *string) *string {
+			if x == nil {
+				return nil
+			}
+			tmp := (*x)
+			return &tmp
+		})(o.Unknown__),
+		Sbs__: (func (x *int) *int {
+			if x == nil {
+				return nil
+			}
+			tmp := (*x)
+			return &tmp
+		})(o.Sbs__),
+	}
+}
+
+type Trixie struct {
+	Typ__	Types	`codec:"typ" json:"typ"`
+	Bippy__	*int	`codec:"bippy,omitempty" json:"bippy,omitempty"`
+	Flaggle__	*EnumNoString	`codec:"flaggle,omitempty" json:"flaggle,omitempty"`
+}
+
+func (o *Trixie) Typ() (ret Types, err error) {
+	switch (o.Typ__) {
+		case Types_BIPPY:
+			if o.Bippy__ == nil {
+				err = errors.New("unexpected nil value for Bippy__")
+				return ret, err
+			}
+		case Types_FLAGGLE:
+			if o.Flaggle__ == nil {
+				err = errors.New("unexpected nil value for Flaggle__")
+				return ret, err
+			}
+	}
+	return o.Typ__, nil
+}
+
+func (o Trixie) Bippy() (res int) {
+	if o.Typ__ != Types_BIPPY {
+		panic("wrong case accessed")
+	}
+	if o.Bippy__ == nil {
+		return
+	}
+	return *o.Bippy__
+}
+
+func (o Trixie) Flaggle() (res EnumNoString) {
+	if o.Typ__ != Types_FLAGGLE {
+		panic("wrong case accessed")
+	}
+	if o.Flaggle__ == nil {
+		return
+	}
+	return *o.Flaggle__
+}
+
+func NewTrixieWithNone() Trixie {
+	return Trixie{
+		Typ__ : Types_NONE,
+	}
+}
+
+func NewTrixieWithBozo() Trixie {
+	return Trixie{
+		Typ__ : Types_BOZO,
+	}
+}
+
+func NewTrixieWithBippy(v int) Trixie {
+	return Trixie{
+		Typ__ : Types_BIPPY,
+		Bippy__ : &v,
+	}
+}
+
+func NewTrixieWithAggle() Trixie {
+	return Trixie{
+		Typ__ : Types_AGGLE,
+	}
+}
+
+func NewTrixieWithFlaggle(v EnumNoString) Trixie {
+	return Trixie{
+		Typ__ : Types_FLAGGLE,
+		Flaggle__ : &v,
+	}
+}
+
+func (o Trixie) DeepCopy() Trixie {
+	return Trixie {
+		Typ__: o.Typ__.DeepCopy(),
+		Bippy__: (func (x *int) *int {
+			if x == nil {
+				return nil
+			}
+			tmp := (*x)
+			return &tmp
+		})(o.Bippy__),
+		Flaggle__: (func (x *EnumNoString) *EnumNoString {
+			if x == nil {
+				return nil
+			}
+			tmp := (*x).DeepCopy()
+			return &tmp
+		})(o.Flaggle__),
+	}
+}
+
 type Simple struct {
 	S	*Blurp	`codec:"s,omitempty" json:"s,omitempty"`
 }
@@ -531,16 +674,6 @@ func (o Simple) DeepCopy() Simple {
 			return &tmp
 		})(o.S),
 	}
-}
-
-type Hash []byte
-func (o Hash) DeepCopy() Hash {
-	return (func (x []byte) []byte {
-		if x == nil {
-			return nil
-		}
-		return append([]byte{}, x...)
-	})(o)
 }
 
 type Cat struct {
@@ -681,139 +814,6 @@ func (o Cat) DeepCopy() Cat {
 		})(o.Boo),
 		HooHah: o.HooHah.DeepCopy(),
 		seqno: o.seqno,
-	}
-}
-
-type messageID uint
-func (o messageID) DeepCopy() messageID {
-	return o
-}
-
-type BigBytes [10000]byte
-func (o BigBytes) DeepCopy() BigBytes {
-	var ret BigBytes
-	copy(ret[:], o[:])
-	return ret
-}
-
-type TeamInviteCategory int
-const (
-	TeamInviteCategory_NONE TeamInviteCategory = 0
-	TeamInviteCategory_UNKNOWN TeamInviteCategory = 1
-	TeamInviteCategory_KEYBASE TeamInviteCategory = 2
-	TeamInviteCategory_EMAIL TeamInviteCategory = 3
-	TeamInviteCategory_SBS TeamInviteCategory = 4
-	TeamInviteCategory_SEITAN TeamInviteCategory = 5
-	TeamInviteCategory_PHONE TeamInviteCategory = 6
-)
-
-func (o TeamInviteCategory) DeepCopy() TeamInviteCategory { return o }
-var TeamInviteCategoryMap = map[string]TeamInviteCategory{
-	"NONE": 0,
-	"UNKNOWN": 1,
-	"KEYBASE": 2,
-	"EMAIL": 3,
-	"SBS": 4,
-	"SEITAN": 5,
-	"PHONE": 6,
-}
-
-var TeamInviteCategoryRevMap = map[TeamInviteCategory]string{
-	0: "NONE",
-	1: "UNKNOWN",
-	2: "KEYBASE",
-	3: "EMAIL",
-	4: "SBS",
-	5: "SEITAN",
-	6: "PHONE",
-}
-
-func (e TeamInviteCategory) String() string {
-	if v, ok := TeamInviteCategoryRevMap[e]; ok {
-		return v
-	}
-	return ""
-}
-
-type TeamInviteType struct {
-	C__	TeamInviteCategory	`codec:"c" json:"c"`
-	Unknown__	*string	`codec:"unknown,omitempty" json:"unknown,omitempty"`
-	Sbs__	*int	`codec:"sbs,omitempty" json:"sbs,omitempty"`
-}
-
-func (o *TeamInviteType) C() (ret TeamInviteCategory, err error) {
-	switch (o.C__) {
-		case TeamInviteCategory_UNKNOWN:
-			if o.Unknown__ == nil {
-				err = errors.New("unexpected nil value for Unknown__")
-				return ret, err
-			}
-		case TeamInviteCategory_SBS:
-			if o.Sbs__ == nil {
-				err = errors.New("unexpected nil value for Sbs__")
-				return ret, err
-			}
-	}
-	return o.C__, nil
-}
-
-func (o TeamInviteType) Unknown() (res string) {
-	if o.C__ != TeamInviteCategory_UNKNOWN {
-		panic("wrong case accessed")
-	}
-	if o.Unknown__ == nil {
-		return
-	}
-	return *o.Unknown__
-}
-
-func (o TeamInviteType) Sbs() (res int) {
-	if o.C__ != TeamInviteCategory_SBS {
-		panic("wrong case accessed")
-	}
-	if o.Sbs__ == nil {
-		return
-	}
-	return *o.Sbs__
-}
-
-func NewTeamInviteTypeWithUnknown(v string) TeamInviteType {
-	return TeamInviteType{
-		C__ : TeamInviteCategory_UNKNOWN,
-		Unknown__ : &v,
-	}
-}
-
-func NewTeamInviteTypeWithSbs(v int) TeamInviteType {
-	return TeamInviteType{
-		C__ : TeamInviteCategory_SBS,
-		Sbs__ : &v,
-	}
-}
-
-func NewTeamInviteTypeDefault(c TeamInviteCategory) TeamInviteType {
-	return TeamInviteType{
-		C__ : c,
-	}
-}
-
-func (o TeamInviteType) DeepCopy() TeamInviteType {
-	return TeamInviteType {
-		C__: o.C__.DeepCopy(),
-		Unknown__: (func (x *string) *string {
-			if x == nil {
-				return nil
-			}
-			tmp := (*x)
-			return &tmp
-		})(o.Unknown__),
-		Sbs__: (func (x *int) *int {
-			if x == nil {
-				return nil
-			}
-			tmp := (*x)
-			return &tmp
-		})(o.Sbs__),
 	}
 }
 

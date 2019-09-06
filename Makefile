@@ -11,7 +11,8 @@ build-stamp: \
 	lib/py_emit.js \
 	lib/ts_emit.js \
 	lib/go_emit.js \
-	lib/base_emitter.js
+	lib/base_emitter.js \
+	lib/utils.js
 	date > $@
 
 install:

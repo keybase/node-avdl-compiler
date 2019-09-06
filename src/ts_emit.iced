@@ -2,6 +2,7 @@ path_lib   = require 'path'
 {BaseEmitter} = require './base_emitter'
 pkg        = require '../package.json'
 {camelCase, uniqBy, uniqWith, isEqual} = require('lodash')
+{is_primitive} = require './utils'
 
 exports.TypescriptEmitter = class TypescriptEmitter extends BaseEmitter
   constructor : () ->
@@ -112,10 +113,7 @@ exports.TypescriptEmitter = class TypescriptEmitter extends BaseEmitter
     @output "}"
 
   emit_variant : (type) ->
-    # Assume that lowercase first letter means primitive switch type
-    first_char = type.switch.type.charAt 0
-    is_switch_primitive = first_char is first_char.toLowerCase() and first_char isnt first_char.toUpperCase()
-
+    is_switch_primitive = is_primitive type.switch.type
     handled_cases = []
     case_strings = type.cases
       .map((type_case) =>
