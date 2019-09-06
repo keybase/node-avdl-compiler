@@ -150,7 +150,7 @@ exports.PythonEmitter = class PythonEmitter extends BaseEmitter
     if fields.length is 0
       @output "pass"
     @untab()
-    @output "\n"
+    @output ""
 
   emit_enum : (type) ->
     @output "class #{type.name}(Enum):"
@@ -161,7 +161,7 @@ exports.PythonEmitter = class PythonEmitter extends BaseEmitter
       e_name = e_name.join("_")
       @output "#{e_name} = #{e_num}"
     @untab()
-    @output "\n"
+    @output ""
     @output "class #{type.name}Strings(Enum):"
     @tab()
     for s, _ in type.symbols
@@ -169,7 +169,7 @@ exports.PythonEmitter = class PythonEmitter extends BaseEmitter
       e_name = e_name.join("_")
       @output "#{e_name} = '#{e_name.toLowerCase()}'"
     @untab()
-    @output "\n"
+    @output ""
 
   emit_variant : (type) ->
     is_switch_primitive = is_primitive type.switch.type
@@ -189,6 +189,7 @@ exports.PythonEmitter = class PythonEmitter extends BaseEmitter
         @output "#{type.switch.name}: Literal[#{if is_switch_primitive then '' else type.switch.type + 'Strings.'}#{type_case.label.name}]"
         @output "#{type_case.label.name}: #{bodyType}"
         @untab()
+        @output ""
         "#{type.name}__#{type_case.label.name}"
       ).filter(Boolean)
     @output "#{type.name} = Union[#{cases.join(", ")}]"

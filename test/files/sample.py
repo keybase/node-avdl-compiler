@@ -22,14 +22,12 @@ class R:
     baz: keybase1.UID = field(metadata=config(field_name='baz_j_uid'))
     woop: Optional[str] = field(default=None, metadata=config(field_name='woop'))
 
-
 class Types(Enum):
     NONE = 0
     BOZO = 1
     BIPPY = 2
     AGGLE = 3
     FLAGGLE = 4
-
 
 class TypesStrings(Enum):
     NONE = 'none'
@@ -38,35 +36,36 @@ class TypesStrings(Enum):
     AGGLE = 'aggle'
     FLAGGLE = 'flaggle'
 
-
 class EnumNoString(Enum):
     NOSTRING = 0
 
-
 class EnumNoStringStrings(Enum):
     NOSTRING = 'nostring'
-
 
 @dataclass_json
 @dataclass
 class Boozle__BOZO:
     typ: Literal[TypesStrings.BOZO]
     BOZO: Optional[int]
+
 @dataclass_json
 @dataclass
 class Boozle__BIPPY:
     typ: Literal[TypesStrings.BIPPY]
     BIPPY: Optional[str]
+
 @dataclass_json
 @dataclass
 class Boozle__AGGLE:
     typ: Literal[TypesStrings.AGGLE]
     AGGLE: Optional[List[int]]
+
 @dataclass_json
 @dataclass
 class Boozle__FLAGGLE:
     typ: Literal[TypesStrings.FLAGGLE]
     FLAGGLE: Optional[List[bool]]
+
 Boozle = Union[Boozle__BOZO, Boozle__BIPPY, Boozle__AGGLE, Boozle__FLAGGLE]
 
 @dataclass_json
@@ -74,11 +73,13 @@ Boozle = Union[Boozle__BOZO, Boozle__BIPPY, Boozle__AGGLE, Boozle__FLAGGLE]
 class Noozle__1:
     version: Literal[1]
     1: Optional[str]
+
 @dataclass_json
 @dataclass
 class Noozle__2:
     version: Literal[2]
     2: Optional[int]
+
 Noozle = Union[Noozle__1, Noozle__2]
 
 @dataclass_json
@@ -86,11 +87,13 @@ Noozle = Union[Noozle__1, Noozle__2]
 class Blurp__true:
     b: Literal[true]
     true: Optional[str]
+
 @dataclass_json
 @dataclass
 class Blurp__false:
     b: Literal[false]
     false: Optional[int]
+
 Blurp = Union[Blurp__true, Blurp__false]
 
 Hash = str
@@ -105,7 +108,6 @@ class TeamInviteCategory(Enum):
     SEITAN = 5
     PHONE = 6
 
-
 class TeamInviteCategoryStrings(Enum):
     NONE = 'none'
     UNKNOWN = 'unknown'
@@ -115,17 +117,18 @@ class TeamInviteCategoryStrings(Enum):
     SEITAN = 'seitan'
     PHONE = 'phone'
 
-
 @dataclass_json
 @dataclass
 class TeamInviteType__UNKNOWN:
     c: Literal[TeamInviteCategoryStrings.UNKNOWN]
     UNKNOWN: Optional[str]
+
 @dataclass_json
 @dataclass
 class TeamInviteType__SBS:
     c: Literal[TeamInviteCategoryStrings.SBS]
     SBS: Optional[int]
+
 TeamInviteType = Union[TeamInviteType__UNKNOWN, TeamInviteType__SBS]
 
 @dataclass_json
@@ -133,33 +136,37 @@ TeamInviteType = Union[TeamInviteType__UNKNOWN, TeamInviteType__SBS]
 class Trixie__NONE:
     typ: Literal[TypesStrings.NONE]
     NONE: None
+
 @dataclass_json
 @dataclass
 class Trixie__BOZO:
     typ: Literal[TypesStrings.BOZO]
     BOZO: None
+
 @dataclass_json
 @dataclass
 class Trixie__BIPPY:
     typ: Literal[TypesStrings.BIPPY]
     BIPPY: Optional[int]
+
 @dataclass_json
 @dataclass
 class Trixie__AGGLE:
     typ: Literal[TypesStrings.AGGLE]
     AGGLE: None
+
 @dataclass_json
 @dataclass
 class Trixie__FLAGGLE:
     typ: Literal[TypesStrings.FLAGGLE]
     FLAGGLE: Optional[EnumNoString]
+
 Trixie = Union[Trixie__NONE, Trixie__BOZO, Trixie__BIPPY, Trixie__AGGLE, Trixie__FLAGGLE]
 
 @dataclass_json
 @dataclass
 class Simple:
     s: Optional[Blurp] = field(default=None, metadata=config(field_name='s'))
-
 
 @dataclass_json
 @dataclass
@@ -174,4 +181,3 @@ class Cat:
     hoo_hah: Hash = field(metadata=config(field_name='hooHah'))
     seqno: rpc.SeqNumber = field(metadata=config(field_name='seqno'))
     wow: Optional[Optional[List[Dict[str, Optional[List[Noozle]]]]]] = field(default=None, metadata=config(field_name='wow'))
-
