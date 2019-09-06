@@ -131,6 +131,8 @@ exports.PythonEmitter = class PythonEmitter extends BaseEmitter
     @output "@dataclass"
     @output "class #{record.name}:"
     @tab()
+
+    # Python needs all non-optional types to come before optional types so we sort
     fields = record.fields.sort (a, b) =>
       if @is_optional(a) and not @is_optional(b)
         return 1
@@ -144,6 +146,7 @@ exports.PythonEmitter = class PythonEmitter extends BaseEmitter
         type : f.type
         jsonkey : f.jsonkey
         optionalkey : f.optional
+
     if fields.length is 0
       @output "pass"
     @untab()
@@ -179,6 +182,7 @@ exports.PythonEmitter = class PythonEmitter extends BaseEmitter
           when type_case.body.type == 'array' then "Optional[List[#{@emit_primitive_type(type_case.body.items)}]]"
           else
             throw new Error "Unrecognized type"
+        @output "@dataclass_json"
         @output "@dataclass"
         @output "class #{type.name}__#{type_case.label.name}:"
         @tab()

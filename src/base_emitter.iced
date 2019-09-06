@@ -72,6 +72,9 @@ exports.BaseEmitter = class BaseEmitter
 
     graph
 
+  # Python requires that types be declared before they can be used.
+  # This isn't a requirement in our avdl files, so we need to go through the types, create a dependency graph, and then sort it
+  # Other languages will get this for free; it doesn't affect them
   sort_types : (types) ->
     graph = @create_dep_graph types
 
@@ -86,7 +89,7 @@ exports.BaseEmitter = class BaseEmitter
           graph[child].in_count--
         delete graph[type.type.name]
       if Object.keys(graph).length == prev_length
-        # we're in a cycle, break with everything appended
+        # we're in a cycle, break and just append all remaining types
         res_types.concat Object.keys(graph).map((type) -> type.type)
         break
       prev_length = Object.keys(graph).length
@@ -111,7 +114,6 @@ exports.BaseEmitter = class BaseEmitter
     json.types = @sort_types json.types
     @create_dep_graph json.types
     @emit_preface infiles, json, options
-    console.log 'outfile:', outfile
     @emit_imports json, outfile, options
     @emit_types json
     @emit_interface json unless options.types_only

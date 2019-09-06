@@ -7,6 +7,19 @@ describe "PythonEmitter", () ->
   beforeEach () ->
     emitter = new PythonEmitter
 
+  describe "output_doc", () ->
+    it "should output a Python docstring", () ->
+      emitter.output_doc "This is a test comment with\na new line."
+      code = emitter._code.join "\n"
+      expect(code).toBe("""
+        \"\"\"
+        This is a test comment with
+        a new line.
+        \"\"\"
+      """)
+      return
+    return
+
   describe "emit_preface", () ->
     it "Should emit a preface", () ->
       emitter.emit_preface ["./my_test_file.avdl"], {namespace: "chat1"}
@@ -88,7 +101,71 @@ describe "PythonEmitter", () ->
     return
 
   describe "emit_record", () ->
-    it "should sort fields", () ->
+    it "should emit an object with primative value keys", () ->
+      record = {
+        type: "record"
+        name: "TestRecord"
+        fields: [
+          {
+            type: "string",
+            name: "statusDescription"
+          },
+          {
+            type: "boolean"
+            name: "isValidThing"
+          },
+          {
+            type: "long",
+            name: "longInt"
+          },
+          {
+            type: "double",
+            name: "doubleOrNothin"
+          },
+          {
+            type: "bytes",
+            name: "takeAByteOfThisApple"
+          }
+        ]
+      }
+      emitter.emit_record record
+      code = emitter._code.join "\n"
+
+      expect(code).toBe("""
+        @dataclass_json
+        @dataclass
+        class TestRecord:
+            status_description: str = field(metadata=config(field_name='statusDescription'))
+            is_valid_thing: bool = field(metadata=config(field_name='isValidThing'))
+            long_int: int = field(metadata=config(field_name='longInt'))
+            double_or_nothin: float = field(metadata=config(field_name='doubleOrNothin'))
+            take_a_byte_of_this_apple: str = field(metadata=config(field_name='takeAByteOfThisApple'))\n\n
+      """)
+      return
+
+    it "Should support custom types as fields", () ->
+      record = {
+        type: "record"
+        name: "TestRecord"
+        fields: [
+          {
+            type: "MySuperCoolCustomType",
+            name: "superCool"
+          },
+        ]
+      }
+      emitter.emit_record record
+      code = emitter._code.join "\n"
+
+      expect(code).toBe("""
+        @dataclass_json
+        @dataclass
+        class TestRecord:
+            super_cool: MySuperCoolCustomType = field(metadata=config(field_name='superCool'))\n\n
+      """)
+      return
+
+    it "should support optional types, and have non-optionals be declared first", () ->
       record = {
         "type": "record",
         "name": "MsgSender",
@@ -132,6 +209,38 @@ describe "PythonEmitter", () ->
       """)
 
       return
+
+
+    it "Should emit a struct with a map type", () ->
+      record = {
+        type: "record"
+        name: "StellarServerDefinitions"
+        fields: [
+          {
+            type: "int",
+            name: "revision"
+          },
+          {
+            type: {
+              type: "map"
+              values: "OutsideCurrencyDefinition"
+              keys: "OutsideCurrencyCode"
+            }
+            name: "currencies"
+          }
+        ]
+      }
+      emitter.emit_record record
+      code = emitter._code.join "\n"
+
+      expect(code).toBe("""
+        @dataclass_json
+        @dataclass
+        class StellarServerDefinitions:
+            revision: int = field(metadata=config(field_name='revision'))
+            currencies: Dict[str, OutsideCurrencyDefinition] = field(metadata=config(field_name='currencies'))\n\n
+      """)
+      return
     return
 
   describe "emit_fixed", () ->
@@ -146,7 +255,7 @@ describe "PythonEmitter", () ->
     return
 
   describe "emit_enum", () ->
-    it "should emit an enum", () ->
+    it "should emit both an int and string enum", () ->
       test_enum = {
         type: "enum",
         name: "AuditVersion",
@@ -178,6 +287,83 @@ describe "PythonEmitter", () ->
             V1 = 'v1'
             V2 = 'v2'
             V3 = 'v3'\n\n
+      """)
+      return
+    return
+
+  describe "emit_variant", () ->
+    it "should emit a variant", () ->
+      variant =
+        type: "variant",
+        name: "MyVariant",
+        switch: {
+          type: "InboxResType",
+          name: "rtype"
+        },
+        cases: [
+          {
+            label: {
+              name: "VERSIONHIT",
+              def: false
+            },
+            body: null
+          },
+          {
+            label: {
+              name: "FULL",
+              def: false
+            },
+            body: "InboxViewFull"
+          },
+          {
+            label: {
+              name: "HELLO",
+              def: false
+            },
+            body: "bool"
+          },
+          {
+            label: {
+              name: "BLAH",
+              def: true
+            },
+            body: "int"
+          },
+          {
+            label: {
+              name: "DECK",
+              def: false
+            },
+            body: {
+              type: "array",
+              items: "int"
+            }
+          }
+        ]
+      emitter.emit_variant variant
+      code = emitter._code.join "\n"
+
+      expect(code).toBe("""
+        @dataclass_json
+        @dataclass
+        class MyVariant__VERSIONHIT:
+            rtype: Literal[InboxResTypeStrings.VERSIONHIT]
+        @dataclass_json
+        @dataclass
+        class MyVariant__FULL:
+            rtype: Literal[InboxResTypeStrings.FULL]
+            FULL: Optional[InboxViewFull]
+        @dataclass_json
+        @dataclass
+        class MyVariant__HELLO:
+            rtype: Literal[InboxResTypeStrings.HELLO]
+            HELLO: Optional[bool]
+        @dataclass_json
+        @dataclass
+        class MyVariant__DECK:
+            rtype: Literal[InboxResTypeStrings.DECK]
+            DECK: Optional[List[int]]
+        MyVariant = Union[MyVariant__VERSIONHIT, MyVariant__FULL, MyVariant__HELLO, MyVariant__DECK]\n
       """)
       return
     return
