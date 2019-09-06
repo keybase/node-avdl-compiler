@@ -131,6 +131,27 @@ describe "TypescriptEmitter", () ->
       """)
       return
 
+    it "Should support custom types as fields", () ->
+      record = {
+        type: "record"
+        name: "TestRecord"
+        fields: [
+          {
+            type: "MySuperCoolCustomType",
+            name: "superCool"
+          },
+        ]
+      }
+      emitter.emit_record record
+      code = emitter._code.join "\n"
+
+      expect(code).toBe("""
+        export type TestRecord = {
+          superCool: MySuperCoolCustomType
+        }\n
+      """)
+      return
+
     it "Should emit a struct with an optional type", () ->
       record = {
         type: "record"
