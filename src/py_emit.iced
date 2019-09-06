@@ -1,16 +1,22 @@
 path_lib      = require 'path'
 {BaseEmitter} = require './base_emitter'
 pkg           = require '../package.json'
-{uniqWith, isEqual, camelCase} = require 'lodash'
+{uniqWith, isEqual, snakeCase} = require 'lodash'
+{is_primitive} = require './utils'
 
 exports.PythonEmitter = class PythonEmitter extends BaseEmitter
   constructor : () ->
     super
     @_tab_char = " ".repeat(4)
-    @_keywords = new Set ['False', 'None', 'True', 'and', 'as', 'assert', 'break', 'class', 'continue', 'def', 'del', 'elif', 'else', 'except', 'finally', 'for', 'from', 'global', 'if', 'import', 'in', 'is', 'lambda', 'nonlocal', 'not', 'or', 'pass', 'raise', 'return', 'try', 'while', 'with', 'yield']
+    # 'self' isn't technically a keyword, but causes issues in classes
+    # 'config' causes issues with dataclasses-json
+    @_keywords = new Set ['False', 'None', 'True', 'and', 'as', 'assert', 'break', 'class', 'continue', 'def', 'del', 'elif', 'else', 'except', 'finally', 'for', 'from', 'global', 'if', 'import', 'in', 'is', 'lambda', 'nonlocal', 'not', 'or', 'pass', 'raise', 'return', 'try', 'while', 'with', 'yield', 'self', 'config']
 
-  # format_name : (name, jsonkey) ->
-
+  format_name : (name) ->
+    formatted_name = snakeCase(name)
+    if @_keywords.has formatted_name
+      formatted_name += '_'
+    formatted_name
 
   output_doc : (d) ->
     if d?
@@ -36,6 +42,7 @@ exports.PythonEmitter = class PythonEmitter extends BaseEmitter
   emit_primitive_type : (m) ->
     map =
       string : "str"
+      bytes : "str"
       boolean : "bool"
       double : "float"
       long : "int"
@@ -55,7 +62,8 @@ exports.PythonEmitter = class PythonEmitter extends BaseEmitter
         else
           throw new Error "Unrecognized type"
       else if t.type is "array"
-        "List[#{@emit_field_type(t.items).type}]"
+        optional = true
+        "Optional[List[#{@emit_field_type(t.items).type}]]"
       else if t.type is "map"
         @make_map_type t
       else
@@ -78,22 +86,25 @@ exports.PythonEmitter = class PythonEmitter extends BaseEmitter
     @output ""
 
   emit_imports : ({imports}, outfile) ->
-    @output "from dataclasses import dataclass"
+    @output "from dataclasses import dataclass, field"
     @output "from enum import Enum"
     @output "from typing import Dict, List, Optional, Union"
+    @output "from typing_extensions import Literal"
     @output ""
-    @output "from mashumaro import DataClassJSONMixin"
+    @output "from dataclasses_json import dataclass_json, config"
     @output ""
 
     imports = uniqWith imports, isEqual
-    for {import_as, path} in imports when path.indexOf('/') >= 0
-      if not import_as
+    relative_dir = path_lib.dirname(outfile)
+    for {import_as, path} in imports
+      if not import_as?
         continue
-      # path = path.replace /\//g, '.'
-      # # remove the first `.`, since it's extra
-      # path = path.slice(1) if path[0] is '.'
-      # @output "import #{path} as #{import_as}"
-      @output "import #{import_as}"
+      if path.match /(\.\/|\.\.\/)/
+        path = path_lib.normalize(relative_dir + "/" + path)
+      path = path.replace /\//g, '.'
+      # remove the first `.`, since it's extra
+      path = path.slice(1) if path[0] is '.'
+      @output "import #{path} as #{import_as}"
     @output ""
 
   emit_typedef : (type) ->
@@ -104,16 +115,29 @@ exports.PythonEmitter = class PythonEmitter extends BaseEmitter
 
   emit_field : ({name, type, jsonkey, optionalkey}) ->
     {type, optional} = @emit_field_type(type, {optionalkey})
-    fieldName = camelCase(jsonkey or name)
+    field_name = @format_name(name)
     type = if optional then "Optional[#{type}]" else type
-    @output "#{fieldName}: #{type}"
+    @output "#{field_name}: #{type} = field(#{if optional then 'default=None, ' else ''}metadata=config(field_name='#{jsonkey or name}'))"
+
+  is_optional : (field) ->
+    if Array.isArray(field.type) and not field.type[0]?
+      return true
+    if typeof(field.type) is 'object' and field.type.type is 'array'
+      return true
+    Boolean(field.optional)
 
   emit_record : (record) ->
+    @output "@dataclass_json"
     @output "@dataclass"
-    @output "class #{record.name}(DataClassJSONMixin):"
+    @output "class #{record.name}:"
     @tab()
-    fields = uniqWith record.fields, (a, b) ->
-      camelCase(a.jsonkey or a.name) == camelCase(b.jsonkey or b.name)
+    fields = record.fields.sort (a, b) =>
+      if @is_optional(a) and not @is_optional(b)
+        return 1
+      if not @is_optional(a) and @is_optional(b)
+        return -1
+      return 0
+
     for f in fields
       @emit_field
         name : f.name
@@ -132,27 +156,36 @@ exports.PythonEmitter = class PythonEmitter extends BaseEmitter
     for s, _ in type.symbols
       [e_name..., e_num] = s.split("_")
       e_name = e_name.join("_")
+      @output "#{e_name} = #{e_num}"
+    @untab()
+    @output "\n"
+    @output "class #{type.name}Strings(Enum):"
+    @tab()
+    for s, _ in type.symbols
+      [e_name..., e_num] = s.split("_")
+      e_name = e_name.join("_")
       @output "#{e_name} = '#{e_name.toLowerCase()}'"
     @untab()
     @output "\n"
 
   emit_variant : (type) ->
+    is_switch_primitive = is_primitive type.switch.type
     cases = type.cases
       .map((type_case) =>
         if type_case.label.def then return null
         bodyType = switch
-          when type_case.body == null then 'null'
-          when typeof type_case.body == 'string' then @emit_primitive_type type_case.body
-          when type_case.body.type == 'array' then "List[#{@emit_primitive_type(type_case.body.items)}]"
+          when type_case.body == null then 'None'
+          when typeof type_case.body == 'string' then "Optional[#{@emit_primitive_type type_case.body}]"
+          when type_case.body.type == 'array' then "Optional[List[#{@emit_primitive_type(type_case.body.items)}]]"
           else
             throw new Error "Unrecognized type"
         @output "@dataclass"
-        @output "class #{type.name}#{type_case.label.name}:"
+        @output "class #{type.name}__#{type_case.label.name}:"
         @tab()
-        @output "#{type.switch.name}: #{type.switch.type}.#{type_case.label.name}"
-        @output "#{type_case.label.name}: Optional[#{bodyType}]"
+        @output "#{type.switch.name}: Literal[#{if is_switch_primitive then '' else type.switch.type + 'Strings.'}#{type_case.label.name}]"
+        @output "#{type_case.label.name}: #{bodyType}"
         @untab()
-        "#{type.name}#{type_case.label.name}"
+        "#{type.name}__#{type_case.label.name}"
       ).filter(Boolean)
     @output "#{type.name} = Union[#{cases.join(", ")}]"
     @output ""

@@ -75,7 +75,6 @@ exports.BaseEmitter = class BaseEmitter
   sort_types : (types) ->
     graph = @create_dep_graph types
 
-    console.log 'graph:', graph
     # Topological sort
     res_types = []
     prev_length = Object.keys(graph).length
@@ -112,6 +111,7 @@ exports.BaseEmitter = class BaseEmitter
     json.types = @sort_types json.types
     @create_dep_graph json.types
     @emit_preface infiles, json, options
+    console.log 'outfile:', outfile
     @emit_imports json, outfile, options
     @emit_types json
     @emit_interface json unless options.types_only

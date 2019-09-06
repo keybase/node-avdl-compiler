@@ -53,18 +53,19 @@ describe "PythonEmitter", () ->
           type: "idl"
         }
       ]
-      emitter.emit_imports {imports}, "test/output/dir"
+      emitter.emit_imports {imports}, "test/output/dir/name/__init__.py"
       code = emitter._code.join "\n"
 
       expect(code).toBe("""
-        from dataclasses import dataclass
+        from dataclasses import dataclass, field
         from enum import Enum
         from typing import Dict, List, Optional, Union
+        from typing_extensions import Literal
 
-        from mashumaro import DataClassJSONMixin
+        from dataclasses_json import dataclass_json, config
 
-        import gregor1
-        import keybase1\n
+        import test.output.dir.gregor1 as gregor1
+        import test.output.dir.keybase1 as keybase1\n
       """)
       return
     return
@@ -83,6 +84,53 @@ describe "PythonEmitter", () ->
       expect(code).toBe("""
         BuildPaymentID = str
       """)
+      return
+    return
+
+  describe "emit_record", () ->
+    it "should sort fields", () ->
+      record = {
+        "type": "record",
+        "name": "MsgSender",
+        "fields": [
+          {
+            "type": "string",
+            "name": "uid",
+            "jsonkey": "uid"
+          },
+          {
+            "type": "string",
+            "name": "username",
+            "jsonkey": "username",
+            "optional": true
+          },
+          {
+            "type": "string",
+            "name": "deviceID",
+            "jsonkey": "device_id"
+          },
+          {
+            "type": "string",
+            "name": "deviceName",
+            "jsonkey": "device_name",
+            "optional": true
+          }
+        ]
+      }
+
+      emitter.emit_record record
+      code = emitter._code.join "\n"
+
+      expect(code).toBe("""
+        @dataclass_json
+        @dataclass
+        class MsgSender:
+            uid: str = field(metadata=config(field_name='uid'))
+            device_id: str = field(metadata=config(field_name='device_id'))
+            username: Optional[str] = field(default=None, metadata=config(field_name='username'))
+            device_name: Optional[str] = field(default=None, metadata=config(field_name='device_name'))\n\n
+      """)
+
       return
     return
 
@@ -119,6 +167,13 @@ describe "PythonEmitter", () ->
             This is a docstring
             hi
             \"\"\"
+            V0 = 0
+            V1 = 1
+            V2 = 2
+            V3 = 3
+
+
+        class AuditVersionStrings(Enum):
             V0 = 'v0'
             V1 = 'v1'
             V2 = 'v2'

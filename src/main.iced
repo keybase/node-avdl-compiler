@@ -127,7 +127,7 @@ exports.Main = class Main
     for infile in @infiles
       await avdl2json.parse { infile, version: 2 }, esc defer ast
       merge_asts json, ast.to_json()
-    await emit { @infiles, json, types_only: true, @lang }, esc defer code
+    await emit { @infiles, json, outfile, types_only: true, @lang }, esc defer code
     await output { code, outfile }, esc defer()
     console.log "Compiling #{@infiles} -> #{outfile}"
 
