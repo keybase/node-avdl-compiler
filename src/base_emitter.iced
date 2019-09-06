@@ -52,9 +52,10 @@ exports.BaseEmitter = class BaseEmitter
     for type in types
       switch type.type
         when "record"
-          if type.typedef and not is_primitive type.typedef
-            graph[type.typedef].children = [type.name]
-            graph[type.name].in_count++
+          if type.typedef
+            if not is_primitive type.typedef
+              graph[type.typedef].children = [type.name]
+              graph[type.name].in_count++
           else
             for field in type.fields
               field_type = @get_field_type field.type
