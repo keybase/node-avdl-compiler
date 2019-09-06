@@ -47,6 +47,8 @@ exports.BaseEmitter = class BaseEmitter
   create_dep_graph : (types) ->
     graph = {}
     for type in types
+      # 'children' is the set of types that require this type. (non-transitive)
+      # 'in_count' is the number of types that this type requires. (non-transitive)
       graph[type.name] = {type, in_count: 0, children: []}
 
     for type in types
@@ -80,6 +82,7 @@ exports.BaseEmitter = class BaseEmitter
     graph = @create_dep_graph types
 
     # Topological sort
+    # Iteratively, release types that do not require any unreleased types. Until all types have been released.
     res_types = []
     prev_length = Object.keys(graph).length
     while Object.keys(graph).length > 0
@@ -91,7 +94,7 @@ exports.BaseEmitter = class BaseEmitter
         delete graph[type.type.name]
       if Object.keys(graph).length == prev_length
         # we're in a cycle, break and just append all remaining types
-        res_types.concat Object.keys(graph).map((type) -> type.type)
+        res_types.concat Object.values(graph).map((type) -> type.type)
         break
       prev_length = Object.keys(graph).length
 
@@ -112,8 +115,8 @@ exports.BaseEmitter = class BaseEmitter
   run : ({infiles, outfile, json, options}) ->
     options = {} unless options?
     infiles.sort()
-    json.types = @sort_types json.types
-    @create_dep_graph json.types
+    if infiles.length > 1
+      json.types = @sort_types json.types
     @emit_preface infiles, json, options
     @emit_imports json, outfile, options
     @emit_types json

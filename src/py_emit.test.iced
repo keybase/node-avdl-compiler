@@ -139,7 +139,7 @@ describe "PythonEmitter", () ->
             is_valid_thing: bool = field(metadata=config(field_name='isValidThing'))
             long_int: int = field(metadata=config(field_name='longInt'))
             double_or_nothin: float = field(metadata=config(field_name='doubleOrNothin'))
-            take_a_byte_of_this_apple: str = field(metadata=config(field_name='takeAByteOfThisApple'))\n\n
+            take_a_byte_of_this_apple: str = field(metadata=config(field_name='takeAByteOfThisApple'))\n
       """)
       return
 
@@ -161,7 +161,7 @@ describe "PythonEmitter", () ->
         @dataclass_json
         @dataclass
         class TestRecord:
-            super_cool: MySuperCoolCustomType = field(metadata=config(field_name='superCool'))\n\n
+            super_cool: MySuperCoolCustomType = field(metadata=config(field_name='superCool'))\n
       """)
       return
 
@@ -205,7 +205,7 @@ describe "PythonEmitter", () ->
             uid: str = field(metadata=config(field_name='uid'))
             device_id: str = field(metadata=config(field_name='device_id'))
             username: Optional[str] = field(default=None, metadata=config(field_name='username'))
-            device_name: Optional[str] = field(default=None, metadata=config(field_name='device_name'))\n\n
+            device_name: Optional[str] = field(default=None, metadata=config(field_name='device_name'))\n
       """)
 
       return
@@ -238,7 +238,7 @@ describe "PythonEmitter", () ->
         @dataclass
         class StellarServerDefinitions:
             revision: int = field(metadata=config(field_name='revision'))
-            currencies: Dict[str, OutsideCurrencyDefinition] = field(metadata=config(field_name='currencies'))\n\n
+            currencies: Dict[str, OutsideCurrencyDefinition] = field(metadata=config(field_name='currencies'))\n
       """)
       return
     return
@@ -280,7 +280,6 @@ describe "PythonEmitter", () ->
             V1 = 1
             V2 = 2
             V3 = 3
-
 
         class AuditVersionStrings(Enum):
             V0 = 'v0'
@@ -349,21 +348,25 @@ describe "PythonEmitter", () ->
         class MyVariant__VERSIONHIT:
             rtype: Literal[InboxResTypeStrings.VERSIONHIT]
             VERSIONHIT: None
+
         @dataclass_json
         @dataclass
         class MyVariant__FULL:
             rtype: Literal[InboxResTypeStrings.FULL]
             FULL: Optional[InboxViewFull]
+
         @dataclass_json
         @dataclass
         class MyVariant__HELLO:
             rtype: Literal[InboxResTypeStrings.HELLO]
             HELLO: Optional[bool]
+
         @dataclass_json
         @dataclass
         class MyVariant__DECK:
             rtype: Literal[InboxResTypeStrings.DECK]
             DECK: Optional[List[int]]
+
         MyVariant = Union[MyVariant__VERSIONHIT, MyVariant__FULL, MyVariant__HELLO, MyVariant__DECK]\n
       """)
       return
