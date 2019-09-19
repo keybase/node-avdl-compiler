@@ -84,13 +84,14 @@ describe "GoEmitter", () ->
       """)
       return
 
-    it "should only import the content package if types_only is false and the file contains messages", () ->
+    it "should only import the content and time packages if types_only is false and the file contains messages", () ->
       emitter.emit_imports {imports: [], messages: {fake_message: 'blah'}, types: []}, 'location/of/my/output.go', {types_only: false}
       code = emitter._code.join "\n"
       expect(code).toBe("""
         import (
         \t"github.com/keybase/go-framed-msgpack-rpc/rpc"
         \tcontext "golang.org/x/net/context"
+        \t"time"
         )\n\n
       """)
       return

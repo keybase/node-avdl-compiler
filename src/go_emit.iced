@@ -594,6 +594,8 @@ exports.GoEmitter = class GoEmitter extends BaseEmitter
       @output line
     if @count_variants({types}) > 0
       @output '"errors"'
+    if Object.keys(messages).length > 0
+      @output '"time"'
     @untab()
     @output ")"
     @output ""
@@ -615,10 +617,15 @@ exports.GoEmitter = class GoEmitter extends BaseEmitter
     resvar = if res? then "ret, " else ""
     @output """"#{name}": {"""
     @tab()
+    @emit_server_hook_timeout { name, details }
     @emit_server_hook_make_arg { name, details }
     @emit_server_hook_make_handler { name, details }
     @untab()
     @output "},"
+
+  emit_server_hook_timeout : ({name, details}) ->
+    timeout_msec = details.timeout_msec or 0
+    @output "Timeout: func() time.Duration { return #{timeout_msec} * time.Millisecond },"
 
   emit_server_hook_make_arg : ({name, details}) ->
     arg = details.request
@@ -724,7 +731,7 @@ exports.GoEmitter = class GoEmitter extends BaseEmitter
       ctype_in = if details.compression_type? then details.compression_type else @_default_compression_type
       # NOTE: This is for initial backwards compatibility so services can
       # understand `CallCompressed` before any client uses it. It also saves us
-      # an int encodeding `CompressionNone` on the wire.
+      # an int encoding `CompressionNone` on the wire.
       if ctype_in isnt "none"
         call_method = "CallCompressed"
         ctype = ", #{@go_compression_type(ctype_in)}"

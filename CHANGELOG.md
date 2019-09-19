@@ -1,3 +1,7 @@
+# 1.4.4
+
+- Add @timeout_msec(xxx) to methods to offer default timeout.
+
 # 1.4.3
 
 - When generating variants in typescript, no longer assume the types are all nullable.

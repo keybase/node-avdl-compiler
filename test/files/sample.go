@@ -8,6 +8,7 @@ import (
 	context "golang.org/x/net/context"
 	keybase1 "github.com/keybase/client/go/protocol/keybase1"
 	"errors"
+	"time"
 )
 
 
@@ -848,6 +849,7 @@ func SampleProtocol(i SampleInterface) rpc.Protocol {
 		Name: "sample.1.sample",
 		Methods: map[string]rpc.ServeHandlerDescription{
 			"getBaz": {
+				Timeout: func() time.Duration { return 0 * time.Millisecond },
 				MakeArg: func() interface{} {
 					var ret [1]GetBazArg
 					return &ret
@@ -863,6 +865,7 @@ func SampleProtocol(i SampleInterface) rpc.Protocol {
 				},
 			},
 			"notifier": {
+				Timeout: func() time.Duration { return 0 * time.Millisecond },
 				MakeArg: func() interface{} {
 					var ret [1]NotifierArg
 					return &ret
@@ -878,6 +881,7 @@ func SampleProtocol(i SampleInterface) rpc.Protocol {
 				},
 			},
 			"processBigBytes": {
+				Timeout: func() time.Duration { return 1000 * time.Millisecond },
 				MakeArg: func() interface{} {
 					var ret [1]ProcessBigBytesArg
 					return &ret
