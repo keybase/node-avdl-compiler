@@ -390,7 +390,7 @@ describe "TypescriptEmitter", () ->
       code = emitter._code.join "\n"
 
       expect(code).toBe("""
-        export type MyVariant = { rtype: InboxResType.VERSIONHIT } | { rtype: InboxResType.FULL, 'FULL': InboxViewFull | null } | { rtype: InboxResType.HELLO, 'HELLO': boolean | null } | { rtype: InboxResType.DECK, 'DECK': number[] | null } | { rtype: Exclude<InboxResType, InboxResType.VERSIONHIT | InboxResType.FULL | InboxResType.HELLO | InboxResType.DECK> }\n
+        export type MyVariant = { rtype: InboxResType.VERSIONHIT } | { rtype: InboxResType.FULL, 'FULL': InboxViewFull } | { rtype: InboxResType.HELLO, 'HELLO': boolean } | { rtype: InboxResType.DECK, 'DECK': number[] } | { rtype: Exclude<InboxResType, InboxResType.VERSIONHIT | InboxResType.FULL | InboxResType.HELLO | InboxResType.DECK> }\n
       """)
       return
     return

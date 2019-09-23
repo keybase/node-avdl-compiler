@@ -126,7 +126,7 @@ exports.TypescriptEmitter = class TypescriptEmitter extends BaseEmitter
             throw new Error "Unrecognized type"
 
         handled_cases.push "#{type.switch.type}.#{type_case.label.name}"
-        bodyStr = if type_case.body then ", '#{type_case.label.name}': #{bodyType} | null" else ''
+        bodyStr = if type_case.body then ", '#{type_case.label.name}': #{bodyType}" else ''
         "{ #{type.switch.name}: #{if is_switch_primitive then '' else type.switch.type + '.'}#{type_case.label.name}#{bodyStr} }")
       .filter(Boolean)
 
