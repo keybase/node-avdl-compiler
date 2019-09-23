@@ -1,3 +1,7 @@
+# 1.4.3
+
+- When generating variants in typescript, no longer assume the types are all nullable.
+
 # 1.4.1
 
 - Adds support for writing relative paths in AVDL files, which are resloved using your defined `$GOPATH`.
