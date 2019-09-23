@@ -2,7 +2,7 @@
  * sample.1
  * SampleInterface protocol is a sample among samples.
  *
- * Auto-generated to TypeScript types by avdl-compiler v1.4.1 (https://github.com/keybase/node-avdl-compiler)
+ * Auto-generated to TypeScript types by avdl-compiler v1.4.2 (https://github.com/keybase/node-avdl-compiler)
  * Input files:
  * - avdl/sample.avdl
  */
@@ -35,13 +35,13 @@ export enum EnumNoString {
   NOSTRING = 'nostring',
 }
 
-export type Boozle = { typ: Types.BOZO, 'BOZO': number | null } | { typ: Types.BIPPY, 'BIPPY': string | null } | { typ: Types.AGGLE, 'AGGLE': number[] | null } | { typ: Types.FLAGGLE, 'FLAGGLE': boolean[] | null } | { typ: Exclude<Types, Types.BOZO | Types.BIPPY | Types.AGGLE | Types.FLAGGLE> }
+export type Boozle = { typ: Types.BOZO, 'BOZO': number } | { typ: Types.BIPPY, 'BIPPY': string } | { typ: Types.AGGLE, 'AGGLE': number[] } | { typ: Types.FLAGGLE, 'FLAGGLE': boolean[] } | { typ: Exclude<Types, Types.BOZO | Types.BIPPY | Types.AGGLE | Types.FLAGGLE> }
 
-export type Trixie = { typ: Types.NONE } | { typ: Types.BOZO } | { typ: Types.BIPPY, 'BIPPY': number | null } | { typ: Types.AGGLE } | { typ: Types.FLAGGLE, 'FLAGGLE': EnumNoString | null } | { typ: Exclude<Types, Types.NONE | Types.BOZO | Types.BIPPY | Types.AGGLE | Types.FLAGGLE> }
+export type Trixie = { typ: Types.NONE } | { typ: Types.BOZO } | { typ: Types.BIPPY, 'BIPPY': number } | { typ: Types.AGGLE } | { typ: Types.FLAGGLE, 'FLAGGLE': EnumNoString } | { typ: Exclude<Types, Types.NONE | Types.BOZO | Types.BIPPY | Types.AGGLE | Types.FLAGGLE> }
 
-export type Noozle = { version: 1, '1': string | null } | { version: 2, '2': number | null } | { version: Exclude<int, int.1 | int.2> }
+export type Noozle = { version: 1, '1': string } | { version: 2, '2': number } | { version: Exclude<int, int.1 | int.2> }
 
-export type Blurp = { b: true, 'true': string | null } | { b: false, 'false': number | null } | { b: Exclude<boolean, boolean.true | boolean.false> }
+export type Blurp = { b: true, 'true': string } | { b: false, 'false': number } | { b: Exclude<boolean, boolean.true | boolean.false> }
 
 export type Simple = {
   s?: Blurp
@@ -75,4 +75,4 @@ export enum TeamInviteCategory {
   PHONE = 'phone',
 }
 
-export type TeamInviteType = { c: TeamInviteCategory.UNKNOWN, 'UNKNOWN': string | null } | { c: TeamInviteCategory.SBS, 'SBS': number | null } | { c: Exclude<TeamInviteCategory, TeamInviteCategory.UNKNOWN | TeamInviteCategory.SBS> }
+export type TeamInviteType = { c: TeamInviteCategory.UNKNOWN, 'UNKNOWN': string } | { c: TeamInviteCategory.SBS, 'SBS': number } | { c: Exclude<TeamInviteCategory, TeamInviteCategory.UNKNOWN | TeamInviteCategory.SBS> }
