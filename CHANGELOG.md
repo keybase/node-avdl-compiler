@@ -2,6 +2,11 @@
 
 - When generating variants in typescript, no longer assume the types are all nullable.
 
+# 1.4.2
+
+- Adds support for generating TypeScript types using `-l typescript -t`.
+- Adds support for generating Python types using `-l python -t`.
+
 # 1.4.1
 
 - Adds support for writing relative paths in AVDL files, which are resloved using your defined `$GOPATH`.
