@@ -849,7 +849,6 @@ func SampleProtocol(i SampleInterface) rpc.Protocol {
 		Name: "sample.1.sample",
 		Methods: map[string]rpc.ServeHandlerDescription{
 			"getBaz": {
-				Timeout: func() time.Duration { return 0 * time.Millisecond },
 				MakeArg: func() interface{} {
 					var ret [1]GetBazArg
 					return &ret
@@ -865,7 +864,6 @@ func SampleProtocol(i SampleInterface) rpc.Protocol {
 				},
 			},
 			"notifier": {
-				Timeout: func() time.Duration { return 0 * time.Millisecond },
 				MakeArg: func() interface{} {
 					var ret [1]NotifierArg
 					return &ret
@@ -881,7 +879,6 @@ func SampleProtocol(i SampleInterface) rpc.Protocol {
 				},
 			},
 			"processBigBytes": {
-				Timeout: func() time.Duration { return 1000 * time.Millisecond },
 				MakeArg: func() interface{} {
 					var ret [1]ProcessBigBytesArg
 					return &ret
@@ -909,20 +906,20 @@ type SampleClient struct {
 // 
 // And then.
 func (c SampleClient) GetBaz(ctx context.Context, __arg GetBazArg) (res keybase1.SigID,err error) {
-	err = c.Cli.CallCompressed(ctx, "sample.1.sample.getBaz", []interface{}{__arg}, &res, rpc.CompressionGzip)
+	err = c.Cli.CallCompressed(ctx, "sample.1.sample.getBaz", []interface{}{__arg}, &res, rpc.CompressionGzip, 0 * time.Millisecond)
 	return
 }
 
 // Notifier notifies the notifiee.
 func (c SampleClient) Notifier(ctx context.Context, i int) (err error) {
 	__arg := NotifierArg{ I : i }
-	err = c.Cli.Notify(ctx, "sample.1.sample.notifier", []interface{}{__arg})
+	err = c.Cli.Notify(ctx, "sample.1.sample.notifier", []interface{}{__arg}, 0 * time.Millisecond)
 	return
 }
 
 // ProcessBigBytes will try to process a bunch of bytes.
 func (c SampleClient) ProcessBigBytes(ctx context.Context, bytes BigBytes) (err error) {
 	__arg := ProcessBigBytesArg{ Bytes : bytes }
-	err = c.Cli.Call(ctx, "sample.1.sample.processBigBytes", []interface{}{__arg}, nil)
+	err = c.Cli.Call(ctx, "sample.1.sample.processBigBytes", []interface{}{__arg}, nil, 1000 * time.Millisecond)
 	return
 }

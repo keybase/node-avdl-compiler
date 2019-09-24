@@ -617,15 +617,10 @@ exports.GoEmitter = class GoEmitter extends BaseEmitter
     resvar = if res? then "ret, " else ""
     @output """"#{name}": {"""
     @tab()
-    @emit_server_hook_timeout { name, details }
     @emit_server_hook_make_arg { name, details }
     @emit_server_hook_make_handler { name, details }
     @untab()
     @output "},"
-
-  emit_server_hook_timeout : ({name, details}) ->
-    timeout_msec = details.timeout_msec or 0
-    @output "Timeout: func() time.Duration { return #{timeout_msec} * time.Millisecond },"
 
   emit_server_hook_make_arg : ({name, details}) ->
     arg = details.request
@@ -735,8 +730,9 @@ exports.GoEmitter = class GoEmitter extends BaseEmitter
       if ctype_in isnt "none"
         call_method = "CallCompressed"
         ctype = ", #{@go_compression_type(ctype_in)}"
+    timeout = ", #{details.timeout_msec or 0} * time.Millisecond"
 
-    @output """err = c.Cli.#{if ow then "Notify" else call_method}(ctx, "#{@_pkg}.#{protocol}.#{name}", #{oarg}#{res}#{ctype})"""
+    @output """err = c.Cli.#{if ow then "Notify" else call_method}(ctx, "#{@_pkg}.#{protocol}.#{name}", #{oarg}#{res}#{ctype}#{timeout})"""
     @output "return"
     @untab()
     @output "}"
