@@ -106,6 +106,7 @@ protocol sample {
 	 ProcessBigBytes will try to process a bunch of bytes.
 	*/
 
+	@timeout_msec(1000)
 	@compression_type("none")
 	void processBigBytes(BigBytes bytes);
 

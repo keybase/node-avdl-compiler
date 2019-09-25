@@ -594,6 +594,8 @@ exports.GoEmitter = class GoEmitter extends BaseEmitter
       @output line
     if @count_variants({types}) > 0
       @output '"errors"'
+    if Object.keys(messages).length > 0
+      @output '"time"'
     @untab()
     @output ")"
     @output ""
@@ -724,12 +726,13 @@ exports.GoEmitter = class GoEmitter extends BaseEmitter
       ctype_in = if details.compression_type? then details.compression_type else @_default_compression_type
       # NOTE: This is for initial backwards compatibility so services can
       # understand `CallCompressed` before any client uses it. It also saves us
-      # an int encodeding `CompressionNone` on the wire.
+      # an int encoding `CompressionNone` on the wire.
       if ctype_in isnt "none"
         call_method = "CallCompressed"
         ctype = ", #{@go_compression_type(ctype_in)}"
+    timeout = ", #{details.timeout_msec or 0} * time.Millisecond"
 
-    @output """err = c.Cli.#{if ow then "Notify" else call_method}(ctx, "#{@_pkg}.#{protocol}.#{name}", #{oarg}#{res}#{ctype})"""
+    @output """err = c.Cli.#{if ow then "Notify" else call_method}(ctx, "#{@_pkg}.#{protocol}.#{name}", #{oarg}#{res}#{ctype}#{timeout})"""
     @output "return"
     @untab()
     @output "}"
