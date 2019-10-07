@@ -91,7 +91,7 @@ exports.PythonEmitter = class PythonEmitter extends BaseEmitter
     @output "from typing import Dict, List, Optional, Union"
     @output "from typing_extensions import Literal"
     @output ""
-    @output "from dataclasses_json import dataclass_json, config"
+    @output "from dataclasses_json import config, DataClassJsonMixin"
     @output ""
 
     imports = uniqWith imports, isEqual
@@ -127,9 +127,8 @@ exports.PythonEmitter = class PythonEmitter extends BaseEmitter
     Boolean(field.optional)
 
   emit_record : (record) ->
-    @output "@dataclass_json"
     @output "@dataclass"
-    @output "class #{record.name}:"
+    @output "class #{record.name}(DataClassJsonMixin):"
     @tab()
 
     # Python needs all non-optional types to come before optional types so we sort
@@ -182,9 +181,8 @@ exports.PythonEmitter = class PythonEmitter extends BaseEmitter
           when type_case.body.type == 'array' then "Optional[List[#{@emit_primitive_type(type_case.body.items)}]]"
           else
             throw new Error "Unrecognized type"
-        @output "@dataclass_json"
         @output "@dataclass"
-        @output "class #{type.name}__#{type_case.label.name}:"
+        @output "class #{type.name}__#{type_case.label.name}(DataClassJsonMixin):"
         @tab()
         @output "#{type.switch.name}: Literal[#{if is_switch_primitive then '' else type.switch.type + 'Strings.'}#{type_case.label.name}]"
         @output "#{type_case.label.name}: #{bodyType}"

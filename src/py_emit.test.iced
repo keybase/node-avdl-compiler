@@ -75,7 +75,7 @@ describe "PythonEmitter", () ->
         from typing import Dict, List, Optional, Union
         from typing_extensions import Literal
 
-        from dataclasses_json import dataclass_json, config
+        from dataclasses_json import config, DataClassJsonMixin
 
         import test.output.dir.gregor1 as gregor1
         import test.output.dir.keybase1 as keybase1\n
@@ -132,9 +132,8 @@ describe "PythonEmitter", () ->
       code = emitter._code.join "\n"
 
       expect(code).toBe("""
-        @dataclass_json
         @dataclass
-        class TestRecord:
+        class TestRecord(DataClassJsonMixin):
             status_description: str = field(metadata=config(field_name='statusDescription'))
             is_valid_thing: bool = field(metadata=config(field_name='isValidThing'))
             long_int: int = field(metadata=config(field_name='longInt'))
@@ -158,9 +157,8 @@ describe "PythonEmitter", () ->
       code = emitter._code.join "\n"
 
       expect(code).toBe("""
-        @dataclass_json
         @dataclass
-        class TestRecord:
+        class TestRecord(DataClassJsonMixin):
             super_cool: MySuperCoolCustomType = field(metadata=config(field_name='superCool'))\n
       """)
       return
@@ -199,9 +197,8 @@ describe "PythonEmitter", () ->
       code = emitter._code.join "\n"
 
       expect(code).toBe("""
-        @dataclass_json
         @dataclass
-        class MsgSender:
+        class MsgSender(DataClassJsonMixin):
             uid: str = field(metadata=config(field_name='uid'))
             device_id: str = field(metadata=config(field_name='device_id'))
             username: Optional[str] = field(default=None, metadata=config(field_name='username'))
@@ -234,9 +231,8 @@ describe "PythonEmitter", () ->
       code = emitter._code.join "\n"
 
       expect(code).toBe("""
-        @dataclass_json
         @dataclass
-        class StellarServerDefinitions:
+        class StellarServerDefinitions(DataClassJsonMixin):
             revision: int = field(metadata=config(field_name='revision'))
             currencies: Dict[str, OutsideCurrencyDefinition] = field(metadata=config(field_name='currencies'))\n
       """)
@@ -343,27 +339,23 @@ describe "PythonEmitter", () ->
       code = emitter._code.join "\n"
 
       expect(code).toBe("""
-        @dataclass_json
         @dataclass
-        class MyVariant__VERSIONHIT:
+        class MyVariant__VERSIONHIT(DataClassJsonMixin):
             rtype: Literal[InboxResTypeStrings.VERSIONHIT]
             VERSIONHIT: None
 
-        @dataclass_json
         @dataclass
-        class MyVariant__FULL:
+        class MyVariant__FULL(DataClassJsonMixin):
             rtype: Literal[InboxResTypeStrings.FULL]
             FULL: Optional[InboxViewFull]
 
-        @dataclass_json
         @dataclass
-        class MyVariant__HELLO:
+        class MyVariant__HELLO(DataClassJsonMixin):
             rtype: Literal[InboxResTypeStrings.HELLO]
             HELLO: Optional[bool]
 
-        @dataclass_json
         @dataclass
-        class MyVariant__DECK:
+        class MyVariant__DECK(DataClassJsonMixin):
             rtype: Literal[InboxResTypeStrings.DECK]
             DECK: Optional[List[int]]
 
