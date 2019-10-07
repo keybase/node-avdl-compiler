@@ -63,7 +63,7 @@ exports.PythonEmitter = class PythonEmitter extends BaseEmitter
           throw new Error "Unrecognized type"
       else if t.type is "array"
         optional = true
-        "Optional[List[#{@emit_field_type(t.items).type}]]"
+        "List[#{@emit_field_type(t.items).type}]"
       else if t.type is "map"
         @make_map_type t
       else

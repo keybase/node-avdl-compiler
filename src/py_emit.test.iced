@@ -210,6 +210,77 @@ describe "PythonEmitter", () ->
 
       return
 
+    it "Should support optional arrays", () ->
+      record = {
+        type: "record",
+        name: "Thread",
+        fields: [
+          {
+            type: {
+              type: "array",
+              items: "Message"
+            },
+            name: "messages",
+            jsonkey: "messages"
+          },
+          {
+            type: [
+              null,
+              "Pagination"
+            ],
+            name: "pagination",
+            jsonkey: "pagination"
+          },
+          {
+            type: "boolean",
+            name: "offline",
+            jsonkey: "offline",
+            optional: true
+          },
+          {
+            type: {
+              "type": "array",
+              "items": "keybase1.TLFIdentifyFailure"
+            },
+            name: "identifyFailures",
+            jsonkey: "identify_failures",
+            optional: true
+          },
+          {
+            type: {
+              "type": "array",
+              "items": "RateLimitRes"
+            },
+            name: "rateLimits",
+            jsonkey: "ratelimits",
+            optional: true
+          }
+        ]
+      }
+
+      emitter.emit_record record
+      code = emitter._code.join "\n"
+
+      expect(code).toBe("""
+        @dataclass_json
+        @dataclass
+        class Thread:
+            messages: Optional[List[Message]] = field(
+                default=None, metadata=config(field_name="messages")
+            )
+            pagination: Optional[Pagination] = field(
+                default=None, metadata=config(field_name="pagination")
+            )
+            offline: Optional[bool] = field(default=None, metadata=config(field_name="offline"))
+            identify_failures: Optional[List[keybase1.TLFIdentifyFailure]] = field(
+                default=None, metadata=config(field_name="identify_failures")
+            )
+            rate_limits: Optional[List[RateLimitRes]] = field(
+                default=None, metadata=config(field_name="ratelimits")
+            )
+      """)
+      return
+
 
     it "Should emit a struct with a map type", () ->
       record = {
@@ -241,6 +312,7 @@ describe "PythonEmitter", () ->
             currencies: Dict[str, OutsideCurrencyDefinition] = field(metadata=config(field_name='currencies'))\n
       """)
       return
+
     return
 
   describe "emit_fixed", () ->
