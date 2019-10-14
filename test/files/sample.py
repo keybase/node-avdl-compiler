@@ -10,14 +10,13 @@ from enum import Enum
 from typing import Dict, List, Optional, Union
 from typing_extensions import Literal
 
-from dataclasses_json import dataclass_json, config
+from dataclasses_json import config, DataClassJsonMixin
 
 import github.com.keybase.client.go.protocol.keybase1 as keybase1
 
 Joe = int
-@dataclass_json
 @dataclass
-class R:
+class R(DataClassJsonMixin):
     bar: keybase1.UID = field(metadata=config(field_name='bar'))
     baz: keybase1.UID = field(metadata=config(field_name='baz_j_uid'))
     woop: Optional[str] = field(default=None, metadata=config(field_name='woop'))
@@ -44,101 +43,86 @@ class EnumNoStringStrings(Enum):
     NOSTRING = 'nostring'
 
 
-@dataclass_json
 @dataclass
-class Boozle__BOZO:
+class Boozle__BOZO(DataClassJsonMixin):
     typ: Literal[TypesStrings.BOZO]
     BOZO: Optional[int]
 
-@dataclass_json
 @dataclass
-class Boozle__BIPPY:
+class Boozle__BIPPY(DataClassJsonMixin):
     typ: Literal[TypesStrings.BIPPY]
     BIPPY: Optional[str]
 
-@dataclass_json
 @dataclass
-class Boozle__AGGLE:
+class Boozle__AGGLE(DataClassJsonMixin):
     typ: Literal[TypesStrings.AGGLE]
     AGGLE: Optional[List[int]]
 
-@dataclass_json
 @dataclass
-class Boozle__FLAGGLE:
+class Boozle__FLAGGLE(DataClassJsonMixin):
     typ: Literal[TypesStrings.FLAGGLE]
     FLAGGLE: Optional[List[bool]]
 
 Boozle = Union[Boozle__BOZO, Boozle__BIPPY, Boozle__AGGLE, Boozle__FLAGGLE]
 
-@dataclass_json
 @dataclass
-class Trixie__NONE:
+class Trixie__NONE(DataClassJsonMixin):
     typ: Literal[TypesStrings.NONE]
     NONE: None
 
-@dataclass_json
 @dataclass
-class Trixie__BOZO:
+class Trixie__BOZO(DataClassJsonMixin):
     typ: Literal[TypesStrings.BOZO]
     BOZO: None
 
-@dataclass_json
 @dataclass
-class Trixie__BIPPY:
+class Trixie__BIPPY(DataClassJsonMixin):
     typ: Literal[TypesStrings.BIPPY]
     BIPPY: Optional[int]
 
-@dataclass_json
 @dataclass
-class Trixie__AGGLE:
+class Trixie__AGGLE(DataClassJsonMixin):
     typ: Literal[TypesStrings.AGGLE]
     AGGLE: None
 
-@dataclass_json
 @dataclass
-class Trixie__FLAGGLE:
+class Trixie__FLAGGLE(DataClassJsonMixin):
     typ: Literal[TypesStrings.FLAGGLE]
     FLAGGLE: Optional[EnumNoString]
 
 Trixie = Union[Trixie__NONE, Trixie__BOZO, Trixie__BIPPY, Trixie__AGGLE, Trixie__FLAGGLE]
 
-@dataclass_json
 @dataclass
-class Noozle__1:
+class Noozle__1(DataClassJsonMixin):
     version: Literal[1]
     1: Optional[str]
 
-@dataclass_json
 @dataclass
-class Noozle__2:
+class Noozle__2(DataClassJsonMixin):
     version: Literal[2]
     2: Optional[int]
 
 Noozle = Union[Noozle__1, Noozle__2]
 
-@dataclass_json
 @dataclass
-class Blurp__true:
+class Blurp__true(DataClassJsonMixin):
     b: Literal[true]
     true: Optional[str]
 
-@dataclass_json
 @dataclass
-class Blurp__false:
+class Blurp__false(DataClassJsonMixin):
     b: Literal[false]
     false: Optional[int]
 
 Blurp = Union[Blurp__true, Blurp__false]
 
-@dataclass_json
 @dataclass
-class Simple:
+class Simple(DataClassJsonMixin):
     s: Optional[Blurp] = field(default=None, metadata=config(field_name='s'))
 
 Hash = str
-@dataclass_json
 @dataclass
-class Cat:
+class Cat(DataClassJsonMixin):
     bird: Dict[str, Noozle] = field(metadata=config(field_name='bird'))
     bee: Dict[str, Noozle] = field(metadata=config(field_name='bee'))
     birds: Dict[str, Optional[List[Noozle]]] = field(metadata=config(field_name='birds'))
@@ -171,15 +155,13 @@ class TeamInviteCategoryStrings(Enum):
     PHONE = 'phone'
 
 
-@dataclass_json
 @dataclass
-class TeamInviteType__UNKNOWN:
+class TeamInviteType__UNKNOWN(DataClassJsonMixin):
     c: Literal[TeamInviteCategoryStrings.UNKNOWN]
     UNKNOWN: Optional[str]
 
-@dataclass_json
 @dataclass
-class TeamInviteType__SBS:
+class TeamInviteType__SBS(DataClassJsonMixin):
     c: Literal[TeamInviteCategoryStrings.SBS]
     SBS: Optional[int]
 
