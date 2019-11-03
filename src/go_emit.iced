@@ -471,6 +471,12 @@ exports.GoEmitter = class GoEmitter extends BaseEmitter
       ret++
     return ret
 
+  count_enums_with_string : ({types}) ->
+    ret = 0
+    for type in types when type.type is "enum" and type.go isnt "nostring"
+      ret++
+    return ret
+
   emit_type : ({type, go_field_suffix}) ->
     @output_doc type.doc
     switch type.type
@@ -529,7 +535,7 @@ exports.GoEmitter = class GoEmitter extends BaseEmitter
       @output "return v"
       @untab()
       @output "}"
-      @output "return \"\""
+      @output "return fmt.Sprintf(\"%v\", int(e))"
       @untab()
       @output "}"
 
@@ -594,6 +600,8 @@ exports.GoEmitter = class GoEmitter extends BaseEmitter
       @output line
     if @count_variants({types}) > 0
       @output '"errors"'
+    if @count_enums_with_string({types}) > 0
+      @output '"fmt"'
     if Object.keys(messages).length > 0
       @output '"time"'
     @untab()

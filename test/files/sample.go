@@ -1,4 +1,4 @@
-// Auto-generated to Go types and interfaces using avdl-compiler v1.4.4 (https://github.com/keybase/node-avdl-compiler)
+// Auto-generated to Go types and interfaces using avdl-compiler v1.4.5 (https://github.com/keybase/node-avdl-compiler)
 //   Input file: avdl/sample.avdl
 
 package sample1
@@ -8,6 +8,7 @@ import (
 	context "golang.org/x/net/context"
 	keybase1 "github.com/keybase/client/go/protocol/keybase1"
 	"errors"
+	"fmt"
 	"time"
 )
 
@@ -63,7 +64,7 @@ func (e Types) String() string {
 	if v, ok := TypesRevMap[e]; ok {
 		return v
 	}
-	return ""
+	return fmt.Sprintf("%v", int(e))
 }
 
 type EnumNoString int
@@ -733,7 +734,7 @@ func (e TeamInviteCategory) String() string {
 	if v, ok := TeamInviteCategoryRevMap[e]; ok {
 		return v
 	}
-	return ""
+	return fmt.Sprintf("%v", int(e))
 }
 
 type TeamInviteType struct {

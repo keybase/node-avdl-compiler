@@ -1,3 +1,11 @@
+# 1.4.6
+
+- Go Enum String() method emits integer instead of empty string for unrecognized names
+
+# 1.4.5
+
+- Uses [dataclasses_json](https://github.com/lidatong/dataclasses-json)'s mixin object instead of its `@dataclass_json` decorator for Python type generation, giving better MyPy support.
+
 # 1.4.4
 
 - Add @timeout_msec(xxx) to methods to offer default timeout.

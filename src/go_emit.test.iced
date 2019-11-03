@@ -408,7 +408,7 @@ describe "GoEmitter", () ->
         \tif v, ok := AuditVersionRevMap[e]; ok {
         \t\treturn v
         \t}
-        \treturn ""
+        \treturn fmt.Sprintf("%v", int(e))
         }\n
       """)
       return
