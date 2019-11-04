@@ -6,7 +6,7 @@
   "scripts": {
     "test": "make test",
     "test:unit": "jest",
-    "prepublish": "make test"
+    "prepublishOnly": "make test"
   },
   "bin": {
     "avdlc": "bin/main.js"
