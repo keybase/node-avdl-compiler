@@ -2,7 +2,7 @@
  * sample.1
  * SampleInterface protocol is a sample among samples.
  *
- * Auto-generated to TypeScript types by avdl-compiler v1.4.5 (https://github.com/keybase/node-avdl-compiler)
+ * Auto-generated to TypeScript types by avdl-compiler v1.4.6 (https://github.com/keybase/node-avdl-compiler)
  * Input files:
  * - avdl/sample.avdl
  */

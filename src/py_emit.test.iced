@@ -259,22 +259,13 @@ describe "PythonEmitter", () ->
       code = emitter._code.join "\n"
 
       expect(code).toBe("""
-        @dataclass_json
         @dataclass
-        class Thread:
-            messages: Optional[List[Message]] = field(
-                default=None, metadata=config(field_name="messages")
-            )
-            pagination: Optional[Pagination] = field(
-                default=None, metadata=config(field_name="pagination")
-            )
-            offline: Optional[bool] = field(default=None, metadata=config(field_name="offline"))
-            identify_failures: Optional[List[keybase1.TLFIdentifyFailure]] = field(
-                default=None, metadata=config(field_name="identify_failures")
-            )
-            rate_limits: Optional[List[RateLimitRes]] = field(
-                default=None, metadata=config(field_name="ratelimits")
-            )
+        class Thread(DataClassJsonMixin):
+            messages: Optional[List[Message]] = field(default=None, metadata=config(field_name='messages'))
+            pagination: Optional[Pagination] = field(default=None, metadata=config(field_name='pagination'))
+            offline: Optional[bool] = field(default=None, metadata=config(field_name='offline'))
+            identify_failures: Optional[List[keybase1.TLFIdentifyFailure]] = field(default=None, metadata=config(field_name='identify_failures'))
+            rate_limits: Optional[List[RateLimitRes]] = field(default=None, metadata=config(field_name='ratelimits'))\n
       """)
       return
 

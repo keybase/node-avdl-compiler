@@ -1,6 +1,6 @@
 """sample.1
 
-Auto-generated to Python types by avdl-compiler v1.4.5 (https://github.com/keybase/node-avdl-compiler)
+Auto-generated to Python types by avdl-compiler v1.4.6 (https://github.com/keybase/node-avdl-compiler)
 Input files:
  - avdl/sample.avdl
 """
@@ -132,7 +132,7 @@ class Cat(DataClassJsonMixin):
     boo: str = field(metadata=config(field_name='boo'))
     hoo_hah: Hash = field(metadata=config(field_name='hooHah'))
     seqno: rpc.SeqNumber = field(metadata=config(field_name='seqno'))
-    wow: Optional[Optional[List[Dict[str, Optional[List[Noozle]]]]]] = field(default=None, metadata=config(field_name='wow'))
+    wow: Optional[List[Dict[str, Optional[List[Noozle]]]]] = field(default=None, metadata=config(field_name='wow'))
 
 messageID = int
 BigBytes = Optional[str]
