@@ -299,7 +299,6 @@ describe "PythonEmitter", () ->
             currencies: Dict[str, OutsideCurrencyDefinition] = field(metadata=config(field_name='currencies'))\n
       """)
       return
-
     return
 
   describe "emit_fixed", () ->
