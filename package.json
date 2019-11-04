@@ -5,7 +5,8 @@
   "main": "lib/main.js",
   "scripts": {
     "test": "make test",
-    "test:unit": "jest"
+    "test:unit": "jest",
+    "prepublishOnly": "make test"
   },
   "bin": {
     "avdlc": "bin/main.js"
