@@ -63,7 +63,7 @@ exports.PythonEmitter = class PythonEmitter extends BaseEmitter
           throw new Error "Unrecognized type"
       else if t.type is "array"
         optional = true
-        "Optional[List[#{@emit_field_type(t.items).type}]]"
+        "List[#{@emit_field_type(t.items).type}]"
       else if t.type is "map"
         @make_map_type t
       else
@@ -72,8 +72,10 @@ exports.PythonEmitter = class PythonEmitter extends BaseEmitter
       throw new Error "Unrecognized type"
     { type , optional }
 
-  make_map_type : (type) ->
-    "Dict[str, #{@emit_field_type(type.values).type}]"
+  make_map_type : (t) ->
+    {optional, type} = @emit_field_type(t.values)
+    type = "Optional[#{type}]" if optional
+    "Dict[str, #{type}]"
 
   emit_preface : (infiles, {namespace}) ->
     @output '"""' + namespace

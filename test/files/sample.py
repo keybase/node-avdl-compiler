@@ -132,7 +132,7 @@ class Cat(DataClassJsonMixin):
     boo: str = field(metadata=config(field_name='boo'))
     hoo_hah: Hash = field(metadata=config(field_name='hooHah'))
     seqno: rpc.SeqNumber = field(metadata=config(field_name='seqno'))
-    wow: Optional[Optional[List[Dict[str, Optional[List[Noozle]]]]]] = field(default=None, metadata=config(field_name='wow'))
+    wow: Optional[List[Dict[str, Optional[List[Noozle]]]]] = field(default=None, metadata=config(field_name='wow'))
 
 messageID = int
 BigBytes = Optional[str]

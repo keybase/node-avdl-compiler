@@ -1,3 +1,7 @@
+# 1.4.7
+
+- Fixes an issue where nullable lists would be emitted as `Optional[Optional[List[` instead of `Optional[List[`.
+
 # 1.4.6
 
 - Go Enum String() method emits integer instead of empty string for unrecognized names
