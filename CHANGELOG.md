@@ -1,3 +1,7 @@
+# 1.4.8
+
+- Update avdl2json
+
 # 1.4.7
 
 - Fixes an issue where nullable lists would be emitted as `Optional[Optional[List[` instead of `Optional[List[`.
