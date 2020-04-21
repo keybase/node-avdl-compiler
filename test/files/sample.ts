@@ -45,6 +45,7 @@ export type Blurp = { b: true, 'true': string } | { b: false, 'false': number } 
 
 export type Simple = {
   s?: Blurp
+  t?: Blurp | null
 }
 
 export type Hash = Buffer

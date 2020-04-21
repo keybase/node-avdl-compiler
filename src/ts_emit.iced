@@ -82,10 +82,10 @@ exports.TypescriptEmitter = class TypescriptEmitter extends BaseEmitter
   emit_fixed : (type) ->
     @output "export type #{type.name} = string | null"
 
-  emit_field : ({name, type, jsonkey, optionalkey}) ->
+  emit_field : ({name, type, jsonkey, optionalkey, null_serializable}) ->
     {type, optional} = @emit_field_type(type, {optionalkey})
     fieldName = camelCase(jsonkey or name)
-    @output "#{fieldName}#{if optional then '?' else ''}: #{type}"
+    @output "#{fieldName}#{if optional then '?' else ''}: #{type}#{if null_serializable then ' | null' else ''}"
 
   emit_record : (record) ->
     @output "export type #{record.name} = {"
@@ -99,6 +99,7 @@ exports.TypescriptEmitter = class TypescriptEmitter extends BaseEmitter
         type : f.type
         jsonkey : f.jsonkey
         optionalkey : f.optional
+        null_serializable : f.nullSerializable
     @untab()
     @output "}"
 

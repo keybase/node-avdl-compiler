@@ -521,6 +521,7 @@ func (o Blurp) DeepCopy() Blurp {
 
 type Simple struct {
 	S	*Blurp	`codec:"s,omitempty" json:"s,omitempty"`
+	T	*Blurp	`codec:"t" json:"t"`
 }
 
 func (o Simple) DeepCopy() Simple {
@@ -532,6 +533,13 @@ func (o Simple) DeepCopy() Simple {
 			tmp := (*x).DeepCopy()
 			return &tmp
 		})(o.S),
+		T: (func (x *Blurp) *Blurp {
+			if x == nil {
+				return nil
+			}
+			tmp := (*x).DeepCopy()
+			return &tmp
+		})(o.T),
 	}
 }
 
