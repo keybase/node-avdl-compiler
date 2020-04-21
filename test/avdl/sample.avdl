@@ -81,6 +81,7 @@ protocol sample {
 	record Simple {
 		union {null, Blurp} s;
 		@nullSerializable(true) union {null, Blurp} t;
+		union {null, array<Blurp>} u;
 	}
 
 	@typedef ("bytes") record Hash {}
