@@ -110,21 +110,21 @@ exports.GoEmitter = class GoEmitter extends BaseEmitter
     @emit_typedef_deep_copy { t }
     true
 
-  codec : ({name, optional, jsonkey, mpackkey}) ->
-    omitempty = if optional then ",omitempty" else ""
+  codec : ({name, optional, jsonkey, mpackkey, null_serializable}) ->
+    omitempty = if optional and not null_serializable then ",omitempty" else ""
     unless jsonkey?
       jsonkey = name
     unless mpackkey?
       mpackkey = name
     "`codec:\"#{mpackkey}#{omitempty}\" json:\"#{jsonkey}#{omitempty}\"`"
 
-  emit_field : ({name, type, go_field_suffix, exported, optionalkey, pointed, jsonkey, mpackkey}) ->
+  emit_field : ({name, type, go_field_suffix, exported, optionalkey, pointed, jsonkey, mpackkey, null_serializable}) ->
     {type, optional} = @emit_field_type(type, {pointed, optionalkey})
     cols = [
       @go_translate_identifier({ name, go_field_suffix, exported }),
       @go_lint_capitalize(type)
     ]
-    cols.push(@codec({name, optional, jsonkey, mpackkey})) if exported
+    cols.push(@codec({name, optional, jsonkey, mpackkey, null_serializable})) if exported
     @output cols.join("\t")
 
   emit_record : (obj, {go_field_suffix, no_deep_copy} = {}) ->
@@ -146,6 +146,7 @@ exports.GoEmitter = class GoEmitter extends BaseEmitter
         optionalkey : f.optional
         jsonkey : f.jsonkey
         mpackkey : f.mpackkey
+        null_serializable : f.nullSerializable
     @untab()
     @output "}"
 

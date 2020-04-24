@@ -119,6 +119,8 @@ Blurp = Union[Blurp__true, Blurp__false]
 @dataclass
 class Simple(DataClassJsonMixin):
     s: Optional[Blurp] = field(default=None, metadata=config(field_name='s'))
+    t: Optional[Blurp] = field(default=None, metadata=config(field_name='t'))
+    u: Optional[List[Blurp]] = field(default=None, metadata=config(field_name='u'))
 
 Hash = str
 @dataclass
