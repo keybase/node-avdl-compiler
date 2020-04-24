@@ -1,3 +1,7 @@
+# 1.4.9
+
+- Add nullSerializable decorator that always emits a field, even with a null value, instead of sometimes omitting it
+
 # 1.4.8
 
 - Update avdl2json
