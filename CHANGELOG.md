@@ -1,3 +1,7 @@
+# 1.4.10
+
+- Support gomodules using the optional '-m' flag.
+
 # 1.4.9
 
 - Add nullSerializable decorator that always emits a field, even with a null value, instead of sometimes omitting it

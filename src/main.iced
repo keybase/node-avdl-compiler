@@ -7,26 +7,28 @@ avdl2json = require 'avdl2json'
 fs = require 'fs'
 pathmod = require 'path'
 {mergeWith} = require 'lodash'
+{exec} = require 'child_process'
 
 #================================================
 
 usage = () ->
   console.error """AVDL Compiler
 
-#{'  '}single file: avdlc -l <lang> [-t] -i <infile> -o <outfile>
-#{'  '}batch:       avdlc -l <lang> [-t] -b -o <outdir> <infiles...>
+#{'  '}single file: avdlc -l <lang> [-t] [-m] -i <infile> -o <outfile>
+#{'  '}batch:       avdlc -l <lang> [-t] [-m] -b -o <outdir> <infiles...>
 
 avdlc can run in either batch or single-file mode. Specify which language
 to output code in. Currently, only "go" is fully supported. TypeScript and Python are partially supported.
 
 Use -t to only print types and ignore function definitions.
+Use -m to set gomodules support
 """
 
 #================================================
 
-emit = ( { infiles, outfile, json, lang, types_only }, cb) ->
+emit = ( { infiles, outfile, json, lang, types_only, gomod_path, gomod_dir }, cb) ->
   emitter = switch lang
-    when "go" then new GoEmitter()
+    when "go" then new GoEmitter(gomod_path, gomod_dir)
     when "typescript" then new TypescriptEmitter()
     when "python" then new PythonEmitter()
     else throw new Error "Unrecognized language: #{@lang}"
@@ -66,12 +68,14 @@ exports.Main = class Main
       err = new Error "usage: shown!"
     else if (@batch = argv.b)
       @types_only = argv.t
+      @gomod_enabled = argv.m
       @outdir = argv.o
       @infiles = argv._
       unless @outdir? and @infiles.length
         err = new Error "need an [-o <outdir>] and input files in batch mode"
     else
       @types_only = argv.t
+      @gomod_enabled = argv.m
       @outfile = argv.o
       @infile = argv.i
       unless @outfile? and @infile?
@@ -104,6 +108,16 @@ exports.Main = class Main
 
   #---------------
 
+  get_gomod : (opts, cb) ->
+    esc = make_esc cb, "get_gomod"
+    cwd = if @outdir? then @outdir else pathmod.dirname(@outfile)
+    await exec 'go list -m -json', {cwd}, esc defer stdout
+    @gomod_path = JSON.parse(stdout).Path
+    @gomod_dir = JSON.parse(stdout).Dir
+    cb null
+
+  #---------------
+
   do_file : ({infile, outfile}, cb) ->
     esc = make_esc cb, "do_file"
     if @clean
@@ -111,7 +125,7 @@ exports.Main = class Main
       console.log "Deleting #{outfile}" unless err?
     else
       await avdl2json.parse { infile, version : 2 }, esc defer ast
-      await emit { infiles: [infile], outfile, json : ast.to_json(), @types_only, @lang }, esc defer code
+      await emit { infiles: [infile], outfile, json : ast.to_json(), @types_only, @lang, @gomod_path, @gomod_dir }, esc defer code
       await output { code, outfile }, esc defer()
       console.log "Compiling #{infile} -> #{outfile}"
     cb null
@@ -127,7 +141,7 @@ exports.Main = class Main
     for infile in @infiles
       await avdl2json.parse { infile, version: 2 }, esc defer ast
       merge_asts json, ast.to_json()
-    await emit { @infiles, json, outfile, types_only: true, @lang }, esc defer code
+    await emit { @infiles, json, outfile, types_only: true, @lang, @gomod_path, @gomod_dir }, esc defer code
     await output { code, outfile }, esc defer()
     console.log "Compiling #{@infiles} -> #{outfile}"
 
@@ -161,6 +175,8 @@ exports.Main = class Main
   main : ({argv}, cb) ->
     esc = make_esc cb, "main"
     await @parse_argv {argv}, esc defer()
+    if @gomod_enabled
+      await @get_gomod {}, esc defer()
     if @batch
       await @do_batch_mode {}, esc defer()
     else
