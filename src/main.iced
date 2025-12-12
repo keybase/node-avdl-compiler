@@ -14,14 +14,14 @@ pathmod = require 'path'
 usage = () ->
   console.error """AVDL Compiler
 
-#{'  '}single file: avdlc -l <lang> [-t] [-m] -i <infile> -o <outfile>
-#{'  '}batch:       avdlc -l <lang> [-t] [-m] -b -o <outdir> <infiles...>
+#{'  '}single file: avdlc -l <lang> [-t] -i <infile> -o <outfile>
+#{'  '}batch:       avdlc -l <lang> [-t] -b -o <outdir> <infiles...>
 
 avdlc can run in either batch or single-file mode. Specify which language
 to output code in. Currently, only "go" is fully supported. TypeScript and Python are partially supported.
 
 Use -t to only print types and ignore function definitions.
-Use -m to enable Go modules (required for Go output)
+Note: Go output requires Go modules (uses 'go list -m -json' to determine module path).
 """
 
 #================================================
@@ -68,14 +68,12 @@ exports.Main = class Main
       err = new Error "usage: shown!"
     else if (@batch = argv.b)
       @types_only = argv.t
-      @gomod_enabled = argv.m
       @outdir = argv.o
       @infiles = argv._
       unless @outdir? and @infiles.length
         err = new Error "need an [-o <outdir>] and input files in batch mode"
     else
       @types_only = argv.t
-      @gomod_enabled = argv.m
       @outfile = argv.o
       @infile = argv.i
       unless @outfile? and @infile?
@@ -175,7 +173,7 @@ exports.Main = class Main
   main : ({argv}, cb) ->
     esc = make_esc cb, "main"
     await @parse_argv {argv}, esc defer()
-    if @gomod_enabled
+    if @lang is "go"
       await @get_gomod {}, esc defer()
     if @batch
       await @do_batch_mode {}, esc defer()
