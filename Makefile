@@ -20,7 +20,7 @@ install:
 	cd test/files && go mod download && go mod tidy
 
 test: build-stamp
-	./node_modules/.bin/jest
+	npm run test:unit
 	cd test && ../$(ICED) ./run.iced && cd files/ && go test $(CI_TAGS)
 
 .PHONY: test
