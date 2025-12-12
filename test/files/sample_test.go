@@ -1,26 +1,26 @@
 package sample1
 
 import (
+	"context"
 	"encoding/json"
 	"testing"
 
 	"github.com/keybase/client/go/protocol/keybase1"
 	"github.com/keybase/go-codec/codec"
 	"github.com/stretchr/testify/require"
-	"golang.org/x/net/context"
 )
 
 type fakeSample struct{}
 
-func (fakeSample) GetBaz(ctx context.Context, arg GetBazArg) (keybase1.SigID, error) {
+func (fakeSample) GetBaz(_ context.Context, _ GetBazArg) (keybase1.SigID, error) {
 	return keybase1.SigID(""), nil
 }
 
-func (fakeSample) ProcessBigBytes(ctx context.Context, arg BigBytes) error {
+func (fakeSample) ProcessBigBytes(_ context.Context, _ BigBytes) error {
 	return nil
 }
 
-func (fakeSample) Notifier(ctx context.Context, n int) error {
+func (fakeSample) Notifier(_ context.Context, _ int) error {
 	return nil
 }
 
@@ -72,5 +72,6 @@ func TestOptionalKey(t *testing.T) {
 		Baz: "hello",
 	}
 	output, err = json.Marshal(noWoop)
+	require.NoError(t, err)
 	require.Equal(t, string(output), `{"bar":"what's up","baz_j_uid":"hello"}`)
 }
