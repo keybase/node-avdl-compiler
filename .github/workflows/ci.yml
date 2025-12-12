@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version: "1.25.x"
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "latest"
+
+      - name: Install npm dependencies
+        run: npm install --ignore-scripts
+
+      - name: Run make install
+        run: make install
+
+      - name: Run make test
+        run: make CI_TAGS="--tags=noresinit" test
+
+      - name: Check for uncommitted changes
+        run: git diff --exit-code

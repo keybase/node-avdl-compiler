@@ -16,7 +16,7 @@ build-stamp: \
 	date > $@
 
 install:
-	npm install
+	npm install --ignore-scripts
 	go get -t -v ./...
 
 test: build-stamp
