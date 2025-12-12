@@ -47,6 +47,9 @@ jobs:
       - name: Install dependencies
         run: make install
 
+      - name: Build JavaScript files
+        run: make
+
       - name: Build Go code
         run: cd test/files && go build -v ./...
 
