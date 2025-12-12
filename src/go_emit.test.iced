@@ -2,13 +2,10 @@
 pkg         = require '../package.json'
 path_lib    = require 'path'
 
-describe.each([
-  ["Go Modules disabled", "", ""],
-  ["Go Modules enabled", "github.com/keybase/node-avdl-compiler", path_lib.resolve()]
-]) 'GoEmitter - %s', (_, gomod_path, gomod_dir) ->
+describe 'GoEmitter', () ->
   emitter = null
   beforeEach () ->
-    emitter = new GoEmitter gomod_path, gomod_dir
+    emitter = new GoEmitter "github.com/keybase/node-avdl-compiler", path_lib.resolve()
 
   describe "emit_preface", () ->
     it "Should emit a preface", () ->

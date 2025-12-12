@@ -21,7 +21,7 @@ avdlc can run in either batch or single-file mode. Specify which language
 to output code in. Currently, only "go" is fully supported. TypeScript and Python are partially supported.
 
 Use -t to only print types and ignore function definitions.
-Use -m to set gomodules support
+Use -m to enable Go modules (required for Go output)
 """
 
 #================================================

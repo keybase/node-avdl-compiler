@@ -588,13 +588,9 @@ exports.GoEmitter = class GoEmitter extends BaseEmitter
       @output '"github.com/keybase/go-framed-msgpack-rpc/rpc"'
       @output 'context "golang.org/x/net/context"' if Object.keys(messages).length > 0
 
-    if @gomod_path and @gomod_dir
-      relative_file = path_lib.resolve(outfile).replace(@gomod_dir, "")
-      relative_dir = @gomod_path + path_lib.dirname(relative_file)
-    else
-      prefix = process.env.GOPATH + '/src/'
-      relative_file = path_lib.resolve(outfile).replace(prefix, "")
-      relative_dir = path_lib.dirname(relative_file)
+    # Go modules mode - construct import paths relative to module root
+    relative_file = path_lib.resolve(outfile).replace(@gomod_dir, "")
+    relative_dir = @gomod_path + path_lib.dirname(relative_file)
 
     for {import_as, path} in imports when path.indexOf('/') >= 0
       if path.match /(\.\/|\.\.\/)/
