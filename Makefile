@@ -16,7 +16,7 @@ build-stamp: \
 	date > $@
 
 install:
-	npm ci
+	npm install --ignore-scripts
 	cd test/files && go mod download && go mod tidy
 
 test: build-stamp

@@ -44,26 +44,21 @@ jobs:
           node-version: "latest"
           cache: "npm"
 
-      - name: Install npm dependencies
-        run: npm ci
+      - name: Install dependencies and build
+        run: |
+          npm ci --ignore-scripts
+          cd test/files && go mod download && go mod tidy
+          cd ../..
+          make
 
-      - name: Install Go dependencies
-        run: cd test/files && go mod download && go mod tidy
-
-      - name: Build JavaScript files
-        run: make
-
-      - name: Build Go code
-        run: cd test/files && go build -v ./...
+      - name: Run tests
+        run: make CI_TAGS="--tags=noresinit" test
 
       - name: Run govulncheck
         uses: golang/govulncheck-action@v1
         with:
           go-version-input: ${{ matrix.go-version }}
           work-dir: test/files
-
-      - name: Run make test
-        run: make CI_TAGS="--tags=noresinit" test
 
       - name: Check for uncommitted changes
         run: git diff --exit-code
