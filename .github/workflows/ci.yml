@@ -47,6 +47,12 @@ jobs:
       - name: Install npm dependencies
         run: npm ci
 
+      - name: Debug - Check jest installation
+        run: |
+          ls -la node_modules/.bin/ | grep jest || echo "jest binary not found"
+          npm list jest || echo "jest not in dependencies"
+          which jest || echo "jest not in PATH"
+
       - name: Install Go dependencies
         run: cd test/files && go mod download && go mod tidy
 
