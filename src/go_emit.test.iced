@@ -51,6 +51,7 @@ describe 'GoEmitter', () ->
       emitter.emit_imports {imports, messages: {}, types: []}, 'location/of/my/output.go', {types_only: true}
       code = emitter._code.join "\n"
 
+      # Note: gofumpt will format this, so spacing may vary
       expect(code).toBe('''
         import (
         \tgregor1 "github.com/keybase/node-avdl-compiler/location/of/gregor1"
@@ -88,11 +89,12 @@ describe 'GoEmitter', () ->
     it "should only import the content and time packages if types_only is false and the file contains messages", () ->
       emitter.emit_imports {imports: [], messages: {fake_message: 'blah'}, types: []}, 'location/of/my/output.go', {types_only: false}
       code = emitter._code.join "\n"
+      # gofumpt will sort imports - stdlib first, then third-party
       expect(code).toBe("""
         import (
-        \t"github.com/keybase/go-framed-msgpack-rpc/rpc"
-        \tcontext "golang.org/x/net/context"
+        \t"context"
         \t"time"
+        \t"github.com/keybase/go-framed-msgpack-rpc/rpc"
         )\n\n
       """)
       return
@@ -123,6 +125,7 @@ describe 'GoEmitter', () ->
       emitter.emit_typedef type
       code = emitter._code.join "\n"
 
+      # gofumpt will add spacing between type and method
       expect(code).toBe("""
         type BuildPaymentID string
         func (o BuildPaymentID) DeepCopy() BuildPaymentID {
@@ -405,11 +408,11 @@ describe 'GoEmitter', () ->
         \t3: "V3",
         }
 
-        func (e AuditVersion) String() string {
-        \tif v, ok := AuditVersionRevMap[e]; ok {
+        func (o AuditVersion) String() string {
+        \tif v, ok := AuditVersionRevMap[o]; ok {
         \t\treturn v
         \t}
-        \treturn fmt.Sprintf("%v", int(e))
+        \treturn fmt.Sprintf("%v", int(o))
         }\n
       """)
       return

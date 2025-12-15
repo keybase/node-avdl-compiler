@@ -1,0 +1,81 @@
+version: "2"
+
+run:
+  timeout: 5m
+  tests: true
+
+formatters:
+  enable:
+    - gofumpt
+
+linters:
+  enable:
+    # Core recommended linters
+    - errcheck # Checks for unchecked errors
+    - govet # Go vet checks
+    - ineffassign # Detects ineffectual assignments
+    - staticcheck # Advanced static analysis
+    - unused # Finds unused code
+
+    # Code quality
+    - misspell # Finds commonly misspelled words
+    - unconvert # Unnecessary type conversions
+    - unparam # Finds unused function parameters
+    - gocritic # Various checks
+    - revive # Fast, configurable linter
+
+    # Security and best practices
+    - gosec # Security-focused linter
+    - bodyclose # Checks HTTP response body closed
+    - noctx # Finds HTTP requests without context
+
+  settings:
+    gocritic:
+      disabled-checks:
+        - ifElseChain
+        - elseif
+
+    govet:
+      enable-all: true
+      disable:
+        - shadow
+        - fieldalignment
+
+    revive:
+      enable-all-rules: false
+
+  exclusions:
+    rules:
+      # Exclude specific revive rules for generated code
+      - linters:
+          - revive
+        text: "package-comments"
+
+      - linters:
+          - revive
+        text: "exported"
+
+      # Exclude var-naming for intentional underscores in generated AVDL code
+      - linters:
+          - revive
+        text: "var-naming"
+
+      # Exclude specific staticcheck rules
+      - linters:
+          - staticcheck
+        text: "ST1005"
+
+      # Exclude specific gocritic rules
+      - linters:
+          - gocritic
+        text: "ifElseChain"
+
+      # Exclude gofumpt formatting for generated AVDL code - uses tabs for alignment
+      - linters:
+          - gofumpt
+        path: "test/files/sample\\.go"
+
+      # Exclude unused for test sample files - they're just for testing the generator
+      - linters:
+          - unused
+        path: "test/files/sample\\.go"

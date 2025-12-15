@@ -212,7 +212,12 @@ exports.GoEmitter = class GoEmitter extends BaseEmitter
     @untab()
     @output "}"
     @output "tmp := ", {frag : true }
-    @deep_copy { t : t[1], val : "(*x)", exported : true }
+    # For pointer-to-type where type has DeepCopy() method, we can simplify
+    # (*x).DeepCopy() to x.DeepCopy(). But for arrays/maps/primitives, we need to dereference.
+    inner = t[1]
+    can_simplify = (typeof(inner) is 'string' and not @is_primitive_type_lax(inner))
+    inner_val = if can_simplify then "x" else "(*x)"
+    @deep_copy { t : inner, val : inner_val, exported : true }
     @output "return &tmp"
     @deep_copy_postamble { val }
 
@@ -353,7 +358,14 @@ exports.GoEmitter = class GoEmitter extends BaseEmitter
       cases = ("o.#{@variant_field(obj.switch.name)} == #{v}" for v in cases)
       @output "if #{cases.join(" || ")} {"
     else
-      @output "if o.#{@variant_field(obj.switch.name)} != #{tag_val} {"
+      # Simplify boolean comparisons for cleaner code
+      switch_field = "o.#{@variant_field(obj.switch.name)}"
+      if tag_val in ["true", true]
+        @output "if !#{switch_field} {"
+      else if tag_val in ["false", false]
+        @output "if #{switch_field} {"
+      else
+        @output "if #{switch_field} != #{tag_val} {"
     @tab()
     @output """panic("wrong case accessed")"""
     @untab()
@@ -529,14 +541,14 @@ exports.GoEmitter = class GoEmitter extends BaseEmitter
     @output "}"
 
     unless nostring
-      @output "func (e " + name + ") String() string {"
+      @output "func (o " + name + ") String() string {"
       @tab()
-      @output "if v, ok := #{name}RevMap[e]; ok {"
+      @output "if v, ok := #{name}RevMap[o]; ok {"
       @tab()
       @output "return v"
       @untab()
       @output "}"
-      @output "return fmt.Sprintf(\"%v\", int(e))"
+      @output "return fmt.Sprintf(\"%v\", int(o))"
       @untab()
       @output "}"
 
@@ -584,27 +596,27 @@ exports.GoEmitter = class GoEmitter extends BaseEmitter
   emit_imports : ({imports, messages, types}, outfile, {types_only}) ->
     @output "import ("
     @tab()
-    if not types_only
-      @output '"github.com/keybase/go-framed-msgpack-rpc/rpc"'
-      @output 'context "golang.org/x/net/context"' if Object.keys(messages).length > 0
+
+    # Standard library imports - gofumpt will sort and format these
+    has_messages = Object.keys(messages).length > 0
+    @output '"context"' if has_messages
+    @output '"errors"' if @count_variants({types}) > 0
+    @output '"fmt"' if @count_enums_with_string({types}) > 0
+    @output '"time"' if has_messages
+
+    # Third-party imports - gofumpt will separate these from stdlib
+    @output '"github.com/keybase/go-framed-msgpack-rpc/rpc"' unless types_only
 
     # Go modules mode - construct import paths relative to module root
     relative_file = path_lib.resolve(outfile).replace(@gomod_dir, "")
     relative_dir = @gomod_path + path_lib.dirname(relative_file)
 
     for {import_as, path} in imports when path.indexOf('/') >= 0
-      if path.match /(\.\/|\.\.\/)/
-        path = path_lib.normalize(relative_dir + "/" + path)
-      line = ""
-      line = import_as + " " if import_as?
+      path = path_lib.normalize(relative_dir + "/" + path) if path.match /(\.\/|\.\.\/)/
+      line = if import_as? then import_as + " " else ""
       line += '"' + path + '"'
       @output line
-    if @count_variants({types}) > 0
-      @output '"errors"'
-    if @count_enums_with_string({types}) > 0
-      @output '"fmt"'
-    if Object.keys(messages).length > 0
-      @output '"time"'
+
     @untab()
     @output ")"
     @output ""
