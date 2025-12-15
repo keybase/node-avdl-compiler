@@ -7,9 +7,9 @@ exports.compile_sample = (T,cb) ->
   main = new Main
   await main.main { argv }, T.esc(defer(), cb)
 
-  # Run gofumpt on the generated file
-  await execFile 'gofumpt', ['-w', "#{__dirname}/sample.go"], T.esc(defer(err), cb)
-  if err
-    console.error "Warning: gofumpt failed:", err.message
+  # Run gofumpt on the generated file if available (optional for local dev)
+  # In CI, golangci-lint will handle formatting. Silently ignore if not installed.
+  await execFile 'gofumpt', ['-w', "#{__dirname}/sample.go"], defer(err)
+  # Ignore error - gofumpt is optional
 
   cb()
