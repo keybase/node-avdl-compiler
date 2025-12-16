@@ -4,7 +4,7 @@
  *
  * Auto-generated to TypeScript types by avdl-compiler v1.4.10 (https://github.com/keybase/node-avdl-compiler)
  * Input files:
- * - avdl/sample.avdl
+ * - test/avdl/sample.avdl
  */
 
 import * as keybase1 from 'github.com/keybase/client/go/protocol/keybase1'
@@ -47,6 +47,19 @@ export type Simple = {
   s?: Blurp
   t?: Blurp | null
   u?: Blurp[] | null
+}
+
+export type BytesRecord = {
+  data: Buffer
+  optionalData?: Buffer
+}
+
+export type OptionalTypesRecord = {
+  optionalArray?: number[] | null
+  optionalMap?: {[key: string]: string}
+  optionalInt?: number
+  optionalString?: string
+  optionalBool?: boolean
 }
 
 export type Hash = Buffer

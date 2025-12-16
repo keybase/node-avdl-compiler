@@ -84,6 +84,19 @@ protocol sample {
 		union {null, array<Blurp>} u;
 	}
 
+	record BytesRecord {
+		bytes data;
+		union {null, bytes} optionalData;
+	}
+
+	record OptionalTypesRecord {
+		union {null, array<int>} optionalArray;
+		union {null, map<string>} optionalMap;
+		union {null, int} optionalInt;
+		union {null, string} optionalString;
+		union {null, boolean} optionalBool;
+	}
+
 	@typedef ("bytes") record Hash {}
 
 	@layout("array")

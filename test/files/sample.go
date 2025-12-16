@@ -1,5 +1,5 @@
 // Auto-generated to Go types and interfaces using avdl-compiler v1.4.10 (https://github.com/keybase/node-avdl-compiler)
-//   Input file: avdl/sample.avdl
+//   Input file: test/avdl/sample.avdl
 
 package sample1
 
@@ -563,6 +563,103 @@ func (o Simple) DeepCopy() Simple {
 			})((*x))
 			return &tmp
 		})(o.U),
+	}
+}
+
+type BytesRecord struct {
+	Data         []byte  `codec:"data" json:"data"`
+	OptionalData *[]byte `codec:"optionalData,omitempty" json:"optionalData,omitempty"`
+}
+
+func (o BytesRecord) DeepCopy() BytesRecord {
+	return BytesRecord{
+		Data: (func(x []byte) []byte {
+			if x == nil {
+				return nil
+			}
+			return append([]byte{}, x...)
+		})(o.Data),
+		OptionalData: (func(x *[]byte) *[]byte {
+			if x == nil {
+				return nil
+			}
+			tmp := (func(x []byte) []byte {
+				if x == nil {
+					return nil
+				}
+				return append([]byte{}, x...)
+			})((*x))
+			return &tmp
+		})(o.OptionalData),
+	}
+}
+
+type OptionalTypesRecord struct {
+	OptionalArray  *[]int             `codec:"optionalArray,omitempty" json:"optionalArray,omitempty"`
+	OptionalMap    *map[string]string `codec:"optionalMap,omitempty" json:"optionalMap,omitempty"`
+	OptionalInt    *int               `codec:"optionalInt,omitempty" json:"optionalInt,omitempty"`
+	OptionalString *string            `codec:"optionalString,omitempty" json:"optionalString,omitempty"`
+	OptionalBool   *bool              `codec:"optionalBool,omitempty" json:"optionalBool,omitempty"`
+}
+
+func (o OptionalTypesRecord) DeepCopy() OptionalTypesRecord {
+	return OptionalTypesRecord{
+		OptionalArray: (func(x *[]int) *[]int {
+			if x == nil {
+				return nil
+			}
+			tmp := (func(x []int) []int {
+				if x == nil {
+					return nil
+				}
+				ret := make([]int, len(x))
+				for i, v := range x {
+					vCopy := v
+					ret[i] = vCopy
+				}
+				return ret
+			})((*x))
+			return &tmp
+		})(o.OptionalArray),
+		OptionalMap: (func(x *map[string]string) *map[string]string {
+			if x == nil {
+				return nil
+			}
+			tmp := (func(x map[string]string) map[string]string {
+				if x == nil {
+					return nil
+				}
+				ret := make(map[string]string, len(x))
+				for k, v := range x {
+					kCopy := k
+					vCopy := v
+					ret[kCopy] = vCopy
+				}
+				return ret
+			})((*x))
+			return &tmp
+		})(o.OptionalMap),
+		OptionalInt: (func(x *int) *int {
+			if x == nil {
+				return nil
+			}
+			tmp := (*x)
+			return &tmp
+		})(o.OptionalInt),
+		OptionalString: (func(x *string) *string {
+			if x == nil {
+				return nil
+			}
+			tmp := (*x)
+			return &tmp
+		})(o.OptionalString),
+		OptionalBool: (func(x *bool) *bool {
+			if x == nil {
+				return nil
+			}
+			tmp := (*x)
+			return &tmp
+		})(o.OptionalBool),
 	}
 }
 
