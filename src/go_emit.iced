@@ -213,9 +213,9 @@ exports.GoEmitter = class GoEmitter extends BaseEmitter
     @output "}"
     @output "tmp := ", {frag : true }
     # For pointer-to-type where type has DeepCopy() method, we can simplify
-    # (*x).DeepCopy() to x.DeepCopy(). But for arrays/maps/primitives, we need to dereference.
+    # (*x).DeepCopy() to x.DeepCopy(). But for arrays/maps/primitives/bytes, we need to dereference.
     inner = t[1]
-    can_simplify = (typeof(inner) is 'string' and not @is_primitive_type_lax(inner))
+    can_simplify = (typeof(inner) is 'string' and inner isnt 'bytes' and not @is_primitive_type_lax(inner))
     inner_val = if can_simplify then "x" else "(*x)"
     @deep_copy { t : inner, val : inner_val, exported : true }
     @output "return &tmp"

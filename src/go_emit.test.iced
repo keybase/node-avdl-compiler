@@ -350,6 +350,55 @@ describe 'GoEmitter', () ->
       """)
       return
 
+    it "Should emit a struct with bytes and optional bytes fields", () ->
+      record = {
+        type: "record"
+        name: "BytesRecord"
+        fields: [
+          {
+            type: "bytes",
+            name: "data"
+          },
+          {
+            type: [null, "bytes"],
+            name: "optionalData"
+          }
+        ]
+      }
+      emitter.emit_record record
+      code = emitter._code.join "\n"
+
+      expect(code).toBe("""
+        type BytesRecord struct {
+        \tData\t[]byte\t`codec:"data" json:"data"`
+        \tOptionalData\t*[]byte\t`codec:"optionalData,omitempty" json:"optionalData,omitempty"`
+        }
+
+        func (o BytesRecord) DeepCopy() BytesRecord {
+        \treturn BytesRecord{
+        \t\tData: (func (x []byte) []byte {
+        \t\t\tif x == nil {
+        \t\t\t\treturn nil
+        \t\t\t}
+        \t\t\treturn append([]byte{}, x...)
+        \t\t})(o.Data),
+        \t\tOptionalData: (func (x *[]byte) *[]byte {
+        \t\t\tif x == nil {
+        \t\t\t\treturn nil
+        \t\t\t}
+        \t\t\ttmp := (func (x []byte) []byte {
+        \t\t\t\tif x == nil {
+        \t\t\t\t\treturn nil
+        \t\t\t\t}
+        \t\t\t\treturn append([]byte{}, x...)
+        \t\t\t})((*x))
+        \t\t\treturn &tmp
+        \t\t})(o.OptionalData),
+        \t}
+        }\n
+      """)
+      return
+
     return
 
 

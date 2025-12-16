@@ -2,7 +2,7 @@
 
 Auto-generated to Python types by avdl-compiler v1.4.10 (https://github.com/keybase/node-avdl-compiler)
 Input files:
- - avdl/sample.avdl
+ - test/avdl/sample.avdl
 """
 
 from dataclasses import dataclass, field
@@ -121,6 +121,19 @@ class Simple(DataClassJsonMixin):
     s: Optional[Blurp] = field(default=None, metadata=config(field_name='s'))
     t: Optional[Blurp] = field(default=None, metadata=config(field_name='t'))
     u: Optional[List[Blurp]] = field(default=None, metadata=config(field_name='u'))
+
+@dataclass
+class BytesRecord(DataClassJsonMixin):
+    data: str = field(metadata=config(field_name='data'))
+    optional_data: Optional[str] = field(default=None, metadata=config(field_name='optionalData'))
+
+@dataclass
+class OptionalTypesRecord(DataClassJsonMixin):
+    optional_array: Optional[List[int]] = field(default=None, metadata=config(field_name='optionalArray'))
+    optional_map: Optional[Dict[str, str]] = field(default=None, metadata=config(field_name='optionalMap'))
+    optional_int: Optional[int] = field(default=None, metadata=config(field_name='optionalInt'))
+    optional_string: Optional[str] = field(default=None, metadata=config(field_name='optionalString'))
+    optional_bool: Optional[bool] = field(default=None, metadata=config(field_name='optionalBool'))
 
 Hash = str
 @dataclass
