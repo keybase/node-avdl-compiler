@@ -1,8 +1,8 @@
 """sample.1
 
-Auto-generated to Python types by avdl-compiler v1.4.10 (https://github.com/keybase/node-avdl-compiler)
+Code generated to Python types by avdl-compiler v1.4.10 (https://github.com/keybase/node-avdl-compiler). DO NOT EDIT.
 Input files:
- - test/avdl/sample.avdl
+ - avdl/sample.avdl
 """
 
 from dataclasses import dataclass, field

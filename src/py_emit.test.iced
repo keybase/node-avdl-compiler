@@ -28,7 +28,7 @@ describe "PythonEmitter", () ->
       expect(code).toBe("""
       \"\"\"chat1
 
-      Auto-generated to Python types by #{pkg.name} v#{pkg.version} (#{pkg.homepage})
+      Code generated to Python types by #{pkg.name} v#{pkg.version} (#{pkg.homepage}). DO NOT EDIT.
       Input files:
        - my_test_file.avdl
       \"\"\"\n

@@ -80,7 +80,7 @@ exports.PythonEmitter = class PythonEmitter extends BaseEmitter
   emit_preface : (infiles, {namespace}) ->
     @output '"""' + namespace
     @output ""
-    @output "Auto-generated to Python types by #{pkg.name} v#{pkg.version} (#{pkg.homepage})"
+    @output "Code generated to Python types by #{pkg.name} v#{pkg.version} (#{pkg.homepage}). DO NOT EDIT."
     @output "Input files:"
     for infile in infiles
       @output " - #{path_lib.relative(process.cwd(), infile)}"

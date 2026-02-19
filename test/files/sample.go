@@ -1,5 +1,5 @@
-// Auto-generated to Go types and interfaces using avdl-compiler v1.4.10 (https://github.com/keybase/node-avdl-compiler)
-//   Input file: test/avdl/sample.avdl
+// Code generated to Go types and interfaces using avdl-compiler v1.4.10 (https://github.com/keybase/node-avdl-compiler). DO NOT EDIT.
+//   Input file: avdl/sample.avdl
 
 package sample1
 

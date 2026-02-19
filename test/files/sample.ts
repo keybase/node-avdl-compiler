@@ -2,9 +2,9 @@
  * sample.1
  * SampleInterface protocol is a sample among samples.
  *
- * Auto-generated to TypeScript types by avdl-compiler v1.4.10 (https://github.com/keybase/node-avdl-compiler)
+ * Code generated to TypeScript types by avdl-compiler v1.4.10 (https://github.com/keybase/node-avdl-compiler). DO NOT EDIT.
  * Input files:
- * - test/avdl/sample.avdl
+ * - avdl/sample.avdl
  */
 
 import * as keybase1 from 'github.com/keybase/client/go/protocol/keybase1'

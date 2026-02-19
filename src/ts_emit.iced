@@ -16,7 +16,7 @@ exports.TypescriptEmitter = class TypescriptEmitter extends BaseEmitter
       for line in doc.split /\n/
         @output " * " + line.replace /^\s$/, ''
     @output " *"
-    @output " * Auto-generated to TypeScript types by #{pkg.name} v#{pkg.version} (#{pkg.homepage})"
+    @output " * Code generated to TypeScript types by #{pkg.name} v#{pkg.version} (#{pkg.homepage}). DO NOT EDIT."
     @output " * Input files:"
     for infile in infiles
       @output " * - #{path_lib.relative(process.cwd(), infile)}"
