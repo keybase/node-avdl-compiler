@@ -13,7 +13,7 @@ describe 'GoEmitter', () ->
       code = emitter._code.join "\n"
 
       expect(code).toBe("""
-        // Auto-generated to Go types and interfaces using avdl-compiler v#{pkg.version} (https://github.com/keybase/node-avdl-compiler)
+        // Code generated to Go types and interfaces using avdl-compiler v#{pkg.version} (https://github.com/keybase/node-avdl-compiler). DO NOT EDIT.
         //   Input file: my_test_file.avdl
 
         package chat1\n
@@ -25,7 +25,7 @@ describe 'GoEmitter', () ->
       code = emitter._code.join "\n"
 
       expect(code).toBe("""
-        // Auto-generated to Go types using avdl-compiler v#{pkg.version} (https://github.com/keybase/node-avdl-compiler)
+        // Code generated to Go types using avdl-compiler v#{pkg.version} (https://github.com/keybase/node-avdl-compiler). DO NOT EDIT.
         //   Input file: my_test_file.avdl
 
         package chat1\n

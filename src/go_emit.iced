@@ -759,7 +759,7 @@ exports.GoEmitter = class GoEmitter extends BaseEmitter
     @output "}"
 
   emit_preface : (infiles, json, {types_only} = {}) ->
-    @output "// Auto-generated to Go #{if types_only then 'types' else 'types and interfaces'} using #{pkg.name} v#{pkg.version} (#{pkg.homepage})"
+    @output "// Code generated to Go #{if types_only then 'types' else 'types and interfaces'} using #{pkg.name} v#{pkg.version} (#{pkg.homepage}). DO NOT EDIT."
     if infiles.length == 1
       @output "//   Input file: #{path_lib.relative(process.cwd(), infiles[0])}"
     else
