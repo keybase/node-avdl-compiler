@@ -983,11 +983,11 @@ func SampleProtocol(i SampleInterface) rpc.Protocol {
 		Name: "sample.1.sample",
 		Methods: map[string]rpc.ServeHandlerDescription{
 			"getBaz": {
-				MakeArg: func() interface{} {
+				MakeArg: func() any {
 					var ret [1]GetBazArg
 					return &ret
 				},
-				Handler: func(ctx context.Context, args interface{}) (ret interface{}, err error) {
+				Handler: func(ctx context.Context, args any) (ret any, err error) {
 					typedArgs, ok := args.(*[1]GetBazArg)
 					if !ok {
 						err = rpc.NewTypeError((*[1]GetBazArg)(nil), args)
@@ -998,11 +998,11 @@ func SampleProtocol(i SampleInterface) rpc.Protocol {
 				},
 			},
 			"notifier": {
-				MakeArg: func() interface{} {
+				MakeArg: func() any {
 					var ret [1]NotifierArg
 					return &ret
 				},
-				Handler: func(ctx context.Context, args interface{}) (ret interface{}, err error) {
+				Handler: func(ctx context.Context, args any) (ret any, err error) {
 					typedArgs, ok := args.(*[1]NotifierArg)
 					if !ok {
 						err = rpc.NewTypeError((*[1]NotifierArg)(nil), args)
@@ -1013,11 +1013,11 @@ func SampleProtocol(i SampleInterface) rpc.Protocol {
 				},
 			},
 			"processBigBytes": {
-				MakeArg: func() interface{} {
+				MakeArg: func() any {
 					var ret [1]ProcessBigBytesArg
 					return &ret
 				},
-				Handler: func(ctx context.Context, args interface{}) (ret interface{}, err error) {
+				Handler: func(ctx context.Context, args any) (ret any, err error) {
 					typedArgs, ok := args.(*[1]ProcessBigBytesArg)
 					if !ok {
 						err = rpc.NewTypeError((*[1]ProcessBigBytesArg)(nil), args)
@@ -1040,20 +1040,20 @@ type SampleClient struct {
 //
 // And then.
 func (c SampleClient) GetBaz(ctx context.Context, __arg GetBazArg) (res keybase1.SigID, err error) {
-	err = c.Cli.CallCompressed(ctx, "sample.1.sample.getBaz", []interface{}{__arg}, &res, rpc.CompressionGzip, 0*time.Millisecond)
+	err = c.Cli.CallCompressed(ctx, "sample.1.sample.getBaz", []any{__arg}, &res, rpc.CompressionGzip, 0*time.Millisecond)
 	return
 }
 
 // Notifier notifies the notifiee.
 func (c SampleClient) Notifier(ctx context.Context, i int) (err error) {
 	__arg := NotifierArg{I: i}
-	err = c.Cli.Notify(ctx, "sample.1.sample.notifier", []interface{}{__arg}, 0*time.Millisecond)
+	err = c.Cli.Notify(ctx, "sample.1.sample.notifier", []any{__arg}, 0*time.Millisecond)
 	return
 }
 
 // ProcessBigBytes will try to process a bunch of bytes.
 func (c SampleClient) ProcessBigBytes(ctx context.Context, bytes BigBytes) (err error) {
 	__arg := ProcessBigBytesArg{Bytes: bytes}
-	err = c.Cli.Call(ctx, "sample.1.sample.processBigBytes", []interface{}{__arg}, nil, 1000*time.Millisecond)
+	err = c.Cli.Call(ctx, "sample.1.sample.processBigBytes", []any{__arg}, nil, 1000*time.Millisecond)
 	return
 }

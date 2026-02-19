@@ -645,7 +645,7 @@ exports.GoEmitter = class GoEmitter extends BaseEmitter
 
   emit_server_hook_make_arg : ({name, details}) ->
     arg = details.request
-    @output "MakeArg: func() interface{} {"
+    @output "MakeArg: func() any {"
     @tab()
 
     # Over the wire, we're expecting either an empty argument array,
@@ -665,7 +665,7 @@ exports.GoEmitter = class GoEmitter extends BaseEmitter
     res = details.response
     resvar = if res? then "ret, " else ""
     pt = @go_primitive_type arg.type
-    @output "Handler: func(ctx context.Context, args interface{}) (ret interface{}, err error) {"
+    @output "Handler: func(ctx context.Context, args any) (ret any, err error) {"
     @tab()
     if arg.nargs > 0
       @output "typedArgs, ok := args.(*[1]#{pt})"
@@ -735,7 +735,7 @@ exports.GoEmitter = class GoEmitter extends BaseEmitter
     if arg.nargs is 1
       n = arg.single.name
       @output "#{arg.name} := #{arg.type}{ #{@go_export_case n} : #{n} }"
-    oarg = "[]interface{}{"
+    oarg = "[]any{"
     oarg += if arg.nargs is 0 then "#{arg.type}{}"
     else arg.name
     oarg += "}"
