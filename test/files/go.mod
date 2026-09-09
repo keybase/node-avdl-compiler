@@ -1,8 +1,8 @@
 module github.com/keybase/node-avdl-compiler/test/files
 
-go 1.24.0
+go 1.26.0
 
-toolchain go1.25.5
+toolchain go1.27.1
 
 require (
 	github.com/keybase/client/go v0.0.0-20251212162511-577ca7a6452f
